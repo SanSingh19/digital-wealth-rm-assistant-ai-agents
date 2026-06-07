@@ -50,7 +50,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(message)s",
     handlers=[
-        logging.StreamHandler(),
+        logging.StreamHandler(stream=open(sys.stdout.fileno(), mode="w", encoding="utf-8", errors="replace", closefd=False)),
         logging.FileHandler(LOG_DIR / "process.log"),
     ],
 )
@@ -94,12 +94,16 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
                 if raw.startswith("json"):
                     raw = raw[4:]
             parsed = json.loads(raw.strip())
-            # OpenAI json_object mode may wrap arrays — unwrap if needed
+            # OpenAI json_object mode wraps arrays in a dict key -- unwrap
+            if isinstance(parsed, list):
+                return [item for item in parsed if isinstance(item, dict)]
             if isinstance(parsed, dict):
                 for v in parsed.values():
                     if isinstance(v, list):
-                        return v
-            return parsed
+                        valid = [item for item in v if isinstance(item, dict)]
+                        return valid
+                return []
+            return []
         except json.JSONDecodeError as e:
             if attempt == 0:
                 log.warning(f"JSON decode error, retrying: {e}")
@@ -365,9 +369,9 @@ def run_processing(article_ids: list[int] | None = None):
     Pass article_ids to process specific articles,
     or leave None to process all unprocessed ones.
     """
-    log.info("═" * 60)
-    log.info("STEP 2 · AI PROCESSING  START")
-    log.info("═" * 60)
+    log.info("=" * 60)
+    log.info("STEP 2 - AI PROCESSING  START")
+    log.info("=" * 60)
 
     engine         = init_db(DATABASE_URL)
     SessionFactory = get_session_factory(engine)
@@ -401,7 +405,7 @@ def run_processing(article_ids: list[int] | None = None):
                 log.error(f"  Event extraction failed: {e}")
                 raw_events = []
 
-            log.info(f"  → {len(raw_events)} market events found")
+            log.info(f"  -> {len(raw_events)} market events found")
 
             event_rows = persist_market_events(session, art, raw_events)
             all_event_rows.extend(event_rows)
@@ -424,7 +428,7 @@ def run_processing(article_ids: list[int] | None = None):
             log.error(f"  Trend clustering failed: {e}")
             raw_trends = []
 
-        log.info(f"  → {len(raw_trends)} trends identified")
+        log.info(f"  -> {len(raw_trends)} trends identified")
 
         trend_rows: list[Trend] = []
         for rt in raw_trends:
@@ -456,7 +460,7 @@ def run_processing(article_ids: list[int] | None = None):
             log.error(f"  Theme distillation failed: {e}")
             raw_themes = []
 
-        log.info(f"  → {len(raw_themes)} themes identified")
+        log.info(f"  -> {len(raw_themes)} themes identified")
 
         for rt in raw_themes:
             theme = get_or_create_theme(
@@ -482,15 +486,15 @@ def _print_summary(engine):
     SessionFactory = get_session_factory(engine)
     with SessionFactory() as session:
         themes = session.query(Theme).all()
-        log.info("\n" + "─" * 60)
+        log.info("\n" + "=" * 60)
         log.info(f"  THEMES STORED: {len(themes)}")
         for theme in themes:
             tags = session.query(SectorTag).filter_by(theme_id=theme.id).all()
             log.info(f"\n  ▸ THEME: {theme.name}")
             log.info(f"    {theme.description[:100] if theme.description else ''}")
             for tag in tags:
-                log.info(f"    └ Sector: {tag.sector_name:30s}  Sentiment: {tag.sentiment.value:10s}  Confidence: {tag.confidence:.2f}")
-        log.info("─" * 60)
+                log.info(f"    - Sector: {tag.sector_name:30s}  Sentiment: {tag.sentiment.value:10s}  Confidence: {tag.confidence:.2f}")
+        log.info("=" * 60)
 
 
 # ══════════════════════════════════════════════

@@ -45,7 +45,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(message)s",
     handlers=[
-        logging.StreamHandler(),
+        logging.StreamHandler(stream=open(sys.stdout.fileno(), mode="w", encoding="utf-8", errors="replace", closefd=False)),
         logging.FileHandler(LOG_DIR / "ingest.log"),
     ],
 )
@@ -95,7 +95,7 @@ def fetch_feed(source: dict) -> list[dict]:
     """
     url  = source["url"]
     name = source["name"]
-    log.info(f"Fetching RSS  → {name}  ({url})")
+    log.info(f"Fetching RSS -> {name}  ({url})")
 
     # ── save raw XML ───────────────────────────
     RAW_FEED_DIR.mkdir(parents=True, exist_ok=True)
@@ -112,7 +112,7 @@ def fetch_feed(source: dict) -> list[dict]:
         resp.raise_for_status()
         raw_content = resp.content
         raw_path.write_bytes(raw_content)
-        log.info(f"  Raw XML saved → {raw_path.name}  ({len(raw_content)} bytes)")
+        log.info(f"  Raw XML saved -> {raw_path.name}  ({len(raw_content)} bytes)")
     except Exception as exc:
         log.warning(f"  Live fetch failed: {exc} – using mock data for dev/demo")
         return _mock_entries(source)
@@ -226,9 +226,9 @@ def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
 
     Returns list of newly inserted NewsArticle IDs.
     """
-    log.info("═" * 60)
-    log.info("STEP 1 · INGESTION  START")
-    log.info("═" * 60)
+    log.info("=" * 60)
+    log.info("STEP 1 - INGESTION  START")
+    log.info("=" * 60)
 
     engine          = init_db(DATABASE_URL)
     SessionFactory  = get_session_factory(engine)
@@ -249,18 +249,18 @@ def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
 
                 # ── save file ───────────────────
                 fpath = save_article_to_disk(entry)
-                log.info(f"  ✔ saved  {fpath.name}")
+                log.info(f"  >> saved  {fpath.name}")
 
                 # ── persist to DB ────────────────
                 row = persist_article(session, entry, fpath)
                 if row:
                     session.flush()
                     new_ids.append(row.id)
-                    log.info(f"  ✔ DB insert  id={row.id}  title='{entry['title'][:55]}...'")
+                    log.info(f"  >> DB insert  id={row.id}  title='{entry['title'][:55]}...'")
 
         session.commit()
 
-    log.info(f"\nSTEP 1 DONE  →  {len(new_ids)} new articles ingested")
+    log.info(f"\nSTEP 1 DONE -> {len(new_ids)} new articles ingested")
     return new_ids
 
 

@@ -24,6 +24,11 @@ import argparse
 import logging
 import sys
 import time
+
+# Fix Windows terminal encoding
+if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 from datetime import datetime
 from pathlib import Path
 
@@ -44,7 +49,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(message)s",
     handlers=[
-        logging.StreamHandler(),
+        logging.StreamHandler(stream=open(sys.stdout.fileno(), mode="w", encoding="utf-8", errors="replace", closefd=False)),
         logging.FileHandler(LOG_DIR / "pipeline.log"),
     ],
 )
@@ -56,9 +61,9 @@ log = logging.getLogger("pipeline")
 # ══════════════════════════════════════════════
 
 def run_pipeline():
-    log.info("\n" + "╔" + "═" * 58 + "╗")
-    log.info(f"║  FINANCE PIPELINE RUN  ·  {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC  ║")
-    log.info("╚" + "═" * 58 + "╝\n")
+    log.info("\n" + "+" + "=" * 58 + "+")
+    log.info(f"|  FINANCE PIPELINE RUN  -  {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC  |")
+    log.info("+" + "=" * 58 + "+\n")
 
     try:
         # ── Step 1: Ingest ─────────────────────
@@ -70,10 +75,10 @@ def run_pipeline():
         else:
             log.info("No new articles to process.")
 
-        log.info("\n✅  Pipeline run completed successfully.\n")
+        log.info("\n[OK]  Pipeline run completed successfully.\n")
 
     except Exception as exc:
-        log.error(f"❌  Pipeline error: {exc}", exc_info=True)
+        log.error(f"[ERROR]  Pipeline error: {exc}", exc_info=True)
 
 
 # ══════════════════════════════════════════════
@@ -199,7 +204,7 @@ def seed_demo_data():
                 ))
 
         session.commit()
-        log.info("  ✔ Demo data seeded: Client C001, Account ACC-C001-001, Portfolio PF-C001-GROWTH")
+        log.info("  >> Demo data seeded: Client C001, Account ACC-C001-001, Portfolio PF-C001-GROWTH")
 
 
 # ══════════════════════════════════════════════
