@@ -2,7 +2,7 @@
 step2_process.py  –  AI-Powered Market Intelligence Extraction
 
 Flow per batch of unprocessed NewsArticles:
-  ┌─────────────────────────────────────────────────────────┐
+  ┌---------------------------------------------------------┐
   │  NewsArticle  (title + summary + full_text)             │
   │      │                                                  │
   │      ▼  Claude Sonnet                                   │
@@ -16,7 +16,7 @@ Flow per batch of unprocessed NewsArticles:
   │      │                                                  │
   │      ▼                                                  │
   │  SectorTag[]   (sector + sentiment per Theme)           │
-  └─────────────────────────────────────────────────────────┘
+  ----------------------------------------------------------┘
 
 All entities + relationships persisted to SQLite / Postgres.
 """
@@ -44,7 +44,7 @@ from models import (
     init_db, get_session_factory,
 )
 
-# ── logging ────────────────────────────────────
+# -- logging ------------------------------------
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -57,9 +57,9 @@ logging.basicConfig(
 log = logging.getLogger("process")
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  OPENAI CLIENT
-# ══════════════════════════════════════════════
+# ==============================================
 
 def get_openai_client() -> OpenAI:
     api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
@@ -117,9 +117,9 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
             raise
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  STAGE A  –  EXTRACT MARKET EVENTS FROM ARTICLE
-# ══════════════════════════════════════════════
+# ==============================================
 
 SYSTEM_MARKET_EVENTS = """
 You are a senior financial analyst AI.
@@ -136,20 +136,22 @@ Extract all distinct market events mentioned.
 A market event is a specific, factual occurrence with market implications
 (earnings, rate decisions, M&A deals, product launches, regulatory actions, etc.).
 
-Return a JSON array of objects with these exact keys:
-[
-  {{
-    "event_text":  "<one-sentence description of the event>",
-    "event_type":  "<one of: EARNINGS | MACRO | M_AND_A | REGULATORY | PRODUCT | SUPPLY_CHAIN | GEOPOLITICAL | OTHER>",
-    "entities":    ["<ticker or company name>", ...]
-  }}
-]
+Return a JSON object with a single key "events" containing an array:
+{{
+  "events": [
+    {{
+      "event_text":  "<one-sentence description of the event>",
+      "event_type":  "<one of: EARNINGS | MACRO | M_AND_A | REGULATORY | PRODUCT | SUPPLY_CHAIN | GEOPOLITICAL | OTHER>",
+      "entities":    ["<ticker or company name>", ...]
+    }}
+  ]
+}}
 
-Return [] if no clear market events are found.
+Return {{"events": []}} if no clear market events are found.
 """.strip()
 
 
-def extract_market_events(client, article: NewsArticle) -> list[dict]:
+def extract_market_events(client, article: NewsArticle):
     body = (article.full_text or article.summary or "")[:3000]  # cap tokens
     prompt = PROMPT_MARKET_EVENTS.format(
         title   = article.title,
@@ -162,9 +164,9 @@ def extract_market_events(client, article: NewsArticle) -> list[dict]:
     return result
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  STAGE B  –  CLUSTER EVENTS INTO TRENDS
-# ══════════════════════════════════════════════
+# ==============================================
 
 SYSTEM_TRENDS = """
 You are a financial markets strategist AI.
@@ -181,20 +183,22 @@ Group these events into named market TRENDS.
 A trend is a repeating pattern or directional force across multiple events
 (e.g. "AI Infrastructure Build-Out", "Central Bank Policy Pivot").
 
-Return a JSON array with:
-[
-  {{
-    "trend_name":        "<short memorable name>",
-    "trend_description": "<2-3 sentence description>",
-    "direction":         "<Bullish | Bearish | Sideways | Unknown>",
-    "event_indices":     [<0-based indices of events that belong to this trend>],
-    "relevance_scores":  [<0.0-1.0 confidence for each event in event_indices>]
-  }}
-]
+Return a JSON object with a single key "trends" containing an array:
+{{
+  "trends": [
+    {{
+      "trend_name":        "<short memorable name>",
+      "trend_description": "<2-3 sentence description>",
+      "direction":         "<Bullish | Bearish | Sideways | Unknown>",
+      "event_indices":     [<0-based indices of events that belong to this trend>],
+      "relevance_scores":  [<0.0-1.0 confidence for each event in event_indices>]
+    }}
+  ]
+}}
 """.strip()
 
 
-def cluster_into_trends(client, events_with_ids: list[dict]) -> list[dict]:
+def cluster_into_trends(client, events_with_ids):
     if not events_with_ids:
         return []
     lines = [f"[{i}] ({e['event_type']}) {e['event_text']}  |  entities: {', '.join(e.get('entities', []))}"
@@ -207,9 +211,9 @@ def cluster_into_trends(client, events_with_ids: list[dict]) -> list[dict]:
     return result
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  STAGE C  –  DISTIL TRENDS INTO THEMES + SECTOR TAGS
-# ══════════════════════════════════════════════
+# ==============================================
 
 SYSTEM_THEMES = """
 You are a senior portfolio strategist AI.
@@ -228,26 +232,28 @@ Step 1 – Group these trends into broad INVESTMENT THEMES
 
 Step 2 – For each theme, list the equity SECTORS most impacted and assign sentiment.
 
-Return a JSON array:
-[
-  {{
-    "theme_name":        "<concise theme name>",
-    "theme_description": "<2-3 sentence investor-facing narrative>",
-    "trend_indices":     [<0-based indices of trends in this theme>],
-    "sector_tags": [
-      {{
-        "sector": "<sector name, e.g. Semiconductors, Financials, Energy>",
-        "sentiment": "<Positive | Negative | Neutral | Mixed>",
-        "confidence": <0.0-1.0>,
-        "rationale": "<one sentence why>"
-      }}
-    ]
-  }}
-]
+Return a JSON object with a single key "themes" containing an array:
+{{
+  "themes": [
+    {{
+      "theme_name":        "<concise theme name>",
+      "theme_description": "<2-3 sentence investor-facing narrative>",
+      "trend_indices":     [<0-based indices of trends in this theme>],
+      "sector_tags": [
+        {{
+          "sector": "<sector name, e.g. Semiconductors, Financials, Energy>",
+          "sentiment": "<Positive | Negative | Neutral | Mixed>",
+          "confidence": <0.0-1.0>,
+          "rationale": "<one sentence why>"
+        }}
+      ]
+    }}
+  ]
+}}
 """.strip()
 
 
-def distil_into_themes(client, trends: list[dict]) -> list[dict]:
+def distil_into_themes(client, trends):
     if not trends:
         return []
     lines = [f"[{i}] ({t.get('direction','?')}) {t['trend_name']}: {t.get('trend_description','')}"
@@ -260,12 +266,12 @@ def distil_into_themes(client, trends: list[dict]) -> list[dict]:
     return result
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  DB PERSISTENCE
-# ══════════════════════════════════════════════
+# ==============================================
 
 def persist_market_events(session: Session, article: NewsArticle,
-                           raw_events: list[dict]) -> list[MarketEvent]:
+                           raw_events) :
     rows = []
     for ev in raw_events:
         row = MarketEvent(
@@ -298,8 +304,8 @@ def get_or_create_trend(session: Session, name: str,
 
 
 def link_events_to_trend(session: Session, trend: Trend,
-                          event_rows: list[MarketEvent],
-                          indices: list[int], scores: list[float]):
+                          event_rows,
+                          indices, scores):
     for idx, score in zip(indices, scores):
         if idx >= len(event_rows):
             continue
@@ -328,7 +334,7 @@ def get_or_create_theme(session: Session, name: str, description: str) -> Theme:
 
 
 def link_trends_to_theme(session: Session, theme: Theme,
-                          trend_rows: list[Trend], indices: list[int]):
+                          trend_rows, indices):
     for idx in indices:
         if idx >= len(trend_rows):
             continue
@@ -340,7 +346,7 @@ def link_trends_to_theme(session: Session, theme: Theme,
             session.add(TrendTheme(trend_id=t.id, theme_id=theme.id))
 
 
-def add_sector_tags(session: Session, theme: Theme, raw_tags: list[dict]):
+def add_sector_tags(session: Session, theme: Theme, raw_tags):
     for tag in raw_tags:
         sentiment_val = tag.get("sentiment", "Neutral")
         try:
@@ -358,11 +364,11 @@ def add_sector_tags(session: Session, theme: Theme, raw_tags: list[dict]):
         session.add(row)
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  MAIN PROCESSING FUNCTION
-# ══════════════════════════════════════════════
+# ==============================================
 
-def run_processing(article_ids: list[int] | None = None):
+def run_processing(article_ids=None):
     """
     Full Step-2 pipeline.
 
@@ -379,7 +385,7 @@ def run_processing(article_ids: list[int] | None = None):
 
     with SessionFactory() as session:
 
-        # ── fetch articles to process ──────────
+        # -- fetch articles to process ----------
         q = session.query(NewsArticle).filter_by(is_processed=False)
         if article_ids:
             q = q.filter(NewsArticle.id.in_(article_ids))
@@ -389,14 +395,14 @@ def run_processing(article_ids: list[int] | None = None):
             log.info("No unprocessed articles found – nothing to do.")
             return
 
-        log.info(f"Processing {len(articles)} articles …")
+        log.info(f"Processing {len(articles)} articles ...")
 
-        # ── collect all events across articles ─
-        all_event_rows: list[MarketEvent] = []
-        all_raw_events: list[dict]        = []
+        # -- collect all events across articles -
+        all_event_rows = []
+        all_raw_events        = []
 
         for art in articles:
-            log.info(f"\n  Article [{art.id}]: {art.title[:60]}…")
+            log.info(f"\n  Article [{art.id}]: {art.title[:60]}...")
 
             # STAGE A – extract market events
             try:
@@ -421,7 +427,7 @@ def run_processing(article_ids: list[int] | None = None):
             return
 
         # STAGE B – cluster events into trends
-        log.info(f"\n  Clustering {len(all_raw_events)} events into trends …")
+        log.info(f"\n  Clustering {len(all_raw_events)} events into trends ...")
         try:
             raw_trends = cluster_into_trends(client, all_raw_events)
         except Exception as e:
@@ -430,7 +436,7 @@ def run_processing(article_ids: list[int] | None = None):
 
         log.info(f"  -> {len(raw_trends)} trends identified")
 
-        trend_rows: list[Trend] = []
+        trend_rows = []
         for rt in raw_trends:
             trend = get_or_create_trend(
                 session,
@@ -453,7 +459,7 @@ def run_processing(article_ids: list[int] | None = None):
             return
 
         # STAGE C – distil trends into themes + sector tags
-        log.info(f"\n  Distilling {len(trend_rows)} trends into investment themes …")
+        log.info(f"\n  Distilling {len(trend_rows)} trends into investment themes ...")
         try:
             raw_themes = distil_into_themes(client, raw_trends)
         except Exception as e:
@@ -476,7 +482,7 @@ def run_processing(article_ids: list[int] | None = None):
 
         session.commit()
 
-    # ── print summary ──────────────────────────
+    # -- print summary --------------------------
     _print_summary(engine)
     log.info("\nSTEP 2 DONE")
 
@@ -490,16 +496,16 @@ def _print_summary(engine):
         log.info(f"  THEMES STORED: {len(themes)}")
         for theme in themes:
             tags = session.query(SectorTag).filter_by(theme_id=theme.id).all()
-            log.info(f"\n  ▸ THEME: {theme.name}")
+            log.info(f"\n  > THEME: {theme.name}")
             log.info(f"    {theme.description[:100] if theme.description else ''}")
             for tag in tags:
                 log.info(f"    - Sector: {tag.sector_name:30s}  Sentiment: {tag.sentiment.value:10s}  Confidence: {tag.confidence:.2f}")
         log.info("=" * 60)
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  CLI ENTRY POINT
-# ══════════════════════════════════════════════
+# ==============================================
 
 if __name__ == "__main__":
     # Process all unprocessed articles in DB

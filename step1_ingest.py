@@ -3,7 +3,7 @@ step1_ingest.py  –  Yahoo Finance RSS Ingestion
 
 Flow:
   1. Fetch RSS feed  (feedparser + custom headers)
-  2. For each entry → scrape full article text with newspaper3k
+  2. For each entry -> scrape full article text with newspaper3k
   3. Save  <title>.json  to  data/articles/YYYY-MM-DD/
   4. Persist NewsArticle row to DB  (skip duplicates via guid)
   5. Dump raw XML feed to  data/raw_feeds/  for audit trail
@@ -30,7 +30,7 @@ except ImportError:
 
 from sqlalchemy.orm import Session
 
-# ── local imports ──────────────────────────────
+# -- local imports ------------------------------
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config.settings import (
     RSS_SOURCES, RAW_FEED_DIR, ARTICLES_DIR, LOG_DIR,
@@ -39,7 +39,7 @@ from config.settings import (
 )
 from models import NewsArticle, init_db, get_session_factory
 
-# ── logging ────────────────────────────────────
+# -- logging ------------------------------------
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -52,9 +52,9 @@ logging.basicConfig(
 log = logging.getLogger("ingest")
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  HELPERS
-# ══════════════════════════════════════════════
+# ==============================================
 
 def slugify_title(title: str, max_len: int = 80) -> str:
     """Turn article title into a safe filename stem."""
@@ -83,9 +83,9 @@ def parse_published(entry) -> datetime | None:
         return None
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  FETCH RSS
-# ══════════════════════════════════════════════
+# ==============================================
 
 def fetch_feed(source: dict) -> list[dict]:
     """
@@ -97,7 +97,7 @@ def fetch_feed(source: dict) -> list[dict]:
     name = source["name"]
     log.info(f"Fetching RSS -> {name}  ({url})")
 
-    # ── save raw XML ───────────────────────────
+    # -- save raw XML ---------------------------
     RAW_FEED_DIR.mkdir(parents=True, exist_ok=True)
     ts       = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     raw_path = RAW_FEED_DIR / f"{slugify_title(name)}_{ts}.xml"
@@ -117,7 +117,7 @@ def fetch_feed(source: dict) -> list[dict]:
         log.warning(f"  Live fetch failed: {exc} – using mock data for dev/demo")
         return _mock_entries(source)
 
-    # ── parse ──────────────────────────────────
+    # -- parse ----------------------------------
     feed    = feedparser.parse(raw_content)
     entries = feed.entries
     log.info(f"  Parsed {len(entries)} entries")
@@ -139,9 +139,9 @@ def _normalise_entry(entry, source_name: str) -> dict:
     }
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  ARTICLE FULL-TEXT SCRAPE
-# ══════════════════════════════════════════════
+# ==============================================
 
 def scrape_full_text(url: str) -> str:
     """Use newspaper3k to fetch and parse full article body."""
@@ -157,9 +157,9 @@ def scrape_full_text(url: str) -> str:
         return ""
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  SAVE TO DISK  (data/articles/YYYY-MM-DD/<title>.json)
-# ══════════════════════════════════════════════
+# ==============================================
 
 def save_article_to_disk(article_data: dict) -> Path:
     """
@@ -188,9 +188,9 @@ def save_article_to_disk(article_data: dict) -> Path:
     return fpath
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  PERSIST TO DB
-# ══════════════════════════════════════════════
+# ==============================================
 
 def persist_article(session: Session, article_data: dict, file_path: Path) -> NewsArticle | None:
     """
@@ -216,9 +216,9 @@ def persist_article(session: Session, article_data: dict, file_path: Path) -> Ne
     return row
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  MAIN INGESTION FUNCTION
-# ══════════════════════════════════════════════
+# ==============================================
 
 def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
     """
@@ -244,14 +244,14 @@ def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
             log.info(f"  Processing {min(len(entries), limit)} / {len(entries)} entries from {source['name']}")
 
             for entry in entries[:limit]:
-                # ── optionally scrape full text ──
+                # -- optionally scrape full text --
                 entry["full_text"] = scrape_full_text(entry["url"])
 
-                # ── save file ───────────────────
+                # -- save file -------------------
                 fpath = save_article_to_disk(entry)
                 log.info(f"  >> saved  {fpath.name}")
 
-                # ── persist to DB ────────────────
+                # -- persist to DB ----------------
                 row = persist_article(session, entry, fpath)
                 if row:
                     session.flush()
@@ -264,9 +264,9 @@ def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
     return new_ids
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  MOCK DATA  (used when feed URL is blocked)
-# ══════════════════════════════════════════════
+# ==============================================
 
 def _mock_entries(source: dict) -> list[dict]:
     """Realistic sample articles for local dev / sandbox."""
@@ -322,9 +322,9 @@ def _mock_entries(source: dict) -> list[dict]:
     return results
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  CLI ENTRY POINT
-# ══════════════════════════════════════════════
+# ==============================================
 if __name__ == "__main__":
     ids = run_ingestion()
-    print(f"\n✅  Ingested {len(ids)} new articles  →  IDs: {ids}")
+    print(f"\n[OK]  Ingested {len(ids)} new articles  ->  IDs: {ids}")

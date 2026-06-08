@@ -3,10 +3,10 @@ pipeline.py  –  Scheduler & Orchestrator
 
 Runs the full pipeline on a schedule:
 
-  Step 1 (Ingest)   →  Step 2 (AI Process)
+  Step 1 (Ingest)   ->  Step 2 (AI Process)
 
 Usage
-─────
+-----
   # Run once immediately
   python pipeline.py --run-once
 
@@ -56,9 +56,9 @@ logging.basicConfig(
 log = logging.getLogger("pipeline")
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  FULL PIPELINE JOB
-# ══════════════════════════════════════════════
+# ==============================================
 
 def run_pipeline():
     log.info("\n" + "+" + "=" * 58 + "+")
@@ -66,10 +66,10 @@ def run_pipeline():
     log.info("+" + "=" * 58 + "+\n")
 
     try:
-        # ── Step 1: Ingest ─────────────────────
+        # -- Step 1: Ingest ---------------------
         new_ids = run_ingestion()
 
-        # ── Step 2: AI Process ─────────────────
+        # -- Step 2: AI Process -----------------
         if new_ids:
             run_processing(article_ids=new_ids)
         else:
@@ -81,20 +81,20 @@ def run_pipeline():
         log.error(f"[ERROR]  Pipeline error: {exc}", exc_info=True)
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  DEMO DATA SEED
-# ══════════════════════════════════════════════
+# ==============================================
 
 def seed_demo_data():
     """Seed a sample client, portfolio, and securities."""
-    log.info("Seeding demo client / portfolio data …")
+    log.info("Seeding demo client / portfolio data ...")
 
     engine         = init_db(DATABASE_URL)
     SessionFactory = get_session_factory(engine)
 
     with SessionFactory() as session:
 
-        # ── Sectors ────────────────────────────
+        # -- Sectors ----------------------------
         sectors_data = [
             ("Technology",        "45"),
             ("Semiconductors",    "45301"),
@@ -120,7 +120,7 @@ def seed_demo_data():
             s = session.query(SectorMaster).filter_by(name=name).first()
             sector_map[name] = s
 
-        # ── Securities ─────────────────────────
+        # -- Securities -------------------------
         securities_data = [
             ("NVDA",  "NVIDIA Corporation",           "EQUITY", "NASDAQ", "Semiconductors"),
             ("MSFT",  "Microsoft Corporation",        "EQUITY", "NASDAQ", "Technology"),
@@ -149,7 +149,7 @@ def seed_demo_data():
         for ticker, *_ in securities_data:
             security_map[ticker] = session.query(Security).filter_by(ticker=ticker).first()
 
-        # ── Client 1 ───────────────────────────
+        # -- Client 1 ---------------------------
         client1 = session.query(Client).filter_by(client_code="C001").first()
         if not client1:
             client1 = Client(
@@ -207,9 +207,9 @@ def seed_demo_data():
         log.info("  >> Demo data seeded: Client C001, Account ACC-C001-001, Portfolio PF-C001-GROWTH")
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  REPORT
-# ══════════════════════════════════════════════
+# ==============================================
 
 def print_report():
     """Print a readable summary of current DB state."""
@@ -223,39 +223,55 @@ def print_report():
         themes   = session.query(Theme).count()
         tags     = session.query(SectorTag).count()
 
-        print("\n" + "═" * 60)
-        print("  FINANCE PIPELINE  ·  DATABASE SUMMARY")
-        print("═" * 60)
+        print("\n" + "=" * 60)
+        print("  FINANCE PIPELINE  -  DATABASE SUMMARY")
+        print("=" * 60)
         print(f"  NewsArticles   : {articles}")
         print(f"  MarketEvents   : {events}")
         print(f"  Trends         : {trends}")
         print(f"  Themes         : {themes}")
         print(f"  SectorTags     : {tags}")
 
-        print("\n" + "─" * 60)
-        print("  INVESTMENT THEMES  →  SECTORS")
-        print("─" * 60)
-
-        for theme in session.query(Theme).all():
-            print(f"\n  ▸ {theme.name}")
-            print(f"    {(theme.description or '')[:120]}")
+        # Investment Themes
+        print("\n" + "=" * 60)
+        print("  INVESTMENT THEMES  ->  SECTORS")
+        print("=" * 60)
+        all_themes = session.query(Theme).all()
+        if not all_themes:
+            print("\n  (no themes yet - run: python pipeline.py --run-once)")
+        for theme in all_themes:
+            print(f"\n  >> {theme.name}")
+            desc = (theme.description or "")[:120]
+            if desc:
+                print(f"     {desc}")
             for tag in session.query(SectorTag).filter_by(theme_id=theme.id).all():
-                bar = "█" * int(tag.confidence * 10)
-                print(f"    └ {tag.sector_name:30s}  {tag.sentiment.value:10s}  [{bar:<10}] {tag.confidence:.0%}")
+                filled = int(tag.confidence * 10)
+                bar    = "#" * filled + "." * (10 - filled)
+                print(f"     - {tag.sector_name:<28}  {tag.sentiment.value:<10}  [{bar}]  {tag.confidence:.0%}")
 
-        print("\n" + "─" * 60)
-        print("  ARTICLES  →  EVENTS")
-        print("─" * 60)
-        for art in session.query(NewsArticle).limit(10).all():
-            ev_count = len(art.market_events)
-            print(f"  [{art.id:3d}] {'✔' if art.is_processed else '○'}  {art.title[:60]:60s}  ({ev_count} events)")
+        # Trends
+        print("\n" + "=" * 60)
+        print("  TRENDS")
+        print("=" * 60)
+        all_trends = session.query(Trend).all()
+        if not all_trends:
+            print("\n  (no trends yet)")
+        for t in all_trends:
+            ev_count = len(t.event_links)
+            print(f"\n  [{t.direction.value}] {t.name}  ({ev_count} events)")
+            if t.description:
+                print(f"    {t.description[:100]}")
 
-        print("═" * 60 + "\n")
+        # Articles
+        print("\n" + "=" * 60)
+        print("  ARTICLES  ->  EVENTS")
+        print("=" * 60)
+        for art in session.query(NewsArticle).limit(15).all():
+            ev_count  = len(art.market_events)
+            processed = "[DONE]" if art.is_processed else "[WAIT]"
+            print(f"  {processed}  [{art.id:3d}]  {art.title[:55]:55s}  ({ev_count} events)")
 
-
-# ══════════════════════════════════════════════
-#  SCHEDULER
-# ══════════════════════════════════════════════
+        print("\n" + "=" * 60)
 
 def start_scheduler():
     log.info(f"Starting scheduler – interval: every {SCHEDULE_INTERVAL_MINUTES} minutes")
@@ -269,9 +285,9 @@ def start_scheduler():
         time.sleep(30)
 
 
-# ══════════════════════════════════════════════
+# ==============================================
 #  CLI
-# ══════════════════════════════════════════════
+# ==============================================
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Finance Intelligence Pipeline")
