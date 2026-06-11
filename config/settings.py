@@ -42,7 +42,7 @@ OPENAI_MODEL   = "gpt-4o"
 MAX_ARTICLES_PER_RUN = 10          # articles sent to AI per job run
 
 # ── Scheduler ─────────────────────────────────
-SCHEDULE_INTERVAL_MINUTES = 30    # how often the full pipeline runs
+SCHEDULE_INTERVAL_MINUTES = 1440    # how often the full pipeline runs(1 Day)
 
 # ── Ingestion fetch settings ───────────────────
 REQUEST_TIMEOUT  = 15              # seconds
