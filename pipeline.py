@@ -31,6 +31,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 from datetime import datetime
 from pathlib import Path
+import json
 
 import schedule
 
@@ -39,10 +40,11 @@ from config.settings import SCHEDULE_INTERVAL_MINUTES, DATABASE_URL, LOG_DIR
 from models import (
     init_db, get_session_factory,
     Client, Account, Portfolio, Holding, Security, SectorMaster,
-    AccountTypeEnum, Theme, SectorTag, Trend, MarketEvent, NewsArticle,
+    AccountTypeEnum, Theme, SectorTag, Trend, MarketEvent, NewsArticle, ClientThemeMatch,
 )
 from step1_ingest  import run_ingestion
 from step2_process import run_processing
+from step3_match import run_matching
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -75,7 +77,14 @@ def run_pipeline():
         else:
             log.info("No new articles to process.")
 
+        # -- Step 3: Match clients to themes --------
+        log.info("[Step 3] Matching client holdings to themes...")
+        match_results = run_matching()
+        total_matches = sum(len(v) for v in match_results.values())
+        log.info(f"[Step 3] Done. {len(match_results)} client(s), {total_matches} theme match(es).")
+
         log.info("\n[OK]  Pipeline run completed successfully.\n")
+
 
     except Exception as exc:
         log.error(f"[ERROR]  Pipeline error: {exc}", exc_info=True)
@@ -273,6 +282,32 @@ def print_report():
 
         print("\n" + "=" * 60)
 
+        # Client-Theme Matches
+        print("\n" + "=" * 60)
+        print(" CLIENT → THEME MATCHES")
+        print("=" * 60)
+        all_clients = session.query(Client).all()
+        if not all_clients:
+            print("\n (no clients seeded yet)")
+        for client in all_clients:
+            matches = (
+                session.query(ClientThemeMatch)
+                .filter_by(client_id=client.id)
+                .order_by(ClientThemeMatch.exposure_pct.desc())
+                .all()
+            )
+            print(f"\n  [{client.client_code}] {client.name}  ({client.risk_profile})")
+            if not matches:
+                print("    (no matches yet — run pipeline once)")
+            for m in matches:
+                theme = session.query(Theme).get(m.theme_id)
+                sectors = json.loads(m.matched_sectors or "[]")
+                bar = "#" * int(m.confidence * 10) + "." * (10 - int(m.confidence * 10))
+                sentiment_str = m.sentiment.value if m.sentiment else "N/A"
+                print(f"    >> {theme.name:<30}  {sentiment_str:<10}  "
+                    f"[{bar}]  ₹{m.exposure_value:>10,.0f}  ({m.exposure_pct:.1f}%)")
+                print(f"       Sectors: {', '.join(sectors)}")
+
 def start_scheduler():
     log.info(f"Starting scheduler – interval: every {SCHEDULE_INTERVAL_MINUTES} minutes")
     schedule.every(SCHEDULE_INTERVAL_MINUTES).minutes.do(run_pipeline)
@@ -304,6 +339,7 @@ if __name__ == "__main__":
     elif args.seed_demo:
         init_db(DATABASE_URL)
         seed_demo_data()
+        run_matching()
 
     elif args.report:
         print_report()
