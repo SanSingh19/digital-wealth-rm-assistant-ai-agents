@@ -307,6 +307,35 @@ class Holding(Base):
         UniqueConstraint("portfolio_id", "security_id", name="uq_portfolio_security"),
     )
 
+class ClientThemeMatch(Base):
+    """
+    Step 3 output: which themes are relevant to which client's holdings,
+    and how much portfolio exposure backs that relevance.
+    """
+    __tablename__ = "client_theme_matches"
+
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    client_id     = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    theme_id      = Column(Integer, ForeignKey("themes.id"), nullable=False)
+    matched_at    = Column(DateTime, default=datetime.utcnow)
+
+    # Which sectors in the portfolio triggered this match
+    matched_sectors = Column(Text)          # JSON list e.g. ["Semiconductors","Technology"]
+    # Total portfolio value exposed to this theme
+    exposure_value  = Column(Float, default=0.0)
+    # % of portfolio exposed
+    exposure_pct    = Column(Float, default=0.0)
+    # Highest sentiment from SectorTags for this theme
+    sentiment       = Column(Enum(SentimentEnum))
+    # Highest confidence score across matched tags
+    confidence      = Column(Float, default=0.0)
+
+    client = relationship("Client")
+    theme  = relationship("Theme")
+
+    __table_args__ = (
+        UniqueConstraint("client_id", "theme_id", name="uq_client_theme"),
+    )
 
 # ═══════════════════════════════════════════════
 #  DB FACTORY
