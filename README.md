@@ -183,3 +183,35 @@ No new LLM calls are needed here. The match is a pure data join: `Holding → Se
                        │  SQLite DB   │
                        └──────────────┘
 ```
+
+## Step 4 — REST API (Read-Only)
+
+Step 4 exposes the data built by Steps 1–3 to a **mid-tier application** over HTTP. The mid-tier app calls these endpoints to read a client's portfolio overview and matched investment themes — it never triggers scraping, AI extraction, or matching itself. That stays the job of `pipeline.py`, run on a schedule.
+
+```
+Mid-tier App
+     │
+     │  HTTP GET
+     ▼
+┌─────────────────────────┐
+│  Step 4: FastAPI        │
+│                          │
+│  /clients                │
+│  /clients/{id}/portfolio │
+│  /clients/{id}/themes    │
+│  /clients/{id}/overview  │
+│  /news/recent            │
+└─────────────────────────┘
+     │
+     │  SQLAlchemy (read-only)
+     ▼
+   SQLite DB
+     ▲
+     │  written by
+┌──────────┬──────────┬──────────┐
+│  Step 1  │  Step 2  │  Step 3  │
+│  Ingest  │  AI       │  Match   │
+│          │  Process  │          │
+└──────────┴──────────┴──────────┘
+        orchestrated by pipeline.py
+```
