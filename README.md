@@ -157,3 +157,29 @@ INVESTMENT THEMES  →  SECTORS
   └ Real Estate             Positive   [██████    ] 65%
   └ Utilities               Positive   [█████     ] 55%
 ```
+
+## Step 3 — Client–Theme Matching
+
+    Step 3: Client x Theme
+multi-client: step3_match.py loops all clients in one pass — O(clients × themes) — no per-client
+API calls needed. Add 100 clients → same code, same speed. Extend seed_clients.py with more rows.
+
+Step 3 closes the loop: it takes the **investment themes and sector tags** extracted in Step 2 and matches them against **each client's actual portfolio holdings** — so every client gets a personalized view of which market themes affect their money, with what sentiment, and how much dollar exposure is behind it.
+
+No new LLM calls are needed here. The match is a pure data join: `Holding → Security → Sector → SectorTag → Theme`.
+
+### Architecture
+
+```
+ ┌──────────────┐     ┌──────────────┐     ┌────────────────────┐
+ │  Step 1      │ --> │  Step 2      │ --> │  Step 3  ✦ NEW     │
+ │  Ingest RSS  │     │  GPT-4o      │     │  Holdings ↔ Themes │
+ └──────────────┘     │  Extract     │     └────────────────────┘
+                       │  Themes     │
+                       └──────────────┘
+                              │
+                              ▼
+                       ┌──────────────┐
+                       │  SQLite DB   │
+                       └──────────────┘
+```
