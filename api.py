@@ -5,11 +5,6 @@ Serves client portfolio overview + matched investment themes for a
 mid-tier application to consume. Does NOT trigger scraping, LLM calls,
 or matching — it only reads what pipeline.py has already written.
 
-Run:
-    uvicorn api:app --reload --port 8000
-
-Docs:
-    http://localhost:8000/docs
 """
 
 import json
