@@ -19,3 +19,6 @@ schedule==1.2.2
 
 # Optional: PostgreSQL driver (uncomment for prod)
 # psycopg2-binary==2.9.9
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
