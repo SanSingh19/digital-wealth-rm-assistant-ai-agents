@@ -350,7 +350,6 @@ class ClientOutlook(Base):
     generated_at        = Column(DateTime, default=datetime.utcnow)
     headline_outlook    = Column(Text, nullable=False) # The narrative paragraph
     drivers             = Column(Text) # JSON list of {title, commentary}
-    model_used          = Column(String(64), default = "gpt-4o")
 
     client = relationship("Client")
 

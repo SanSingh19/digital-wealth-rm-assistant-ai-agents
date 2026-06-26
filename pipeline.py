@@ -45,6 +45,7 @@ from models import (
 from step1_ingest  import run_ingestion
 from step2_process import run_processing
 from step3_match import run_matching
+from step5_advisor import run_advisor
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -82,6 +83,11 @@ def run_pipeline():
         match_results = run_matching()
         total_matches = sum(len(v) for v in match_results.values())
         log.info(f"[Step 3] Done. {len(match_results)} client(s), {total_matches} theme match(es).")
+
+        #---------step 5: advisor------------
+        log.info("[Step 5] Generating client market outlooks...")
+        outlook_results = run_advisor()
+        log.info(f"[Step 5] Done. {len(outlook_results)} outlook(s) generated.")
 
         log.info("\n[OK]  Pipeline run completed successfully.\n")
 
