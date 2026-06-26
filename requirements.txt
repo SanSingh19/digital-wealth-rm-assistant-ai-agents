@@ -19,3 +19,11 @@ schedule==1.2.2
 
 # Optional: PostgreSQL driver (uncomment for prod)
 # psycopg2-binary==2.9.9
+
+# FastAPI
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# langchain
+langchain>=0.2
+langchain-openai>=0.1
