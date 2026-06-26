@@ -6,7 +6,6 @@ recent relevant news, sends it to GPT-4o via LangChain, and saves a
 structured market outlook (headline + per-driver commentary) to the DB.
 
 This is the ONLY step that calls the LLM here — api.py just reads results.
-
 """
 
 import json
