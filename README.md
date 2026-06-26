@@ -63,6 +63,8 @@ Docs:
 ### News / Market Intelligence
 
 ```
+NewsArticle → MarketEvent → MarketEventTrend → Trend → TrendTheme → Theme → ClientThemeMatch → Client
+----------------------------
 NewsArticle
   id, guid, source_name, title, summary, full_text, url, published_at,
   ingested_at, raw_file_path, is_processed
