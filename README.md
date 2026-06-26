@@ -34,23 +34,26 @@ Yahoo Finance RSS
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Set your Anthropic API key
-export ANTHROPIC_API_KEY=sk-ant-...
-
-# 3. Initialise DB tables
+# 2. Initialise DB tables
 python pipeline.py --init-db
 
-# 4. Seed demo client/portfolio data
+# 3. Seed demo client/portfolio data
 python pipeline.py --seed-demo
 
-# 5. Run the pipeline once
+# 4. Run the pipeline once
 python pipeline.py --run-once
 
-# 6. Print report
+# 5. Print report
 python pipeline.py --report
 
-# 7. Start scheduled job (every 30 min)
+# 6. Start scheduled job (every 30 min)
 python pipeline.py
+
+Run:
+    uvicorn api:app --reload --port 8000
+
+Docs:
+    http://localhost:8000/docs
 ```
 
 ---
