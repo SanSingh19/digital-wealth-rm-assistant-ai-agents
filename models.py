@@ -337,6 +337,23 @@ class ClientThemeMatch(Base):
         UniqueConstraint("client_id", "theme_id", name="uq_client_theme"),
     )
 
+class ClientOutlook(Base):
+    """
+    Step 5 output: AI- generated market outlook for a client,
+    contextual to
+    their portfolio, matched themes, and recent news drivers.
+    """
+    __tablename__ = "client_outlooks"
+
+    id                  = Column(Integer, primary_key=True, autoincrement=True)
+    client_id           = Column(Integer, ForeignKey("clients.id"), nullable=False, unique=True)
+    generated_at        = Column(DateTime, default=datetime.utcnow)
+    headline_outlook    = Column(Text, nullable=False) # The narrative paragraph
+    drivers             = Column(Text) # JSON list of {title, commentary}
+
+    client = relationship("Client")
+
+
 # ═══════════════════════════════════════════════
 #  DB FACTORY
 # ═══════════════════════════════════════════════

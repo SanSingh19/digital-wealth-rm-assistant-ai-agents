@@ -702,3 +702,203 @@ STEP 2 DONE
 2026-06-19 15:40:56,139  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-06-26 13:25:57,655  INFO      Database tables created.
+2026-06-26 13:26:56,879  INFO      
++==========================================================+
+2026-06-26 13:26:56,880  INFO      |  FINANCE PIPELINE RUN  -  2026-06-26 07:56:56 UTC  |
+2026-06-26 13:26:56,880  INFO      +==========================================================+
+
+2026-06-26 13:26:56,881  INFO      ============================================================
+2026-06-26 13:26:56,881  INFO      STEP 1 - INGESTION  START
+2026-06-26 13:26:56,882  INFO      ============================================================
+2026-06-26 13:26:56,889  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-06-26 13:26:58,174  INFO        Raw XML saved -> yahoo_finance_20260626_075656.xml  (23709 bytes)
+2026-06-26 13:26:58,276  INFO        Parsed 40 entries
+2026-06-26 13:26:58,281  INFO        Processing 10 / 40 entries from Yahoo Finance
+2026-06-26 13:27:16,971  INFO        >> saved  seagate_stocks_unfilled_orders_were_the_real_tell__e8680a21.json
+2026-06-26 13:27:17,130  INFO        >> DB insert  id=63  title='Seagate Stock's Unfilled Orders Were The Real Tell...'
+2026-06-26 13:27:23,571  INFO        >> saved  can_you_write_checks_from_a_money_market_account__6d65e417.json
+2026-06-26 13:27:23,576  INFO        >> DB insert  id=64  title='Can you write checks from a money market account?...'
+2026-06-26 13:27:39,224  INFO        >> saved  fed_stress_test_shows_the_biggest_us_banks_are_strong_enough_to_withstand_severe__8247b117.json
+2026-06-26 13:27:39,228  INFO        >> DB insert  id=65  title='Fed stress test shows the biggest US banks are strong e...'
+2026-06-26 13:27:51,742  INFO        >> saved  chinas_crude_imports_plunge_to_lowest_level_since_2018__4158eaac.json
+2026-06-26 13:27:51,750  INFO        >> DB insert  id=66  title='China’s Crude Imports Plunge To Lowest Level Since 2018...'
+2026-06-26 13:28:02,355  INFO        >> saved  mortgage_rates_hold_below_65_as_inflation_wild_card_looms__0c203fd4.json
+2026-06-26 13:28:02,360  INFO        >> DB insert  id=67  title='Mortgage rates hold below 6.5% as inflation wild card l...'
+2026-06-26 13:28:02,543  INFO        >> saved  treasury_yields_fall_ahead_of_us_activity_inflation_data__73c15ce8.json
+2026-06-26 13:28:02,546  INFO        >> DB insert  id=68  title='Treasury Yields Fall Ahead of U.S. Activity, Inflation ...'
+2026-06-26 13:28:03,131  INFO        >> saved  can_argenx_retake_its_record_high_and_a_buy_point_on_a_new_vyvgart_strategy__a9942e6e.json
+2026-06-26 13:28:05,514  INFO        >> saved  medical_aesthetics_play_flies_on_unsolicited_takeover_bid_why_it_makes_sense__a9942e6e.json
+2026-06-26 13:28:21,443  INFO        >> saved  micron_tops_estimates_touts_22_billion_in_customer_deals_for_memory_chips__912e4bbe.json
+2026-06-26 13:28:21,446  INFO        >> DB insert  id=69  title='Micron tops estimates, touts $22 billion in customer de...'
+2026-06-26 13:28:24,335  INFO        >> saved  nvidia_backed_robotics_company_goes_public_via_spac_shares_briefly_jump_30__a9942e6e.json
+2026-06-26 13:28:24,337  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-06-26 13:28:25,820  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-06-26 13:28:25,824  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-06-26 13:28:27,712  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-06-26 13:28:34,511  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-06-26 13:28:37,799  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-06-26 13:28:42,389  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-06-26 13:28:45,998  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-06-26 13:28:59,790  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-06-26 13:29:05,531  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-06-26 13:29:08,712  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-06-26 13:29:16,691  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-06-26 13:29:19,973  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-06-26 13:29:19,986  INFO      
+STEP 1 DONE -> 7 new articles ingested
+2026-06-26 13:29:19,987  INFO      ============================================================
+2026-06-26 13:29:19,988  INFO      STEP 2 - AI PROCESSING  START
+2026-06-26 13:29:19,990  INFO      ============================================================
+2026-06-26 13:29:20,903  INFO      Processing 7 articles ...
+2026-06-26 13:29:20,904  INFO      
+  Article [63]: Seagate Stock's Unfilled Orders Were The Real Tell...
+2026-06-26 13:29:26,722  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:26,745  INFO        -> 3 market events found
+2026-06-26 13:29:26,756  INFO      
+  Article [64]: Can you write checks from a money market account?...
+2026-06-26 13:29:28,155  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:28,159  INFO        -> 1 market events found
+2026-06-26 13:29:28,167  INFO      
+  Article [65]: Fed stress test shows the biggest US banks are strong enough...
+2026-06-26 13:29:29,688  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:29,692  INFO        -> 1 market events found
+2026-06-26 13:29:29,696  INFO      
+  Article [66]: China’s Crude Imports Plunge To Lowest Level Since 2018...
+2026-06-26 13:29:33,333  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:33,336  INFO        -> 7 market events found
+2026-06-26 13:29:33,342  INFO      
+  Article [67]: Mortgage rates hold below 6.5% as inflation wild card looms...
+2026-06-26 13:29:36,245  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:36,249  INFO        -> 5 market events found
+2026-06-26 13:29:36,258  INFO      
+  Article [68]: Treasury Yields Fall Ahead of U.S. Activity, Inflation Data...
+2026-06-26 13:29:37,269  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:37,272  INFO        -> 0 market events found
+2026-06-26 13:29:37,275  INFO      
+  Article [69]: Micron tops estimates, touts $22 billion in customer deals f...
+2026-06-26 13:29:39,834  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:39,837  INFO        -> 7 market events found
+2026-06-26 13:29:39,843  INFO      
+  Clustering 24 events into trends ...
+2026-06-26 13:29:45,866  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:45,869  INFO        -> 5 trends identified
+2026-06-26 13:29:45,942  INFO      
+  Distilling 5 trends into investment themes ...
+2026-06-26 13:29:54,070  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:29:54,074  INFO        -> 4 themes identified
+2026-06-26 13:29:54,145  INFO      
+============================================================
+2026-06-26 13:29:54,145  INFO        THEMES STORED: 18
+2026-06-26 13:29:54,151  INFO      
+  > THEME: Tech Resurgence
+2026-06-26 13:29:54,152  INFO          The technology sector is witnessing a revival driven by significant growth in cloud services and adv
+2026-06-26 13:29:54,153  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.90
+2026-06-26 13:29:54,157  INFO      
+  > THEME: Corporate Strategic Movements
+2026-06-26 13:29:54,158  INFO          Corporations across sectors are engaging in strategic share movements to optimize market positioning
+2026-06-26 13:29:54,160  INFO          - Sector: Consumer Staples                Sentiment: Neutral     Confidence: 0.70
+2026-06-26 13:29:54,164  INFO      
+  > THEME: Broad Market Optimism
+2026-06-26 13:29:54,166  INFO          Positive analyst sentiment and maintained or increased price targets indicate a healthy outlook acro
+2026-06-26 13:29:54,169  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.80
+2026-06-26 13:29:54,171  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-06-26 13:29:54,172  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.75
+2026-06-26 13:29:54,175  INFO      
+  > THEME: Crypto Derivatives Expansion
+2026-06-26 13:29:54,176  INFO          The rapid adoption of Kalshi's crypto perpetual futures highlights a burgeoning interest in crypto d
+2026-06-26 13:29:54,177  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.90
+2026-06-26 13:29:54,180  INFO      
+  > THEME: Industrial and Energy Innovation
+2026-06-26 13:29:54,181  INFO          Technological advancements and strategic collaborations are propelling growth in the industrial and 
+2026-06-26 13:29:54,182  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.80
+2026-06-26 13:29:54,182  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.70
+2026-06-26 13:29:54,185  INFO      
+  > THEME: Technology Growth and Strategic Expansion
+2026-06-26 13:29:54,185  INFO          With financial growth and strategic acquisitions, companies like IBM and Autodesk are positioning th
+2026-06-26 13:29:54,186  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-06-26 13:29:54,189  INFO      
+  > THEME: Tech Sector Uncertainty
+2026-06-26 13:29:54,189  INFO          The technology sector is experiencing mixed signals from analysts, indicating uncertainty and varied
+2026-06-26 13:29:54,190  INFO          - Sector: Technology                      Sentiment: Mixed       Confidence: 0.60
+2026-06-26 13:29:54,191  INFO          - Sector: Industrials                     Sentiment: Neutral     Confidence: 0.50
+2026-06-26 13:29:54,194  INFO      
+  > THEME: Energy Market Dynamics
+2026-06-26 13:29:54,195  INFO          Volatility in oil and energy prices due to geopolitical tensions and inflationary pressures creates 
+2026-06-26 13:29:54,196  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-06-26 13:29:54,196  INFO          - Sector: Utilities                       Sentiment: Positive    Confidence: 0.80
+2026-06-26 13:29:54,199  INFO      
+  > THEME: Crypto Market Instability
+2026-06-26 13:29:54,199  INFO          The cryptocurrency market is undergoing significant instability, with major price declines in Bitcoi
+2026-06-26 13:29:54,200  INFO          - Sector: Cryptocurrencies                Sentiment: Negative    Confidence: 0.95
+2026-06-26 13:29:54,200  INFO          - Sector: Financials                      Sentiment: Mixed       Confidence: 0.60
+2026-06-26 13:29:54,203  INFO      
+  > THEME: Geopolitical Uncertainty
+2026-06-26 13:29:54,204  INFO          Geopolitical conflicts, particularly in the Middle East, are contributing to market disruptions, aff
+2026-06-26 13:29:54,205  INFO          - Sector: Industrials                     Sentiment: Negative    Confidence: 0.70
+2026-06-26 13:29:54,205  INFO          - Sector: Consumer Goods                  Sentiment: Neutral     Confidence: 0.50
+2026-06-26 13:29:54,209  INFO      
+  > THEME: Tech Sector Realignment
+2026-06-26 13:29:54,210  INFO          The tech sector is experiencing a divergence in performance with some companies thriving due to stra
+2026-06-26 13:29:54,212  INFO          - Sector: Technology                      Sentiment: Mixed       Confidence: 0.75
+2026-06-26 13:29:54,213  INFO          - Sector: Information Technology Services  Sentiment: Mixed       Confidence: 0.70
+2026-06-26 13:29:54,216  INFO      
+  > THEME: Interest Rate Uncertainty
+2026-06-26 13:29:54,216  INFO          The Federal Reserve's unclear direction on interest rates is causing speculation and concern. This u
+2026-06-26 13:29:54,217  INFO          - Sector: Financials                      Sentiment: Mixed       Confidence: 0.80
+2026-06-26 13:29:54,217  INFO          - Sector: Real Estate                     Sentiment: Negative    Confidence: 0.90
+2026-06-26 13:29:54,218  INFO          - Sector: Consumer Discretionary          Sentiment: Negative    Confidence: 0.70
+2026-06-26 13:29:54,221  INFO      
+  > THEME: Equity Market Volatility
+2026-06-26 13:29:54,222  INFO          Significant fluctuations in major stock indices and the erratic behavior in newly listed firms like 
+2026-06-26 13:29:54,223  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.85
+2026-06-26 13:29:54,224  INFO          - Sector: Aerospace & Defense             Sentiment: Neutral     Confidence: 0.60
+2026-06-26 13:29:54,227  INFO      
+  > THEME: Currency & Geopolitical Shifts
+2026-06-26 13:29:54,228  INFO          Recent currency fluctuations and geopolitical strains are influencing commodity prices, particularly
+2026-06-26 13:29:54,229  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.75
+2026-06-26 13:29:54,229  INFO          - Sector: Industrials                     Sentiment: Neutral     Confidence: 0.70
+2026-06-26 13:29:54,232  INFO      
+  > THEME: Global Supply Chain Realignment
+2026-06-26 13:29:54,232  INFO          Global supply chains are being restructured due to ongoing supply constraints and shifts in import s
+2026-06-26 13:29:54,233  INFO          - Sector: Technology                      Sentiment: Neutral     Confidence: 0.80
+2026-06-26 13:29:54,233  INFO          - Sector: Energy                          Sentiment: Neutral     Confidence: 0.70
+2026-06-26 13:29:54,236  INFO      
+  > THEME: Geopolitical Energy Volatility
+2026-06-26 13:29:54,236  INFO          The energy market is experiencing significant volatility due to geopolitical tensions and shifts in 
+2026-06-26 13:29:54,237  INFO          - Sector: Energy                          Sentiment: Negative    Confidence: 0.90
+2026-06-26 13:29:54,240  INFO      
+  > THEME: Technology Growth Momentum
+2026-06-26 13:29:54,241  INFO          The semiconductor market is experiencing robust growth driven by positive earnings forecasts and sto
+2026-06-26 13:29:54,241  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.95
+2026-06-26 13:29:54,245  INFO      
+  > THEME: Central Bank Policy Stability
+2026-06-26 13:29:54,246  INFO          Central banks, especially the Federal Reserve, are maintaining a steady policy approach amid rising 
+2026-06-26 13:29:54,246  INFO          - Sector: Financials                      Sentiment: Neutral     Confidence: 0.85
+2026-06-26 13:29:54,247  INFO      ============================================================
+2026-06-26 13:29:54,249  INFO      
+STEP 2 DONE
+2026-06-26 13:29:54,250  INFO      [Step 3] Matching client holdings to themes...
+2026-06-26 13:29:54,279  INFO      Loaded 18 themes covering 13 distinct sectors.
+2026-06-26 13:29:54,308  INFO      Processing 5 client(s)...
+2026-06-26 13:29:54,370  INFO        [C001] Arjun Mehta -> 8 theme(s) matched: ['Broad Market Optimism', 'Technology Growth Momentum', 'Tech Resurgence', 'Technology Growth and Strategic Expansion', 'Tech Sector Uncertainty', 'Tech Sector Realignment', 'Equity Market Volatility', 'Global Supply Chain Realignment']
+2026-06-26 13:29:54,429  INFO        [C002] Priya Sharma -> 9 theme(s) matched: ['Crypto Derivatives Expansion', 'Crypto Market Instability', 'Interest Rate Uncertainty', 'Central Bank Policy Stability', 'Industrial and Energy Innovation', 'Energy Market Dynamics', 'Currency & Geopolitical Shifts', 'Global Supply Chain Realignment', 'Geopolitical Energy Volatility']
+2026-06-26 13:29:54,483  INFO        [C003] Rahul Gupta -> 15 theme(s) matched: ['Tech Resurgence', 'Broad Market Optimism', 'Technology Growth and Strategic Expansion', 'Tech Sector Uncertainty', 'Tech Sector Realignment', 'Equity Market Volatility', 'Global Supply Chain Realignment', 'Crypto Derivatives Expansion', 'Crypto Market Instability', 'Interest Rate Uncertainty', 'Central Bank Policy Stability', 'Industrial and Energy Innovation', 'Energy Market Dynamics', 'Currency & Geopolitical Shifts', 'Geopolitical Energy Volatility']
+2026-06-26 13:29:54,526  INFO        [C004] Neha Joshi -> 8 theme(s) matched: ['Broad Market Optimism', 'Technology Growth Momentum', 'Tech Resurgence', 'Technology Growth and Strategic Expansion', 'Tech Sector Uncertainty', 'Tech Sector Realignment', 'Equity Market Volatility', 'Global Supply Chain Realignment']
+2026-06-26 13:29:54,569  INFO        [C005] Vikram Patel -> 7 theme(s) matched: ['Tech Resurgence', 'Broad Market Optimism', 'Technology Growth and Strategic Expansion', 'Tech Sector Uncertainty', 'Tech Sector Realignment', 'Equity Market Volatility', 'Global Supply Chain Realignment']
+2026-06-26 13:29:54,571  INFO      [Step 3] Done. 5 client(s), 47 theme match(es).
+2026-06-26 13:29:54,571  INFO      [Step 5] Generating client market outlooks...
+2026-06-26 13:30:03,538  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:30:03,641  INFO        [C001] outlook generated (3 drivers).
+2026-06-26 13:30:06,760  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:30:06,841  INFO        [C002] outlook generated (3 drivers).
+2026-06-26 13:30:10,549  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:30:10,630  INFO        [C003] outlook generated (3 drivers).
+2026-06-26 13:30:14,858  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:30:14,942  INFO        [C004] outlook generated (3 drivers).
+2026-06-26 13:30:19,658  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-26 13:30:19,754  INFO        [C005] outlook generated (3 drivers).
+2026-06-26 13:30:19,755  INFO      [Step 5] Done. 5 outlook(s) generated.
+2026-06-26 13:30:19,756  INFO      
+[OK]  Pipeline run completed successfully.
+

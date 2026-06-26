@@ -5,11 +5,7 @@ Serves client portfolio overview + matched investment themes for a
 mid-tier application to consume. Does NOT trigger scraping, LLM calls,
 or matching — it only reads what pipeline.py has already written.
 
-Run:
-    uvicorn api:app --reload --port 8000
 
-Docs:
-    http://localhost:8000/docs
 """
 
 import json
@@ -25,7 +21,7 @@ from sqlalchemy.orm import Session, joinedload
 from models import (
     init_db, get_session_factory,
     Client, Account, Portfolio, Holding, Security,
-    Theme, SectorTag, ClientThemeMatch, NewsArticle,
+    Theme, SectorTag, ClientThemeMatch, NewsArticle, ClientOutlook,
 )
 from config.settings import DATABASE_URL
 
@@ -104,6 +100,16 @@ class ClientOverviewOut(BaseModel):
     client: ClientOut
     matched_themes: list[ThemeMatchOut]
 
+
+class OutlookDriverOut(BaseModel):
+    title: str
+    commentary: str
+
+
+class ClientOutlookOut(BaseModel):
+    headline_outlook: str
+    drivers: list[OutlookDriverOut]
+    generated_at: Optional[datetime]
 
 # ---------- Helpers ----------
 
@@ -253,3 +259,16 @@ def get_recent_news(limit: int = 20, db: Session = Depends(get_db)):
         }
         for a in articles
     ]
+
+@app.get("/clients/{client_id}/outlook", response_model=ClientOutlookOut)
+def get_client_outlook(client_id: int, db: Session = Depends(get_db)):
+    """AI-generated market outlook for this client (read-only, pre-computed by step5_advisor.py)."""
+    _client_or_404(db, client_id)
+    outlook = db.query(ClientOutlook).filter_by(client_id=client_id).first()
+    if not outlook:
+        raise HTTPException(status_code=404, detail="No outlook generated yet for this client")
+    return ClientOutlookOut(
+        headline_outlook=outlook.headline_outlook,
+        drivers=json.loads(outlook.drivers or "[]"),
+        generated_at=outlook.generated_at,
+    )
