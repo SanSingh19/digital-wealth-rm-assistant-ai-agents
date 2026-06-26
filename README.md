@@ -218,3 +218,45 @@ Mid-tier App
 └──────────┴──────────┴──────────┘
         orchestrated by pipeline.py
 ```
+
+## Step 5 — AI Advisor Agent (Market Outlook)
+
+Step 5 is the final layer: it takes everything built in Steps 1–3 — a client's portfolio holdings, their matched investment themes, and recent relevant news — and sends it to **GPT-4o via LangChain** to generate a structured, client-specific market outlook. This is the only step in the pipeline that calls an LLM at this stage; the API (Step 4) only ever reads what Step 5 has already saved.
+
+```
+   SQLite DB
+   (Steps 1-3 data: portfolio, themes, news)
+        │
+        ▼
+┌─────────────────────────────┐
+│  step5_advisor.py  (NEW)    │
+│  Builds context:             │
+│  - portfolio holdings        │
+│  - matched themes            │
+│  - recent relevant news      │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  LangChain + GPT-4o          │
+│  PydanticOutputParser        │
+│  forces structured output    │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  ClientOutlook table (NEW)  │
+│  - headline_outlook          │
+│  - drivers (JSON)            │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  api.py                      │
+│  GET /clients/{id}/outlook  │
+│  (read-only)                  │
+└─────────────────────────────┘
+        │
+        ▼
+   Mid-tier App
+```
