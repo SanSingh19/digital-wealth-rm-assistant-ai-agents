@@ -34,23 +34,26 @@ Yahoo Finance RSS
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Set your Anthropic API key
-export ANTHROPIC_API_KEY=sk-ant-...
-
-# 3. Initialise DB tables
+# 2. Initialise DB tables
 python pipeline.py --init-db
 
-# 4. Seed demo client/portfolio data
+# 3. Seed demo client/portfolio data
 python pipeline.py --seed-demo
 
-# 5. Run the pipeline once
+# 4. Run the pipeline once
 python pipeline.py --run-once
 
-# 6. Print report
+# 5. Print report
 python pipeline.py --report
 
-# 7. Start scheduled job (every 30 min)
+# 6. Start scheduled job (every 30 min)
 python pipeline.py
+
+Run:
+    uvicorn api:app --reload --port 8000
+
+Docs:
+    http://localhost:8000/docs
 ```
 
 ---
@@ -156,4 +159,104 @@ INVESTMENT THEMES  →  SECTORS
   └ Financials              Mixed      [███████   ] 70%
   └ Real Estate             Positive   [██████    ] 65%
   └ Utilities               Positive   [█████     ] 55%
+```
+
+## Step 3 — Client–Theme Matching
+
+    Step 3: Client x Theme
+multi-client: step3_match.py loops all clients in one pass — O(clients × themes) — no per-client
+API calls needed. Add 100 clients → same code, same speed. Extend seed_clients.py with more rows.
+
+Step 3 closes the loop: it takes the **investment themes and sector tags** extracted in Step 2 and matches them against **each client's actual portfolio holdings** — so every client gets a personalized view of which market themes affect their money, with what sentiment, and how much dollar exposure is behind it.
+
+No new LLM calls are needed here. The match is a pure data join: `Holding → Security → Sector → SectorTag → Theme`.
+
+### Architecture
+
+```
+ ┌──────────────┐     ┌──────────────┐     ┌────────────────────┐
+ │  Step 1      │ --> │  Step 2      │ --> │  Step 3  ✦ NEW     │
+ │  Ingest RSS  │     │  GPT-4o      │     │  Holdings ↔ Themes │
+ └──────────────┘     │  Extract     │     └────────────────────┘
+                       │  Themes     │
+                       └──────────────┘
+                              │
+                              ▼
+                       ┌──────────────┐
+                       │  SQLite DB   │
+                       └──────────────┘
+```
+
+## Step 4 — REST API (Read-Only)
+
+Step 4 exposes the data built by Steps 1–3 to a **mid-tier application** over HTTP. The mid-tier app calls these endpoints to read a client's portfolio overview and matched investment themes — it never triggers scraping, AI extraction, or matching itself. That stays the job of `pipeline.py`, run on a schedule.
+
+```
+Mid-tier App
+     │
+     │  HTTP GET
+     ▼
+┌─────────────────────────┐
+│  Step 4: FastAPI        │
+│                          │
+│  /clients                │
+│  /clients/{id}/portfolio │
+│  /clients/{id}/themes    │
+│  /clients/{id}/overview  │
+│  /news/recent            │
+└─────────────────────────┘
+     │
+     │  SQLAlchemy (read-only)
+     ▼
+   SQLite DB
+     ▲
+     │  written by
+┌──────────┬──────────┬──────────┐
+│  Step 1  │  Step 2  │  Step 3  │
+│  Ingest  │  AI       │  Match   │
+│          │  Process  │          │
+└──────────┴──────────┴──────────┘
+        orchestrated by pipeline.py
+```
+
+## Step 5 — AI Advisor Agent (Market Outlook)
+
+Step 5 is the final layer: it takes everything built in Steps 1–3 — a client's portfolio holdings, their matched investment themes, and recent relevant news — and sends it to **GPT-4o via LangChain** to generate a structured, client-specific market outlook. This is the only step in the pipeline that calls an LLM at this stage; the API (Step 4) only ever reads what Step 5 has already saved.
+
+```
+   SQLite DB
+   (Steps 1-3 data: portfolio, themes, news)
+        │
+        ▼
+┌─────────────────────────────┐
+│  step5_advisor.py  (NEW)    │
+│  Builds context:             │
+│  - portfolio holdings        │
+│  - matched themes            │
+│  - recent relevant news      │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  LangChain + GPT-4o          │
+│  PydanticOutputParser        │
+│  forces structured output    │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  ClientOutlook table (NEW)  │
+│  - headline_outlook          │
+│  - drivers (JSON)            │
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│  api.py                      │
+│  GET /clients/{id}/outlook  │
+│  (read-only)                  │
+└─────────────────────────────┘
+        │
+        ▼
+   Mid-tier App
 ```
