@@ -28,7 +28,7 @@ from config.settings import DATABASE_URL
 log = logging.getLogger("api")
 
 app = FastAPI(
-    title="Wealth RM Meeting Preparation API",
+    title="Finance Pipeline API",
     description="Read-only API for client portfolios and matched investment themes.",
     version="1.0.0",
 )
