@@ -21,7 +21,9 @@ from sqlalchemy.orm import joinedload
 from models import (
     init_db, get_session_factory,
     Client, Account, Portfolio, Holding, Security,
-    Theme, SectorTag, ClientThemeMatch, NewsArticle, MarketEvent,
+    Theme, SectorTag, ClientThemeMatch, NewsArticle, MarketEvent,MarketEventTrend,
+    Trend,
+    TrendTheme,
     ClientOutlook,
 )
 from config.settings import DATABASE_URL, OPENAI_API_KEY
@@ -38,9 +40,9 @@ class OutlookDriver(BaseModel):
 
 class ClientOutlookResult(BaseModel):
     headline_outlook: str = Field(
-        description="A single contextual paragraph summarizing the market outlook "
-                     "for this specific client, referencing their actual holdings, "
-                     "sectors, and themes by name."
+        description="A 2-3 sentence news summary covering key recent happenings "
+                "across the sectors this client is most exposed to. Focus on "
+                "what is actually happening in the market, not on portfolio impact."
     )
     drivers: list[OutlookDriver] = Field(
         description="2-3 specific market drivers (news events, theme shifts, rate "
@@ -51,27 +53,33 @@ class ClientOutlookResult(BaseModel):
 PARSER = PydanticOutputParser(pydantic_object=ClientOutlookResult)
 
 PROMPT = ChatPromptTemplate.from_template(
-    """You are a wealth management advisor assistant. Write a market outlook for
-this specific client based ONLY on the data provided below. Be concrete and
-reference actual holdings, sectors, tickers, and theme names. Do not invent
-data not present in the context.
+    """You are a financial news analyst. Based on the client's sector exposures and 
+the recent news provided below, write a concise sector-focused news summary.
 
-CLIENT
-------
+For the headline_outlook: summarise what is actually happening in the markets 
+across the sectors this client is most heavily invested in. Write it like a 
+briefing note — cover key events, moves, and sentiment shifts. Do NOT frame 
+it as advice or portfolio impact. Stick strictly to what the news says.
+
+For the drivers: pick 2-3 specific events from the news that are most relevant 
+to this client's sector exposure, with one sentence on what happened.
+
+CLIENT SECTOR EXPOSURE
+-----------------------
 Name: {client_name}
-Risk profile: {risk_profile}
+Top sectors by investment weight: (derived from holdings below)
 
 PORTFOLIO HOLDINGS
 ------------------
 {holdings_text}
 
+RECENT MARKET NEWS & EVENTS
+-----------------------------
+{news_text}
+
 MATCHED INVESTMENT THEMES
 --------------------------
 {themes_text}
-
-RECENT RELEVANT NEWS / MARKET EVENTS
---------------------------------------
-{news_text}
 
 {format_instructions}
 """
@@ -113,19 +121,51 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
     }
 
 
-def _relevant_news_for_client(session, matches: list[ClientThemeMatch], limit: int = 8) -> list:
-    """Pull recent news articles whose extracted themes overlap this client's matched themes."""
-    theme_ids = [m.theme_id for m in matches]
+def _relevant_news_for_client(
+    session,
+    matches: list[ClientThemeMatch],
+    limit: int = 5
+) -> list:
+
+    top_matches = sorted(
+    matches,
+    key=lambda x: x.exposure_pct,
+    reverse=True)[:3]
+
+    theme_ids = [m.theme_id for m in top_matches]
+
     if not theme_ids:
         return []
+
     articles = (
         session.query(NewsArticle)
-        .join(MarketEvent, MarketEvent.article_id == NewsArticle.id)
-        .order_by(NewsArticle.published_at.desc())
+        .join(
+            MarketEvent,
+            MarketEvent.article_id == NewsArticle.id
+        )
+        .join(
+            MarketEventTrend,
+            MarketEventTrend.market_event_id == MarketEvent.id
+        )
+        .join(
+            Trend,
+            Trend.id == MarketEventTrend.trend_id
+        )
+        .join(
+            TrendTheme,
+            TrendTheme.trend_id == Trend.id
+        )
+        .filter(
+            TrendTheme.theme_id.in_(theme_ids)
+        )
+        .order_by(
+            NewsArticle.published_at.desc()
+        )
         .distinct()
         .limit(limit)
         .all()
     )
+
     return articles
 
 
