@@ -14,7 +14,7 @@ Yahoo Finance RSS
          │  new article IDs
          ▼
 ┌──────────────────────┐
-│  Step 2: AI Process  │  Claude Sonnet
+│  Step 2: AI Process  │  OpenAI
 │                      │
 │  A) Market Events    │  discrete facts per article
 │  B) Trends           │  cross-article patterns
