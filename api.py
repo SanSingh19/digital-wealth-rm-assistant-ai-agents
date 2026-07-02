@@ -5,6 +5,7 @@ Serves client portfolio overview + matched investment themes for a
 mid-tier application to consume. Does NOT trigger scraping, LLM calls,
 or matching — it only reads what pipeline.py has already written.
 
+
 """
 
 import json
