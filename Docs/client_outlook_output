@@ -1,9 +1,3 @@
-# outlook output
-This is the outlook output for the client. It is a JSON object that contains the following fields:
-- headline_outlook: A summary of the overall outlook for the client.
-- drivers: A list of drivers that are expected to impact the client's business.
-- generated_at: The timestamp of when the outlook was generated.
-
 {
   "headline_outlook": "The technology sector is experiencing a mix of optimism and uncertainty, with significant attention on strategic expansions and innovation surges. Meanwhile, the healthcare sector remains stable with no major disruptions reported. In renewable energy, there is a steady focus on growth and sustainability, although specific recent developments have not been highlighted.",
   "drivers": [
