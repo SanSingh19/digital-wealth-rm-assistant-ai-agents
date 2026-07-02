@@ -1,0 +1,244 @@
+(base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> venv/Scripts/activate
+(venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> python pipeline.py --run-once
+2026-06-11 12:30:15,940  INFO      
++==========================================================+
+2026-06-11 12:30:15,941  INFO      |  FINANCE PIPELINE RUN  -  2026-06-11 07:00:15 UTC  |
+2026-06-11 12:30:15,942  INFO      +==========================================================+
+
+2026-06-11 12:30:15,943  INFO      ============================================================
+2026-06-11 12:30:15,944  INFO      STEP 1 - INGESTION  START
+2026-06-11 12:30:15,945  INFO      ============================================================
+2026-06-11 12:30:15,953  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-06-11 12:30:17,273  INFO        Raw XML saved -> yahoo_finance_20260611_070015.xml  (25036 bytes)
+2026-06-11 12:30:17,381  INFO        Parsed 42 entries
+2026-06-11 12:30:17,390  INFO        Processing 10 / 42 entries from Yahoo Finance
+2026-06-11 12:30:20,661  INFO        >> saved  kalshi_crypto_perpetual_futures_hit_1_billion_in_trading_volume__bf9c72eb.json
+2026-06-11 12:30:20,825  INFO        >> DB insert  id=34  title='Kalshi crypto perpetual futures hit $1 billion in tradi...'
+2026-06-11 12:30:23,159  INFO        >> saved  anthropic_releases_mythos_class_ai_model_as_mega_startup_preps_ipo__a9942e6e.json
+2026-06-11 12:30:26,721  INFO        >> saved  is_the_dollar_index_preparing_for_a_significant_break__d444dc97.json
+2026-06-11 12:30:26,796  INFO        >> DB insert  id=35  title='Is the Dollar Index Preparing for a Significant Break?...'
+2026-06-11 12:30:29,736  INFO        >> saved  primis_bank_review_2026_high_interest_bank_accounts_with_free_nationwide_atm_acc__5061a105.json
+2026-06-11 12:30:29,756  INFO        >> DB insert  id=36  title='Primis Bank review (2026): High-interest bank accounts ...'
+2026-06-11 12:30:33,953  INFO        >> saved  why_analysts_believe_honeywells_hon_automation_story_is_gaining_strength__dacbef96.json
+2026-06-11 12:30:34,018  INFO        >> DB insert  id=37  title='Why Analysts Believe Honeywell’s (HON) Automation Story...'
+2026-06-11 12:30:37,896  INFO        >> saved  wall_street_is_missing_the_bigger_picture_why_this_legacy_tech_stalwart_is_a_scr__1ece7191.json
+2026-06-11 12:30:37,971  INFO        >> DB insert  id=38  title='Wall Street Is Missing the Bigger Picture: Why This Leg...'
+2026-06-11 12:30:41,938  INFO        >> saved  aecom_acm_7_best_civil_engineering_stocks_to_buy_for_smart_city_projects__6b072aa8.json
+2026-06-11 12:30:42,012  INFO        >> DB insert  id=39  title='AECOM (ACM): 7 Best Civil Engineering Stocks to Buy for...'
+2026-06-11 12:30:46,128  INFO        >> saved  is_autodesk_inc_adsk_among_the_best_automation_stocks_to_buy_for_warehouse_const__f45576ab.json
+2026-06-11 12:30:46,146  INFO        >> DB insert  id=40  title='Is Autodesk, Inc. (ADSK) among the Best Automation Stoc...'
+2026-06-11 12:30:50,351  INFO        >> saved  emerson_emr_teams_up_with_aramco_on_a_technology_initiative_with_bigger_implicat__901d5924.json
+2026-06-11 12:30:50,476  INFO        >> DB insert  id=41  title='Emerson (EMR) Teams Up With Aramco On A Technology Init...'
+2026-06-11 12:30:55,630  INFO        >> saved  deere_de_could_benefit_as_farm_equipment_demand_begins_to_stabilize__a06e300a.json
+2026-06-11 12:30:55,671  INFO        >> DB insert  id=42  title='Deere (DE) Could Benefit As Farm Equipment Demand Begin...'
+2026-06-11 12:30:55,733  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-06-11 12:30:56,366  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-06-11 12:30:56,379  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-06-11 12:30:58,324  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-06-11 12:31:00,314  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-06-11 12:31:01,819  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-06-11 12:31:03,345  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-06-11 12:31:04,675  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-06-11 12:31:06,192  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-06-11 12:31:07,666  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-06-11 12:31:09,486  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-06-11 12:31:10,843  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-06-11 12:31:12,179  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-06-11 12:31:12,203  INFO      
+STEP 1 DONE -> 9 new articles ingested
+2026-06-11 12:31:12,209  INFO      ============================================================
+2026-06-11 12:31:12,212  INFO      STEP 2 - AI PROCESSING  START
+2026-06-11 12:31:12,219  INFO      ============================================================
+2026-06-11 12:31:14,514  INFO      Processing 9 articles ...
+2026-06-11 12:31:14,522  INFO      
+  Article [34]: Kalshi crypto perpetual futures hit $1 billion in trading vo...
+2026-06-11 12:31:24,381  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:24,466  INFO        -> 4 market events found
+2026-06-11 12:31:24,494  INFO      
+  Article [35]: Is the Dollar Index Preparing for a Significant Break?...
+2026-06-11 12:31:25,613  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:25,731  INFO        -> 0 market events found
+2026-06-11 12:31:25,743  INFO      
+  Article [36]: Primis Bank review (2026): High-interest bank accounts with ...
+2026-06-11 12:31:26,809  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:26,818  INFO        -> 0 market events found
+2026-06-11 12:31:26,846  INFO      
+  Article [37]: Why Analysts Believe Honeywell’s (HON) Automation Story Is G...
+2026-06-11 12:31:29,585  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:29,604  INFO        -> 5 market events found
+2026-06-11 12:31:29,615  INFO
+  Article [38]: Wall Street Is Missing the Bigger Picture: Why This Legacy T...
+2026-06-11 12:31:32,504  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:32,523  INFO        -> 5 market events found
+2026-06-11 12:31:32,540  INFO      
+  Article [39]: AECOM (ACM): 7 Best Civil Engineering Stocks to Buy for Smar...
+2026-06-11 12:31:34,820  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:34,858  INFO        -> 2 market events found
+2026-06-11 12:31:34,865  INFO
+  Article [40]: Is Autodesk, Inc. (ADSK) among the Best Automation Stocks to...
+2026-06-11 12:31:36,993  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:37,004  INFO        -> 3 market events found
+2026-06-11 12:31:37,014  INFO      
+  Article [41]: Emerson (EMR) Teams Up With Aramco On A Technology Initiativ...
+2026-06-11 12:31:39,458  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:39,482  INFO        -> 4 market events found
+2026-06-11 12:31:39,513  INFO      
+  Article [42]: Deere (DE) Could Benefit As Farm Equipment Demand Begins To ...
+2026-06-11 12:31:42,539  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:42,550  INFO        -> 2 market events found
+2026-06-11 12:31:42,566  INFO      
+  Clustering 25 events into trends ...
+2026-06-11 12:31:56,407  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:31:56,418  INFO        -> 7 trends identified
+2026-06-11 12:31:56,614  INFO      
+  Distilling 7 trends into investment themes ...
+2026-06-11 12:32:03,502  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-11 12:32:03,513  INFO        -> 4 themes identified
+2026-06-11 12:32:03,634  INFO      
+============================================================
+2026-06-11 12:32:03,642  INFO        THEMES STORED: 7
+2026-06-11 12:32:03,651  INFO      
+  > THEME: Tech Resurgence
+2026-06-11 12:32:03,679  INFO          The technology sector is witnessing a revival driven by significant growth in cloud services and adv
+2026-06-11 12:32:03,683  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.90    
+2026-06-11 12:32:03,695  INFO      
+  > THEME: Corporate Strategic Movements
+2026-06-11 12:32:03,697  INFO          Corporations across sectors are engaging in strategic share movements to optimize market positioning
+2026-06-11 12:32:03,702  INFO          - Sector: Consumer Staples                Sentiment: Neutral     Confidence: 0.70    
+2026-06-11 12:32:03,709  INFO      
+  > THEME: Broad Market Optimism
+2026-06-11 12:32:03,712  INFO          Positive analyst sentiment and maintained or increased price targets indicate a healthy outlook acro
+2026-06-11 12:32:03,719  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.80
+2026-06-11 12:32:03,790  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-06-11 12:32:03,798  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.75
+2026-06-11 12:32:03,857  INFO      
+  > THEME: Crypto Derivatives Expansion
+2026-06-11 12:32:03,878  INFO          The rapid adoption of Kalshi's crypto perpetual futures highlights a burgeoning interest in crypto d
+2026-06-11 12:32:03,895  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.90
+2026-06-11 12:32:03,934  INFO      
+  > THEME: Industrial and Energy Innovation
+2026-06-11 12:32:03,997  INFO          Technological advancements and strategic collaborations are propelling growth in the industrial and
+2026-06-11 12:32:04,033  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.80
+2026-06-11 12:32:04,043  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.70
+2026-06-11 12:32:04,092  INFO      
+  > THEME: Technology Growth and Strategic Expansion
+2026-06-11 12:32:04,125  INFO          With financial growth and strategic acquisitions, companies like IBM and Autodesk are positioning th
+2026-06-11 12:32:04,136  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-06-11 12:32:04,154  INFO      
+  > THEME: Tech Sector Uncertainty
+2026-06-11 12:32:04,167  INFO          The technology sector is experiencing mixed signals from analysts, indicating uncertainty and varied
+2026-06-11 12:32:04,182  INFO          - Sector: Technology                      Sentiment: Mixed       Confidence: 0.60
+2026-06-11 12:32:04,230  INFO          - Sector: Industrials                     Sentiment: Neutral     Confidence: 0.50
+2026-06-11 12:32:04,255  INFO      ============================================================
+2026-06-11 12:32:04,281  INFO      
+STEP 2 DONE
+2026-06-11 12:32:04,312  INFO      
+[OK]  Pipeline run completed successfully.
+
+(venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> python pipeline.py --report
+
+============================================================
+  FINANCE PIPELINE  -  DATABASE SUMMARY
+============================================================
+  NewsArticles   : 42
+  MarketEvents   : 50
+  Trends         : 11
+  Themes         : 7
+  SectorTags     : 11
+
+============================================================
+  INVESTMENT THEMES  ->  SECTORS
+============================================================
+
+  >> Tech Resurgence
+     The technology sector is witnessing a revival driven by significant growth in cloud services and advertising revenues, c
+     - Technology                    Positive    [#########.]  90%
+
+  >> Corporate Strategic Movements
+     Corporations across sectors are engaging in strategic share movements to optimize market positioning and shareholder ret
+     - Consumer Staples              Neutral     [#######...]  70%
+
+  >> Broad Market Optimism
+     Positive analyst sentiment and maintained or increased price targets indicate a healthy outlook across various sectors.
+
+     - Semiconductors                Positive    [########..]  80%
+     - Technology                    Positive    [########..]  85%
+     - Industrials                   Positive    [#######...]  75%
+
+  >> Crypto Derivatives Expansion
+     The rapid adoption of Kalshi's crypto perpetual futures highlights a burgeoning interest in crypto derivatives, with mar
+     - Financials                    Positive    [#########.]  90%
+
+  >> Industrial and Energy Innovation
+     Technological advancements and strategic collaborations are propelling growth in the industrial and energy sectors, fost
+     - Industrials                   Positive    [########..]  80%
+     - Energy                        Positive    [#######...]  70%
+
+  >> Technology Growth and Strategic Expansion
+     With financial growth and strategic acquisitions, companies like IBM and Autodesk are positioning themselves as leaders
+
+     - Technology                    Positive    [########..]  85%
+
+  >> Tech Sector Uncertainty
+     The technology sector is experiencing mixed signals from analysts, indicating uncertainty and varied expectations for gr
+     - Technology                    Mixed       [######....]  60%
+     - Industrials                   Neutral     [#####.....]  50%
+
+============================================================
+  TRENDS
+============================================================
+
+  [Bullish] Alphabet Growth and Stock Adjustments  (5 events)
+    Alphabet is experiencing significant growth in its Google Cloud and advertising revenues, while its
+
+  [Bullish] Restructuring and Share Movement in Tech  (7 events)
+    Several technology companies, such as GitLab, are undergoing restructuring efforts, while investment
+
+  [Sideways] Coca-Cola Strategic Share Movements  (3 events)
+    The Coca-Cola Company is exploring strategic share movements through potential public listings and t
+
+  [Bullish] Positive Analyst Sentiment in Various Sectors  (7 events)
+    Multiple major companies including Intel, AMD, Apple, and Caterpillar are receiving positive or main
+
+  [Bullish] Surge in Crypto Derivatives  (3 events)
+    The launch of Kalshi's crypto perpetual futures has seen remarkable market uptake with over $1 billi
+
+  [Bullish] Honeywell's Strategic Growth Initiatives  (5 events)
+    Honeywell is positioned for growth through anticipated organic growth and operational efficiencies.
+
+  [Bullish] IBM's Financial Strength  (5 events)
+    IBM demonstrates solid financial performance with significant revenue growth in software and mainfra
+
+  [Sideways] Tech Industry Analyst Activity  (3 events)
+    There's notable analyst activity affecting major tech firms with mixed signals from price target adj
+
+  [Bullish] Infrastructure and Energy Collaboration  (4 events)
+    Corporate collaborations solidify technological and operational advancements, highlighted by Emerson
+
+  [Bullish] Autodesk's Strategic Expansion  (1 events)
+    Autodesk's strategic acquisition of MaintainX is a significant move to bolster its operational infra
+
+  [Sideways] Mixed Outlook on Deere & Company  (2 events)
+    Analyst opinions on Deere & Company remain varied with adjustments in price targets reflecting mixed
+
+============================================================
+  ARTICLES  ->  EVENTS
+============================================================
+  [WAIT]  [  1]  Top Wall Street Strategist: AI ‘Reality Check’ Is Comin  (0 events)
+  [WAIT]  [  2]  Eli Lilly Leads Medical Stocks To Watch, While Google F  (0 events)
+  [WAIT]  [  3]  The next NVIDIA? These 3 stocks below $50 are poised to  (0 events)
+  [WAIT]  [  4]  Lawmakers invest in tech, AI, and crypto as new rules f  (0 events)
+  [WAIT]  [  5]  SpaceX's IPO dream runs into Wall Street's oldest test:  (0 events)
+  [WAIT]  [  6]  Nvidia Wants to Sell AI Factories, Not Chips             (0 events)
+  [WAIT]  [  7]  NYC bar owner used Kalshi to hedge the bar’s bets and p  (0 events)
+  [WAIT]  [  8]  Experts say Google's $84 billion AI gamble could leave   (0 events)
+  [WAIT]  [  9]  'Too big to stop': Young American men are flocking to p  (0 events)
+  [WAIT]  [ 10]  I’m 60 and want a long-term care policy before I retire  (0 events)
+  [WAIT]  [ 11]  NVIDIA surpasses $3 trillion market cap on AI chip dema  (0 events)
+  [WAIT]  [ 12]  Federal Reserve holds rates steady, hints at September   (0 events)
+  [WAIT]  [ 13]  Apple unveils AI-powered iPhone 17 lineup at WWDC 2026   (0 events)
+  [WAIT]  [ 14]  Oil prices drop 4% as OPEC+ agrees to increase output q  (0 events)
+  [WAIT]  [ 15]  Microsoft Azure cloud revenue up 35% YoY, beating estim  (0 events)
+
+============================================================
+(venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> 

@@ -1,0 +1,20 @@
+# outlook output
+This is the outlook output for the client. It is a JSON object that contains the following fields:
+- headline_outlook: A summary of the overall outlook for the client.
+- drivers: A list of drivers that are expected to impact the client's business.
+- generated_at: The timestamp of when the outlook was generated.
+
+{
+  "headline_outlook": "The technology sector is experiencing a mix of optimism and uncertainty, with significant attention on strategic expansions and innovation surges. Meanwhile, the healthcare sector remains stable with no major disruptions reported. In renewable energy, there is a steady focus on growth and sustainability, although specific recent developments have not been highlighted.",
+  "drivers": [
+    {
+      "title": "GitLab Shares Sink After Layoff News",
+      "commentary": "The technology sector faces mixed sentiment as GitLab's layoffs contribute to uncertainty, though analysts still see potential for growth."
+    },
+    {
+      "title": "Nvidia Just Slipped Below $5 Trillion",
+      "commentary": "Nvidia's recent market valuation drop highlights volatility in the tech sector, impacting sentiment despite ongoing innovation and expansion efforts."
+    }
+  ],
+  "generated_at": "2026-07-01T05:22:18.789867"
+}

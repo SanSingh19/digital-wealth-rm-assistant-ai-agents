@@ -1,0 +1,29 @@
+# Finance Intelligence Pipeline – Python dependencies
+
+# RSS ingestion
+feedparser==6.0.11
+requests==2.32.3
+
+# Full article text extraction
+newspaper3k==0.2.8
+lxml_html_clean
+
+# AI processing
+openai>=1.30.0
+
+# Database ORM
+sqlalchemy>=2.0.0
+
+# Scheduler
+schedule==1.2.2
+
+# Optional: PostgreSQL driver (uncomment for prod)
+# psycopg2-binary==2.9.9
+
+# FastAPI
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# langchain
+langchain>=0.2
+langchain-openai>=0.1

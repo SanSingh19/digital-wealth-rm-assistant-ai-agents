@@ -1,0 +1,185 @@
+# this will create db file finance_pipeline.db
+python pipeline.py --init-db
+
+# This creates a sample client, portfolio, and holdings so the database isn't empty. Good for testing.
+python pipeline.py --seed-demo
+
+(venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> python pipeline.py --seed-demo
+2026-06-07 19:32:22,315  INFO      Seeding demo client / portfolio data …
+2026-06-07 19:32:22,451  INFO        >> Demo data seeded: Client C001, Account ACC-C001-001, Portfolio PF-C001-GROWTH
+------------------------------------------------------------------------------------
+python pipeline.py --run-once
+
+'''This runs Step 1 + Step 2 together:
+
+Fetches articles from Yahoo Finance
+Saves them to data/articles/YYYY-MM-DD/
+Sends them to OpenAI
+Saves events, trends, themes, sector tags to the DB'''
+-----------------------------------------------------------------------------------
+cmd output :
+    
+    (venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> python pipeline.py --run-once
+2026-06-07 19:36:18,094  INFO      
++==========================================================+
+2026-06-07 19:36:18,095  INFO      |  FINANCE PIPELINE RUN  -  2026-06-07 14:06:18 UTC  |
+2026-06-07 19:36:18,095  INFO      +==========================================================+
+
+2026-06-07 19:36:18,096  INFO      ============================================================
+2026-06-07 19:36:18,096  INFO      STEP 1 - INGESTION  START
+2026-06-07 19:36:18,097  INFO      ============================================================
+2026-06-07 19:36:18,104  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-06-07 19:36:18,249  INFO        Raw XML saved -> yahoo_finance_20260607_140618.xml  (31772 bytes)
+2026-06-07 19:36:18,316  INFO        Parsed 50 entries
+2026-06-07 19:36:18,321  INFO        Processing 10 / 50 entries from Yahoo Finance
+2026-06-07 19:36:24,199  INFO        >> saved  hive_digital_technologies_cfo_on_bitcoin_mining_and_ai_data_center_growth_icymi__32c948e2.json
+2026-06-07 19:36:24,319  INFO        >> DB insert  id=21  title='HIVE Digital Technologies CFO on Bitcoin mining and AI ...'
+2026-06-07 19:36:30,377  INFO        >> saved  the_next_nvidia_these_3_stocks_below_50_are_poised_to_win_the_next_ai_boom_and_t__fd97577d.json
+2026-06-07 19:36:38,067  INFO        >> saved  experts_say_googles_84_billion_ai_gamble_could_leave_investors_waiting_a_decade___c7ce0a6e.json
+2026-06-07 19:36:40,092  INFO        >> saved  eli_lilly_leads_medical_stocks_to_watch_while_google_finds_support__a9942e6e.json
+2026-06-07 19:36:47,383  INFO        >> saved  im_60_and_want_a_long_term_care_policy_before_i_retire_is_this_a_good_idea_and_h__0465d394.json
+2026-06-07 19:36:54,248  INFO        >> saved  3_cathie_wood_etfs_to_buy_before_they_likely_invest_in_spacex__2a84842e.json
+2026-06-07 19:36:54,254  INFO        >> DB insert  id=22  title='3 Cathie Wood ETFs to Buy Before They (Likely) Invest i...'
+2026-06-07 19:37:00,732  INFO        >> saved  lawmakers_invest_in_tech_ai_and_crypto_as_new_rules_for_the_industries_are_on_th__3facdf03.json
+2026-06-07 19:37:08,389  INFO        >> saved  spacexs_ipo_dream_runs_into_wall_streets_oldest_test_chart_of_the_day__05efb2b8.json
+2026-06-07 19:37:17,288  INFO        >> saved  nyc_bar_owner_used_kalshi_to_hedge_the_bars_bets_and_provided_that_extra_insuran__93397500.json
+2026-06-07 19:37:26,672  INFO        >> saved  spacex_targeting_a_177_trillion_valuation_just_got_a_100_property_tax_exemption___df781b74.json
+2026-06-07 19:37:26,676  INFO        >> DB insert  id=23  title='SpaceX, targeting a $1.77 trillion valuation, just got ...'
+2026-06-07 19:37:26,677  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-06-07 19:37:27,052  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-06-07 19:37:27,054  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-06-07 19:37:29,141  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-06-07 19:37:30,328  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-06-07 19:37:31,663  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-06-07 19:37:32,481  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-06-07 19:37:33,490  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-06-07 19:37:34,221  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-06-07 19:37:34,764  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-06-07 19:37:35,630  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-06-07 19:37:37,979  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-06-07 19:37:39,034  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-06-07 19:37:39,044  INFO      
+STEP 1 DONE -> 3 new articles ingested
+2026-06-07 19:37:39,045  INFO      ============================================================
+2026-06-07 19:37:39,046  INFO      STEP 2 - AI PROCESSING  START
+2026-06-07 19:37:39,048  INFO      ============================================================
+2026-06-07 19:37:39,763  INFO      Processing 3 articles …
+2026-06-07 19:37:39,763  INFO      
+  Article [21]: HIVE Digital Technologies CFO on Bitcoin mining and AI data …
+2026-06-07 19:37:42,725  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-07 19:37:42,764  INFO        -> 0 market events found
+2026-06-07 19:37:42,765  INFO      
+  Article [22]: 3 Cathie Wood ETFs to Buy Before They (Likely) Invest in Spa…
+2026-06-07 19:37:44,727  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-07 19:37:44,737  INFO        -> 0 market events found
+2026-06-07 19:37:44,749  INFO
+  Article [23]: SpaceX, targeting a $1.77 trillion valuation, just got a 100…
+2026-06-07 19:37:46,127  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-07 19:37:46,136  INFO        -> 0 market events found
+2026-06-07 19:37:46,148  INFO      No market events extracted.
+2026-06-07 19:37:46,149  INFO
+[OK]  Pipeline run completed successfully.
+---------------------------------------------------------------------
+
+python pipeline.py --report
+
+---------------------------------------------------
+
+════════════════════════════════════════════════════════════
+  FINANCE PIPELINE  ·  DATABASE SUMMARY
+════════════════════════════════════════════════════════════
+  NewsArticles   : 23
+  MarketEvents   : 0
+  Trends         : 0
+  Themes         : 0
+  SectorTags     : 0
+
+────────────────────────────────────────────────────────────
+  INVESTMENT THEMES  →  SECTORS
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+  ARTICLES  →  EVENTS
+────────────────────────────────────────────────────────────
+  [  1] ○  Top Wall Street Strategist: AI ‘Reality Check’ Is Coming as   (0 events)
+  [  2] ○  Eli Lilly Leads Medical Stocks To Watch, While Google Finds   (0 events)
+  [  3] ○  The next NVIDIA? These 3 stocks below $50 are poised to win   (0 events)
+  [  4] ○  Lawmakers invest in tech, AI, and crypto as new rules for th  (0 events)
+  [  5] ○  SpaceX's IPO dream runs into Wall Street's oldest test: Char  (0 events)
+  [  6] ○  Nvidia Wants to Sell AI Factories, Not Chips                  (0 events)
+  [  7] ○  NYC bar owner used Kalshi to hedge the bar’s bets and provid  (0 events)
+  [  8] ○  Experts say Google's $84 billion AI gamble could leave inves  (0 events)
+  [  9] ○  'Too big to stop': Young American men are flocking to predic  (0 events)
+  [ 10] ○  I’m 60 and want a long-term care policy before I retire. Is   (0 events)
+════════════════════════════════════════════════════════════
+---------------------------------------
+python pipeline.py --run-once
+python pipeline.py --report
+------------------------------------------
+
+(venv) (base) PS C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline> python pipeline.py --report
+
+============================================================
+  FINANCE PIPELINE  -  DATABASE SUMMARY
+============================================================
+  NewsArticles   : 33
+  MarketEvents   : 25
+  Trends         : 4
+  Themes         : 3
+  SectorTags     : 5
+
+============================================================
+  INVESTMENT THEMES  ->  SECTORS
+============================================================
+
+  >> Tech Resurgence
+     The technology sector is witnessing a revival driven by significant growth in cloud services and advertising revenues, c
+     - Technology                    Positive    [#########.]  90%
+
+  >> Corporate Strategic Movements
+     Corporations across sectors are engaging in strategic share movements to optimize market positioning and shareholder ret
+     - Consumer Staples              Neutral     [#######...]  70%
+
+  >> Broad Market Optimism
+     Positive analyst sentiment and maintained or increased price targets indicate a healthy outlook across various sectors.
+
+     - Semiconductors                Positive    [########..]  80%
+     - Technology                    Positive    [########..]  85%
+     - Industrials                   Positive    [#######...]  75%
+
+============================================================
+  TRENDS
+============================================================
+
+  [Bullish] Alphabet Growth and Stock Adjustments  (5 events)
+    Alphabet is experiencing significant growth in its Google Cloud and advertising revenues, while its
+
+  [Bullish] Restructuring and Share Movement in Tech  (7 events)
+    Several technology companies, such as GitLab, are undergoing restructuring efforts, while investment
+
+  [Sideways] Coca-Cola Strategic Share Movements  (3 events)
+    The Coca-Cola Company is exploring strategic share movements through potential public listings and t
+
+  [Bullish] Positive Analyst Sentiment in Various Sectors  (7 events)
+    Multiple major companies including Intel, AMD, Apple, and Caterpillar are receiving positive or main
+
+============================================================
+  ARTICLES  ->  EVENTS
+============================================================
+  [WAIT]  [  1]  Top Wall Street Strategist: AI ‘Reality Check’ Is Comin  (0 events)
+  [WAIT]  [  2]  Eli Lilly Leads Medical Stocks To Watch, While Google F  (0 events)
+  [WAIT]  [  3]  The next NVIDIA? These 3 stocks below $50 are poised to  (0 events)
+  [WAIT]  [  4]  Lawmakers invest in tech, AI, and crypto as new rules f  (0 events)
+  [WAIT]  [  5]  SpaceX's IPO dream runs into Wall Street's oldest test:  (0 events)
+  [WAIT]  [  6]  Nvidia Wants to Sell AI Factories, Not Chips             (0 events)
+  [WAIT]  [  7]  NYC bar owner used Kalshi to hedge the bar’s bets and p  (0 events)
+  [WAIT]  [  8]  Experts say Google's $84 billion AI gamble could leave   (0 events)
+  [WAIT]  [  9]  'Too big to stop': Young American men are flocking to p  (0 events)
+  [WAIT]  [ 10]  I’m 60 and want a long-term care policy before I retire  (0 events)
+  [WAIT]  [ 11]  NVIDIA surpasses $3 trillion market cap on AI chip dema  (0 events)
+  [WAIT]  [ 12]  Federal Reserve holds rates steady, hints at September   (0 events)
+  [WAIT]  [ 13]  Apple unveils AI-powered iPhone 17 lineup at WWDC 2026   (0 events)
+  [WAIT]  [ 14]  Oil prices drop 4% as OPEC+ agrees to increase output q  (0 events)
+  [WAIT]  [ 15]  Microsoft Azure cloud revenue up 35% YoY, beating estim  (0 events)
+
+============================================================
