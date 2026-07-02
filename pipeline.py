@@ -100,6 +100,7 @@ def run_pipeline():
 #  DEMO DATA SEED
 # ==============================================
 
+'''
 def seed_demo_data():
     """Seed a sample client, portfolio, and securities."""
     log.info("Seeding demo client / portfolio data ...")
@@ -220,7 +221,7 @@ def seed_demo_data():
 
         session.commit()
         log.info("  >> Demo data seeded: Client C001, Account ACC-C001-001, Portfolio PF-C001-GROWTH")
-
+'''
 
 # ==============================================
 #  REPORT
@@ -344,7 +345,7 @@ if __name__ == "__main__":
 
     elif args.seed_demo:
         init_db(DATABASE_URL)
-        seed_demo_data()
+        # seed_demo_data()
         run_matching()
 
     elif args.report:

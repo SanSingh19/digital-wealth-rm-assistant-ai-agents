@@ -18,7 +18,10 @@ from models import (
     RelationshipManager,
     ClientPersonalDetails,
     Meeting,
-    ClientMeetingSummary
+    ClientMeetingSummary,
+    SectorMaster,
+    ClientPreference,
+    ClientRiskOverview
 )
 
 from config.settings import DATABASE_URL
@@ -31,6 +34,170 @@ RMS = [
     {"id": 2, "rm_code": "RM002", "name": "Sarah Lee"},
 ]
 
+# ---------------- SectorMasters ----------------
+sector_master = [
+
+    {
+        "id": 1,
+        "name": "Technology",
+        "gics_code": "45",
+        "description": "Software, cloud computing and enterprise technology companies"
+    },
+
+    {
+        "id": 2,
+        "name": "Semiconductors",
+        "gics_code": "45301",
+        "description": "Chip manufacturing and semiconductor equipment companies"
+    },
+
+    {
+        "id": 3,
+        "name": "Financials",
+        "gics_code": "40",
+        "description": "Banking, fixed income instruments and financial services"
+    },
+
+    {
+        "id": 4,
+        "name": "Energy",
+        "gics_code": "10",
+        "description": "Traditional energy sector including oil and gas"
+    },
+
+    {
+        "id": 5,
+        "name": "Healthcare",
+        "gics_code": "35",
+        "description": "Healthcare and pharmaceutical companies"
+    },
+
+    {
+        "id": 6,
+        "name": "Consumer Discretionary",
+        "gics_code": "25",
+        "description": "Consumer products and retail companies"
+    },
+
+    {
+        "id": 9,
+        "name": "Real Estate",
+        "gics_code": "60",
+        "description": "Real estate investment trusts and property funds"
+    },
+
+    {
+        "id": 12,
+        "name": "Renewable Energy",
+        "gics_code": "10RE",
+        "description": "ESG focused green and renewable energy investments"
+    }
+
+]
+
+# ---------------- Securities ----------------
+securities = [
+
+    {
+        "ticker": "ASML",
+        "name": "ASML Holding",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 2,
+        "currency": "USD",
+        "last_price": 850.0
+    },
+
+    {
+        "ticker": "NVDA",
+        "name": "NVIDIA Corporation",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 2,
+        "currency": "USD",
+        "last_price": 900.0
+    },
+
+    {
+        "ticker": "MSFT",
+        "name": "Microsoft Corporation",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 1,
+        "currency": "USD",
+        "last_price": 430.0
+    },
+
+    {
+        "ticker": "AAPL",
+        "name": "Apple Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 1,
+        "currency": "USD",
+        "last_price": 195.0
+    },
+
+    {
+        "ticker": "BOND1",
+        "name": "Euro Gov Bond Fund",
+        "security_type": "FIXED_INCOME",
+        "exchange": "LSE",
+        "sector_id": 3,
+        "currency": "USD",
+        "last_price": 98.5
+    },
+
+    {
+        "ticker": "BOND2",
+        "name": "Short Duration Green Bond",
+        "security_type": "FIXED_INCOME",
+        "exchange": "LSE",
+        "sector_id": 3,
+        "currency": "USD",
+        "last_price": 95.0
+    },
+
+    {
+        "ticker": "REIT1",
+        "name": "European Real Estate ETF",
+        "security_type": "REAL_ESTATE",
+        "exchange": "EURONEXT",
+        "sector_id": 9,
+        "currency": "USD",
+        "last_price": 45.0
+    },
+
+    {
+        "ticker": "ALT1",
+        "name": "ESG Small Cap Fund",
+        "security_type": "ALTERNATIVES",
+        "exchange": "EURONEXT",
+        "sector_id": 12,
+        "currency": "USD",
+        "last_price": 62.0
+    },
+
+    {
+        "ticker": "ALT2",
+        "name": "Nordea Climate Fund",
+        "security_type": "ALTERNATIVES",
+        "exchange": "EURONEXT",
+        "sector_id": 12,
+        "currency": "USD",
+        "last_price": 58.0
+    },
+
+    {
+        "ticker": "LIQ1",
+        "name": "Money Market Fund",
+        "security_type": "LIQUIDITY",
+        "exchange": "EURONEXT",
+        "sector_id": 3,
+        "currency": "USD",
+        "last_price": 1.0
+    }
+]
 
 # ---------------- Clients ----------------
 
@@ -78,11 +245,31 @@ CLIENTS = [
         },
 
         "holdings": [
-            ("NVDA",200,85,900),
-            ("MSFT",150,310,430),
-            ("AMD",300,95,162),
-            ("ENPH",50,200,115)
-        ]
+                ("ASML",2500,780,850),
+                ("NVDA",1500,820,900),
+                ("MSFT",2000,390,430),
+                ("BOND1",12000,95,98.5),
+                ("REIT1",15000,40,45),
+                ("ALT1",10000,55,62),
+                ("ALT2",8000,52,58),
+                ("LIQ1",200000,1,1)
+        ],
+
+        "preferences":[
+            ("EQUITY",45,65),
+            ("FIXED_INCOME",15,30),
+            ("REAL_ESTATE",5,10),
+            ("ALTERNATIVES",10,20),
+            ("LIQUIDITY",2,8)
+        ],
+
+        "risk_overview":{
+            "concentration_pct":"18",
+            "concentration_asset":"NVDA",
+            "sharpe_ratio":"1.5",
+            "value_at_risk":"520",
+            "max_drawdown":"7.1"
+        }
     },
     {
         "code":"CD901234",
@@ -123,10 +310,29 @@ CLIENTS = [
         },
 
         "holdings":[
-            ("JNJ",100,155,165),
-            ("JPM",80,140,195),
-            ("XOM",120,55,115)
-        ]
+                ("AAPL",1000,170,195),
+                ("BOND1",25000,94,98.5),
+                ("BOND2",22000,90,95),
+                ("REIT1",10000,42,45),
+                ("ALT1",3000,55,62),
+                ("LIQ1",350000,1,1)
+        ],
+
+        "preferences":[
+            ("EQUITY",20,35),
+            ("FIXED_INCOME",40,55),
+            ("REAL_ESTATE",5,15),
+            ("ALTERNATIVES",2,8),
+            ("LIQUIDITY",5,12)
+        ],
+
+        "risk_overview":{
+            "concentration_pct":"24",
+            "concentration_asset":"BOND1",
+            "sharpe_ratio":"1.2",
+            "value_at_risk":"310",
+            "max_drawdown":"4.9"
+        }
     },
 
     {
@@ -168,11 +374,29 @@ CLIENTS = [
         },
 
         "holdings":[
-            ("AAPL",50,170,195),
-            ("JPM",60,140,195),
-            ("AMZN",30,130,185),
-            ("XOM",40,55,115)
-        ]
+                ("MSFT",1200,390,430),
+                ("AAPL",1800,170,195),
+                ("BOND1",15000,95,98.5),
+                ("REIT1",12000,40,45),
+                ("ALT2",5000,52,58),
+                ("LIQ1",150000,1,1)
+        ],
+
+        "preferences":[
+            ("EQUITY",30,45),
+            ("FIXED_INCOME",25,40),
+            ("REAL_ESTATE",8,15),
+            ("ALTERNATIVES",5,12),
+            ("LIQUIDITY",5,10)
+        ],
+
+        "risk_overview":{
+            "concentration_pct":"16",
+            "concentration_asset":"MSFT",
+            "sharpe_ratio":"1.4",
+            "value_at_risk":"275",
+            "max_drawdown":"5.4"
+        }
     }
 ]
 
@@ -186,6 +410,53 @@ def seed_all_clients():
 
     with Session() as session:
 
+        # Seed Sector Master
+        for sector in sector_master:
+
+            existing_sector = session.query(
+                SectorMaster
+            ).filter_by(
+                id=sector["id"]
+            ).first()
+
+            if not existing_sector:
+
+                session.add(
+                    SectorMaster(
+                        id=sector["id"],
+                        name=sector["name"],
+                        gics_code=sector["gics_code"],
+                        description=sector["description"]
+                    )
+                )
+
+        session.commit()
+
+
+        # Seed Securities
+        for sec in securities:
+
+            existing_security = session.query(
+                Security
+            ).filter_by(
+                ticker=sec["ticker"]
+            ).first()
+
+            if not existing_security:
+
+                session.add(
+                    Security(
+                        ticker=sec["ticker"],
+                        name=sec["name"],
+                        security_type=sec["security_type"],
+                        exchange=sec["exchange"],
+                        sector_id=sec["sector_id"],
+                        currency=sec["currency"],
+                        last_price=sec["last_price"]
+                    )
+                )
+
+        session.commit()
         # Seed Relationship Managers
 
         for rm in RMS:
@@ -347,6 +618,32 @@ def seed_all_clients():
                         weight_pct=(qty*price)/total*100
                     )
                 )
+
+            # Client Preferences
+            for security_type,bw_min,bw_max in data["preferences"]:
+
+                session.add(
+                    ClientPreference(
+                        client_id=client.client_code,
+                        security_type=security_type,
+                        bandwidth_min=bw_min,
+                        bandwidth_max=bw_max
+                    )
+                )
+
+            # Client Risk Overview
+            risk = data["risk_overview"]
+
+            session.add(
+                ClientRiskOverview(
+                    client_id=client.client_code,
+                    concentration_pct=risk["concentration_pct"],
+                    concentration_asset=risk["concentration_asset"],
+                    sharpe_ratio=risk["sharpe_ratio"],
+                    value_at_risk=risk["value_at_risk"],
+                    max_drawdown=risk["max_drawdown"]
+                )
+            )
 
             session.commit()
 
