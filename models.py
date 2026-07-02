@@ -268,6 +268,13 @@ class Client(Base):
     accounts       = relationship("Account", back_populates="client",
                                   cascade="all, delete-orphan")
 
+    preferences = relationship("ClientPreference", back_populates="client")
+
+    risk_overview = relationship(
+        "ClientRiskOverview",
+        back_populates="client"
+    )
+
     theme_matches = relationship(
         "ClientThemeMatch",
         back_populates="client",
@@ -478,6 +485,36 @@ class Holding(Base):
     __table_args__ = (
         UniqueConstraint("portfolio_id", "security_id", name="uq_portfolio_security"),
     )
+
+class ClientPreference(Base):
+    __tablename__ = "client_preferences"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(String, ForeignKey("clients.client_code"), nullable=False)
+    security_type = Column(String(32), nullable=False)
+    bandwidth_min = Column(Float)
+    bandwidth_max = Column(Float)
+
+    client = relationship("Client", back_populates="preferences")
+
+class ClientRiskOverview(Base):
+    __tablename__ = "client_risk_overview"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(
+        String,
+        ForeignKey("clients.client_code"),
+        nullable=False
+    )
+    concentration_pct = Column(String(10))
+    concentration_asset = Column(String(30))
+    sharpe_ratio = Column(String(10))
+    value_at_risk = Column(String(20))
+    max_drawdown = Column(String(10))
+
+    client = relationship("Client", back_populates="risk_overview")
+
+
 
 class ClientThemeMatch(Base):
     """

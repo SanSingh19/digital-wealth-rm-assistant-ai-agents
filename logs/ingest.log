@@ -2148,3 +2148,322 @@ STEP 2 DONE
 2026-07-02 15:12:56,165  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-07-02 17:37:01,327  INFO      
++==========================================================+
+2026-07-02 17:37:01,332  INFO      |  FINANCE PIPELINE RUN  -  2026-07-02 12:07:01 UTC  |
+2026-07-02 17:37:01,333  INFO      +==========================================================+
+
+2026-07-02 17:37:01,333  INFO      ============================================================
+2026-07-02 17:37:01,334  INFO      STEP 1 - INGESTION  START
+2026-07-02 17:37:01,336  INFO      ============================================================
+2026-07-02 17:37:01,359  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-02 17:37:01,542  INFO        Raw XML saved -> yahoo_finance_20260702_120701.xml  (22991 bytes)
+2026-07-02 17:37:01,630  INFO        Parsed 39 entries
+2026-07-02 17:37:01,634  INFO        Processing 10 / 39 entries from Yahoo Finance
+2026-07-02 17:37:04,317  INFO        >> saved  retail_giant_exits_us_fashion_after_multi_million_dollar_scandal__27add60f.json
+2026-07-02 17:37:04,561  INFO        >> DB insert  id=21  title='Retail giant exits U.S. fashion after multi-million-dol...'
+2026-07-02 17:37:06,654  INFO        >> saved  the_ai_revolution_needs_electricity_more_than_intelligence__be7f82a4.json
+2026-07-02 17:37:06,659  INFO        >> DB insert  id=22  title='The AI Revolution Needs Electricity More Than Intellige...'
+2026-07-02 17:37:08,203  INFO        >> saved  8_charts_spacs_from_boom_to_bust_and_back_again__82851738.json
+2026-07-02 17:37:08,210  INFO        >> DB insert  id=23  title='8 charts: SPACs, from boom to bust, and back again...'
+2026-07-02 17:37:09,971  INFO        >> saved  bayer_seeks_us_duties_on_chinese_made_glyphosate_angering_farmers__16cf0dd9.json
+2026-07-02 17:37:09,977  INFO        >> DB insert  id=24  title='Bayer seeks US duties on Chinese-made glyphosate, anger...'
+2026-07-02 17:37:11,587  INFO        >> saved  uber_backed_lime_raises_167_million_in_us_ipo__6a8d4e80.json
+2026-07-02 17:37:11,593  INFO        >> DB insert  id=25  title='Uber-backed Lime raises $167 million in US IPO...'
+2026-07-02 17:37:11,784  INFO        >> saved  inside_the_egg_price_fixing_scandal_that_spiked_american_grocery_bills__face9612.json
+2026-07-02 17:37:11,789  INFO        >> DB insert  id=26  title='Inside the Egg Price-Fixing Scandal That Spiked America...'
+2026-07-02 17:37:13,222  INFO        >> saved  vimeo_owner_bending_spoons_prices_ipo_at_above_target_range_to_raise_168_billion__d868b5d0.json
+2026-07-02 17:37:13,228  INFO        >> DB insert  id=27  title='Vimeo owner Bending Spoons prices IPO at above target r...'
+2026-07-02 17:37:14,590  INFO        >> saved  will_the_housing_market_crash_in_2026_see_whats_ahead__3f77127d.json
+2026-07-02 17:37:14,595  INFO        >> DB insert  id=28  title='Will the housing market crash in 2026? See what's ahead...'
+2026-07-02 17:37:16,462  INFO        >> saved  japan_business_mood_hits_8_year_high_builds_case_for_boj_rate_hikes__b4800970.json
+2026-07-02 17:37:16,467  INFO        >> DB insert  id=29  title='Japan business mood hits 8-year high, builds case for B...'
+2026-07-02 17:37:18,100  INFO        >> saved  most_us_stocks_rise_but_drops_for_tech_pull_wall_street_lower__8994c8e7.json
+2026-07-02 17:37:18,104  INFO        >> DB insert  id=30  title='Most US stocks rise, but drops for tech pull Wall Stree...'
+2026-07-02 17:37:18,104  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-02 17:37:18,399  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-02 17:37:18,401  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-02 17:37:18,768  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-02 17:37:19,215  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-02 17:37:19,461  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-02 17:37:19,802  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-02 17:37:20,227  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-02 17:37:20,485  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-02 17:37:20,721  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-02 17:37:20,999  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-02 17:37:21,253  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-02 17:37:21,508  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-02 17:37:21,520  INFO      
+STEP 1 DONE -> 10 new articles ingested
+2026-07-02 17:37:21,521  INFO      ============================================================
+2026-07-02 17:37:21,522  INFO      STEP 2 - AI PROCESSING  START
+2026-07-02 17:37:21,523  INFO      ============================================================
+2026-07-02 17:37:22,467  INFO      Processing 10 articles ...
+2026-07-02 17:37:22,468  INFO      
+  Article [21]: Retail giant exits U.S. fashion after multi-million-dollar s...
+2026-07-02 17:37:29,570  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:29,617  INFO        -> 4 market events found
+2026-07-02 17:37:29,633  INFO      
+  Article [22]: The AI Revolution Needs Electricity More Than Intelligence...
+2026-07-02 17:37:32,885  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:32,889  INFO        -> 4 market events found
+2026-07-02 17:37:32,901  INFO      
+  Article [23]: 8 charts: SPACs, from boom to bust, and back again...
+2026-07-02 17:37:37,593  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:37,606  INFO        -> 5 market events found
+2026-07-02 17:37:37,613  INFO      
+  Article [24]: Bayer seeks US duties on Chinese-made glyphosate, angering f...
+2026-07-02 17:37:40,287  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:40,293  INFO        -> 3 market events found
+2026-07-02 17:37:40,300  INFO      
+  Article [25]: Uber-backed Lime raises $167 million in US IPO...
+2026-07-02 17:37:44,326  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:44,337  INFO        -> 5 market events found
+2026-07-02 17:37:44,342  INFO      
+  Article [26]: Inside the Egg Price-Fixing Scandal That Spiked American Gro...
+2026-07-02 17:37:45,139  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:45,148  INFO        -> 0 market events found
+2026-07-02 17:37:45,150  INFO      
+  Article [27]: Vimeo owner Bending Spoons prices IPO at above target range ...
+2026-07-02 17:37:47,751  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:47,760  INFO        -> 4 market events found
+2026-07-02 17:37:47,767  INFO      
+  Article [28]: Will the housing market crash in 2026? See what's ahead...
+2026-07-02 17:37:51,274  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:51,289  INFO        -> 4 market events found
+2026-07-02 17:37:51,295  INFO      
+  Article [29]: Japan business mood hits 8-year high, builds case for BOJ ra...
+2026-07-02 17:37:55,850  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:37:55,860  INFO        -> 6 market events found
+2026-07-02 17:37:55,867  INFO      
+  Article [30]: Most US stocks rise, but drops for tech pull Wall Street low...
+2026-07-02 17:38:01,328  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:01,336  INFO        -> 10 market events found
+2026-07-02 17:38:01,343  INFO      
+  Clustering 45 events into trends ...
+2026-07-02 17:38:09,026  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:09,029  INFO        -> 7 trends identified
+2026-07-02 17:38:09,147  INFO      
+  Distilling 7 trends into investment themes ...
+2026-07-02 17:38:19,516  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:19,526  INFO        -> 6 themes identified
+2026-07-02 17:38:19,619  INFO      
+============================================================
+2026-07-02 17:38:19,620  INFO        THEMES STORED: 8
+2026-07-02 17:38:19,625  INFO      
+  > THEME: Consumer Finance Evolution
+2026-07-02 17:38:19,626  INFO          The credit card market is seeing heightened competition as financial institutions push aggressively 
+2026-07-02 17:38:19,628  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.90
+2026-07-02 17:38:19,632  INFO      
+  > THEME: Autonomous Vehicle Integration
+2026-07-02 17:38:19,633  INFO          The resurgence in autonomous vehicle collaborations and operational activities signals a pivotal shi
+2026-07-02 17:38:19,633  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.95
+2026-07-02 17:38:19,634  INFO          - Sector: Automotive                      Sentiment: Positive    Confidence: 0.85
+2026-07-02 17:38:19,636  INFO          - Sector: Transportation                  Sentiment: Positive    Confidence: 0.90
+2026-07-02 17:38:19,639  INFO      
+  > THEME: Corporate Restructuring and Governance
+2026-07-02 17:38:19,640  INFO          Global restructuring and increased regulatory scrutiny are prompting major shifts in corporate strat
+2026-07-02 17:38:19,641  INFO          - Sector: Corporate Services              Sentiment: Neutral     Confidence: 0.80
+2026-07-02 17:38:19,642  INFO          - Sector: Legal & Compliance              Sentiment: Positive    Confidence: 0.90
+2026-07-02 17:38:19,644  INFO      
+  > THEME: Energy Transition with Nuclear Focus
+2026-07-02 17:38:19,648  INFO          The revival of nuclear energy as a sustainable power alternative is gaining momentum. With backing f
+2026-07-02 17:38:19,649  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-07-02 17:38:19,650  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-07-02 17:38:19,653  INFO      
+  > THEME: Public Market Activity Uptrend
+2026-07-02 17:38:19,654  INFO          Investor optimism is reflected in a surge of IPOs, demonstrating confidence in public markets. Despi
+2026-07-02 17:38:19,657  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.85
+2026-07-02 17:38:19,661  INFO      
+  > THEME: Tech Sector Valuations Under Pressure
+2026-07-02 17:38:19,664  INFO          High valuations in the tech sector are leading to investor caution, affecting share prices of major 
+2026-07-02 17:38:19,666  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.90
+2026-07-02 17:38:19,667  INFO          - Sector: Semiconductors                  Sentiment: Negative    Confidence: 0.80
+2026-07-02 17:38:19,672  INFO      
+  > THEME: Monetary Policy Adjustments in Japan
+2026-07-02 17:38:19,673  INFO          Japan's shift in monetary policy, marked by interest rate hikes, aims to address inflation and econo
+2026-07-02 17:38:19,673  INFO          - Sector: Financials                      Sentiment: Mixed       Confidence: 0.70
+2026-07-02 17:38:19,675  INFO          - Sector: Consumer Goods                  Sentiment: Negative    Confidence: 0.60
+2026-07-02 17:38:19,680  INFO      
+  > THEME: Economic and Employment Oscillations
+2026-07-02 17:38:19,681  INFO          Economic indicators are showing mixed signals with private sector job recovery efforts countered by 
+2026-07-02 17:38:19,683  INFO          - Sector: Employment Services             Sentiment: Neutral     Confidence: 0.70
+2026-07-02 17:38:19,686  INFO          - Sector: Retail                          Sentiment: Mixed       Confidence: 0.65
+2026-07-02 17:38:19,687  INFO      ============================================================
+2026-07-02 17:38:19,689  INFO      
+STEP 2 DONE
+2026-07-02 17:38:19,692  INFO      [Step 3] Matching client holdings to themes...
+2026-07-02 17:38:19,737  INFO      Loaded 8 themes covering 11 distinct sectors.
+2026-07-02 17:38:19,761  INFO      Processing 3 client(s)...
+2026-07-02 17:38:19,801  INFO        [AB345678] Arjun Mehta -> 0 theme(s) matched: []
+2026-07-02 17:38:19,811  INFO        [CD901234] Priya Sharma -> 0 theme(s) matched: []
+2026-07-02 17:38:19,822  INFO        [EF567890] Rahul Gupta -> 0 theme(s) matched: []
+2026-07-02 17:38:19,825  INFO      [Step 3] Done. 3 client(s), 0 theme match(es).
+2026-07-02 17:38:19,826  INFO      [Step 5] Generating client market outlooks...
+2026-07-02 17:38:23,482  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:23,582  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-02 17:38:25,975  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:26,009  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-02 17:38:27,585  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:38:27,622  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-02 17:38:27,623  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-02 17:38:27,625  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-02 17:43:23,798  INFO      Database tables created.
+2026-07-02 17:43:46,362  INFO      Seeding demo client / portfolio data ...
+2026-07-02 17:49:24,722  INFO      
++==========================================================+
+2026-07-02 17:49:24,722  INFO      |  FINANCE PIPELINE RUN  -  2026-07-02 12:19:24 UTC  |
+2026-07-02 17:49:24,724  INFO      +==========================================================+
+
+2026-07-02 17:49:24,724  INFO      ============================================================
+2026-07-02 17:49:24,725  INFO      STEP 1 - INGESTION  START
+2026-07-02 17:49:24,726  INFO      ============================================================
+2026-07-02 17:49:24,743  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-02 17:49:24,898  INFO        Raw XML saved -> yahoo_finance_20260702_121924.xml  (22991 bytes)
+2026-07-02 17:49:24,981  INFO        Parsed 39 entries
+2026-07-02 17:49:24,987  INFO        Processing 10 / 39 entries from Yahoo Finance
+2026-07-02 17:49:26,520  INFO        >> saved  retail_giant_exits_us_fashion_after_multi_million_dollar_scandal__27add60f.json
+2026-07-02 17:49:26,672  INFO        >> DB insert  id=1  title='Retail giant exits U.S. fashion after multi-million-dol...'
+2026-07-02 17:49:28,466  INFO        >> saved  the_ai_revolution_needs_electricity_more_than_intelligence__be7f82a4.json
+2026-07-02 17:49:28,473  INFO        >> DB insert  id=2  title='The AI Revolution Needs Electricity More Than Intellige...'
+2026-07-02 17:49:30,228  INFO        >> saved  8_charts_spacs_from_boom_to_bust_and_back_again__82851738.json
+2026-07-02 17:49:30,232  INFO        >> DB insert  id=3  title='8 charts: SPACs, from boom to bust, and back again...'
+2026-07-02 17:49:32,085  INFO        >> saved  bayer_seeks_us_duties_on_chinese_made_glyphosate_angering_farmers__16cf0dd9.json
+2026-07-02 17:49:32,089  INFO        >> DB insert  id=4  title='Bayer seeks US duties on Chinese-made glyphosate, anger...'
+2026-07-02 17:49:33,811  INFO        >> saved  uber_backed_lime_raises_167_million_in_us_ipo__6a8d4e80.json
+2026-07-02 17:49:33,815  INFO        >> DB insert  id=5  title='Uber-backed Lime raises $167 million in US IPO...'
+2026-07-02 17:49:34,081  INFO        >> saved  inside_the_egg_price_fixing_scandal_that_spiked_american_grocery_bills__face9612.json
+2026-07-02 17:49:34,086  INFO        >> DB insert  id=6  title='Inside the Egg Price-Fixing Scandal That Spiked America...'
+2026-07-02 17:49:35,497  INFO        >> saved  vimeo_owner_bending_spoons_prices_ipo_at_above_target_range_to_raise_168_billion__d868b5d0.json
+2026-07-02 17:49:35,502  INFO        >> DB insert  id=7  title='Vimeo owner Bending Spoons prices IPO at above target r...'
+2026-07-02 17:49:37,135  INFO        >> saved  will_the_housing_market_crash_in_2026_see_whats_ahead__3f77127d.json
+2026-07-02 17:49:37,141  INFO        >> DB insert  id=8  title='Will the housing market crash in 2026? See what's ahead...'
+2026-07-02 17:49:38,747  INFO        >> saved  japan_business_mood_hits_8_year_high_builds_case_for_boj_rate_hikes__b4800970.json
+2026-07-02 17:49:38,751  INFO        >> DB insert  id=9  title='Japan business mood hits 8-year high, builds case for B...'
+2026-07-02 17:49:41,181  INFO        >> saved  most_us_stocks_rise_but_drops_for_tech_pull_wall_street_lower__8994c8e7.json
+2026-07-02 17:49:41,186  INFO        >> DB insert  id=10  title='Most US stocks rise, but drops for tech pull Wall Stree...'
+2026-07-02 17:49:41,187  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-02 17:49:41,472  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-02 17:49:41,474  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-02 17:49:41,855  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-02 17:49:41,859  INFO        >> DB insert  id=11  title='NVIDIA surpasses $3 trillion market cap on AI chip dema...'
+2026-07-02 17:49:42,314  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-02 17:49:42,317  INFO        >> DB insert  id=12  title='Federal Reserve holds rates steady, hints at September ...'
+2026-07-02 17:49:42,696  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-02 17:49:42,702  INFO        >> DB insert  id=13  title='Apple unveils AI-powered iPhone 17 lineup at WWDC 2026...'
+2026-07-02 17:49:43,075  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-02 17:49:43,079  INFO        >> DB insert  id=14  title='Oil prices drop 4% as OPEC+ agrees to increase output q...'
+2026-07-02 17:49:43,459  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-02 17:49:43,463  INFO        >> DB insert  id=15  title='Microsoft Azure cloud revenue up 35% YoY, beating estim...'
+2026-07-02 17:49:43,979  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-02 17:49:43,983  INFO        >> DB insert  id=16  title='Tesla Q1 deliveries miss expectations amid pricing pres...'
+2026-07-02 17:49:44,383  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-02 17:49:44,385  INFO        >> DB insert  id=17  title='Semiconductor shortage eases as TSMC expands Arizona fa...'
+2026-07-02 17:49:45,249  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-02 17:49:45,255  INFO        >> DB insert  id=18  title='JPMorgan warns of recession risk as yield curve inverts...'
+2026-07-02 17:49:45,777  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-02 17:49:45,783  INFO        >> DB insert  id=19  title='Amazon acquires AI startup Adept for $1.2 billion...'
+2026-07-02 17:49:46,232  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-02 17:49:46,235  INFO        >> DB insert  id=20  title='Renewable energy stocks rally on new IRA extension prop...'
+2026-07-02 17:49:46,246  INFO      
+STEP 1 DONE -> 20 new articles ingested
+2026-07-02 17:49:46,247  INFO      ============================================================
+2026-07-02 17:49:46,248  INFO      STEP 2 - AI PROCESSING  START
+2026-07-02 17:49:46,249  INFO      ============================================================
+2026-07-02 17:49:47,168  INFO      Processing 10 articles ...
+2026-07-02 17:49:47,169  INFO      
+  Article [1]: Retail giant exits U.S. fashion after multi-million-dollar s...
+2026-07-02 17:49:52,239  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:49:52,276  INFO        -> 5 market events found
+2026-07-02 17:49:52,291  INFO      
+  Article [2]: The AI Revolution Needs Electricity More Than Intelligence...
+2026-07-02 17:49:56,112  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:49:56,142  INFO        -> 4 market events found
+2026-07-02 17:49:56,149  INFO      
+  Article [3]: 8 charts: SPACs, from boom to bust, and back again...
+2026-07-02 17:49:58,655  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:49:58,665  INFO        -> 4 market events found
+2026-07-02 17:49:58,670  INFO      
+  Article [4]: Bayer seeks US duties on Chinese-made glyphosate, angering f...
+2026-07-02 17:50:02,345  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:02,356  INFO        -> 4 market events found
+2026-07-02 17:50:02,360  INFO      
+  Article [5]: Uber-backed Lime raises $167 million in US IPO...
+2026-07-02 17:50:04,629  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:04,642  INFO        -> 5 market events found
+2026-07-02 17:50:04,648  INFO      
+  Article [6]: Inside the Egg Price-Fixing Scandal That Spiked American Gro...
+2026-07-02 17:50:05,950  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:05,961  INFO        -> 0 market events found
+2026-07-02 17:50:05,965  INFO      
+  Article [7]: Vimeo owner Bending Spoons prices IPO at above target range ...
+2026-07-02 17:50:08,030  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:08,033  INFO        -> 4 market events found
+2026-07-02 17:50:08,038  INFO      
+  Article [8]: Will the housing market crash in 2026? See what's ahead...
+2026-07-02 17:50:11,444  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:11,453  INFO        -> 3 market events found
+2026-07-02 17:50:11,459  INFO      
+  Article [9]: Japan business mood hits 8-year high, builds case for BOJ ra...
+2026-07-02 17:50:17,023  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:17,026  INFO        -> 8 market events found
+2026-07-02 17:50:17,033  INFO      
+  Article [10]: Most US stocks rise, but drops for tech pull Wall Street low...
+2026-07-02 17:50:22,896  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:22,899  INFO        -> 10 market events found
+2026-07-02 17:50:22,906  INFO      
+  Clustering 47 events into trends ...
+2026-07-02 17:50:34,646  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:34,669  INFO        -> 7 trends identified
+2026-07-02 17:50:34,806  INFO      
+  Distilling 7 trends into investment themes ...
+2026-07-02 17:50:43,837  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:43,841  INFO        -> 5 themes identified
+2026-07-02 17:50:43,917  INFO      
+============================================================
+2026-07-02 17:50:43,917  INFO        THEMES STORED: 5
+2026-07-02 17:50:43,922  INFO      
+  > THEME: Retail Challenges and Recovery
+2026-07-02 17:50:43,923  INFO          The retail sector is experiencing significant challenges due to corporate scandals, market exits, an
+2026-07-02 17:50:43,924  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.90
+2026-07-02 17:50:43,927  INFO      
+  > THEME: Tech Investment Boom
+2026-07-02 17:50:43,927  INFO          Increasing investments in AI and next-generation technologies signal strong growth potential in the 
+2026-07-02 17:50:43,927  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.95
+2026-07-02 17:50:43,930  INFO      
+  > THEME: Regulatory and Geopolitical Pressures
+2026-07-02 17:50:43,931  INFO          The global market is under pressure due to heightened regulatory scrutiny and geopolitical tensions,
+2026-07-02 17:50:43,932  INFO          - Sector: Financials                      Sentiment: Negative    Confidence: 0.85
+2026-07-02 17:50:43,932  INFO          - Sector: Energy                          Sentiment: Negative    Confidence: 0.90
+2026-07-02 17:50:43,935  INFO      
+  > THEME: IPO and Market Dynamics
+2026-07-02 17:50:43,936  INFO          The resurgence in IPO activity highlights strong investor appetite for new market entrants, reflecti
+2026-07-02 17:50:43,936  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.90
+2026-07-02 17:50:43,938  INFO      
+  > THEME: Stable Growth Amid Volatility
+2026-07-02 17:50:43,938  INFO          While macroeconomic indicators remain mixed, select companies are outperforming expectations, sugges
+2026-07-02 17:50:43,938  INFO          - Sector: Consumer Goods                  Sentiment: Positive    Confidence: 0.85
+2026-07-02 17:50:43,939  INFO          - Sector: Industrials                     Sentiment: Mixed       Confidence: 0.70
+2026-07-02 17:50:43,939  INFO      ============================================================
+2026-07-02 17:50:43,940  INFO      
+STEP 2 DONE
+2026-07-02 17:50:43,942  INFO      [Step 3] Matching client holdings to themes...
+2026-07-02 17:50:43,972  INFO      Loaded 5 themes covering 6 distinct sectors.
+2026-07-02 17:50:44,008  INFO      Processing 3 client(s)...
+2026-07-02 17:50:44,260  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-02 17:50:44,308  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-02 17:50:44,339  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-02 17:50:44,341  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-07-02 17:50:44,343  INFO      [Step 5] Generating client market outlooks...
+2026-07-02 17:50:49,382  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:49,475  INFO        [AB345678] outlook generated (3 drivers).
+2026-07-02 17:50:53,486  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:53,555  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-02 17:50:57,480  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-02 17:50:57,585  INFO        [EF567890] outlook generated (3 drivers).
+2026-07-02 17:50:57,586  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-02 17:50:57,587  INFO      
+[OK]  Pipeline run completed successfully.
+
