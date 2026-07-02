@@ -14,8 +14,9 @@ Client → Account → Portfolio → Holding → Security → SectorMaster
 from datetime import datetime
 from sqlalchemy import (
     create_engine, Column, String, Integer, Float,
-    DateTime, Text, ForeignKey, Boolean, Enum, UniqueConstraint
+    DateTime, Text, ForeignKey, Boolean, Enum, UniqueConstraint, Date, Time
 )
+from sqlalchemy.types import JSON
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 import enum
 
@@ -156,6 +157,10 @@ class Theme(Base):
                                   cascade="all, delete-orphan")
     sector_tags    = relationship("SectorTag", back_populates="theme",
                                   cascade="all, delete-orphan")
+    client_matches = relationship(
+        "ClientThemeMatch",
+        back_populates="theme"
+    )
 
     def __repr__(self):
         return f"<Theme id={self.id} name='{self.name}'>"
@@ -224,18 +229,185 @@ class Client(Base):
 
     id             = Column(Integer, primary_key=True, autoincrement=True)
     client_code    = Column(String(32), unique=True, nullable=False)
+    rm_id = Column(Integer, ForeignKey("relationship_manager.id"), nullable=False)
     name           = Column(String(256), nullable=False)
     email          = Column(String(256))
     phone          = Column(String(32))
     risk_profile   = Column(String(32))   # Conservative / Moderate / Aggressive
+    age = Column(Integer)
+    profession = Column(String(100))
+    preference = Column(String(100))
+    service_model = Column(String(100))
+    investment_goals = Column(String(255))
+
     created_at     = Column(DateTime, default=datetime.utcnow)
+
+    relationship_manager = relationship(
+         "RelationshipManager",
+          back_populates="clients"
+    )
+
+    personal_details = relationship(
+          "ClientPersonalDetails",
+           back_populates="client",
+           uselist=False
+    )
+
+    meet = relationship(
+           "Meeting",
+            back_populates="meeting_client",
+            cascade="all, delete-orphan"
+    )
+
+    client_summary = relationship(
+            "ClientMeetingSummary",
+             back_populates="client_meeting_data",
+             cascade="all, delete-orphan"
+    )
 
     accounts       = relationship("Account", back_populates="client",
                                   cascade="all, delete-orphan")
 
+    theme_matches = relationship(
+        "ClientThemeMatch",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
+
+    outlook = relationship(
+        "ClientOutlook",
+        back_populates="client",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
 
+# ---------------- RM ----------------
+
+class RelationshipManager(Base):
+    __tablename__ = "relationship_manager"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    rm_code = Column(String(32), unique=True, nullable=False)
+    name = Column(String(256), nullable=False)
+
+    clients = relationship(
+        "Client",
+        back_populates="relationship_manager",
+        cascade="all,delete-orphan"
+    )
+
+    meetings = relationship(
+        "Meeting",
+        back_populates="rm",
+        cascade="all,delete-orphan"
+    )
+
+    rm_meeting_summary = relationship(
+        "ClientMeetingSummary",
+        back_populates="rm_summary",
+        cascade="all,delete-orphan"
+    )
+
+# ---------------- Meetings ----------------
+
+class Meeting(Base):
+    __tablename__ = "meetings"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    rm_id = Column(
+        Integer,
+        ForeignKey("relationship_manager.id"),
+        nullable=False
+    )
+
+    client_id = Column(
+        String,
+        ForeignKey("clients.client_code"),
+        nullable=False
+    )
+
+    title = Column(String(255))
+    date = Column(Date)
+    time = Column(Time)
+
+    location = Column(String(255))
+    platform = Column(String(100))
+
+    rm = relationship(
+        "RelationshipManager",
+        back_populates="meetings"
+    )
+
+    meeting_client = relationship(
+        "Client",
+        back_populates="meet"
+    )
+
+
+# ---------------- Personal Details ----------------
+
+class ClientPersonalDetails(Base):
+    __tablename__ = "client_personal_details"
+
+    id = Column(Integer, primary_key=True)
+
+    client_code = Column(
+        String(32),
+        ForeignKey("clients.client_code"),
+        unique=True,
+        nullable=False
+    )
+
+    marital_status = Column(String(50))
+    kids_details = Column(String(255))
+    date_of_Birth = Column(String(20))
+    hobbies = Column(String(255))
+    other = Column(String(500))
+    client_constraints = Column(String(500))
+
+    client = relationship(
+        "Client",
+        back_populates="personal_details"
+    )
+
+
+# ---------------- Meeting Summary ----------------
+
+class ClientMeetingSummary(Base):
+    __tablename__ = "client_meeting_summary"
+
+    id = Column(Integer, primary_key=True)
+
+    rm_id = Column(
+        Integer,
+        ForeignKey("relationship_manager.id"),
+        nullable=False
+    )
+
+    client_id = Column(
+        String,
+        ForeignKey("clients.client_code"),
+        nullable=False
+    )
+
+    main_discussion_points = Column(JSON)
+    last_meeting_date = Column(Date)
+    client_questions = Column(JSON)
+
+    rm_summary = relationship(
+        "RelationshipManager",
+        back_populates="rm_meeting_summary"
+    )
+
+    client_meeting_data = relationship(
+        "Client",
+        back_populates="client_summary"
+    )
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -330,8 +502,8 @@ class ClientThemeMatch(Base):
     # Highest confidence score across matched tags
     confidence      = Column(Float, default=0.0)
 
-    client = relationship("Client")
-    theme  = relationship("Theme")
+    client = relationship("Client", back_populates="theme_matches")
+    theme  = relationship("Theme", back_populates="client_matches")
 
     __table_args__ = (
         UniqueConstraint("client_id", "theme_id", name="uq_client_theme"),
@@ -351,7 +523,7 @@ class ClientOutlook(Base):
     headline_outlook    = Column(Text, nullable=False) # The narrative paragraph
     drivers             = Column(Text) # JSON list of {title, commentary}
 
-    client = relationship("Client")
+    client = relationship("Client", back_populates = "outlook")
 
 
 # ═══════════════════════════════════════════════
