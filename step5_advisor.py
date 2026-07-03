@@ -11,6 +11,7 @@ This is the ONLY step that calls the LLM here — api.py just reads results.
 import json
 import logging
 from datetime import datetime
+from typing import Literal
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -28,6 +29,13 @@ from models import (
 )
 from config.settings import DATABASE_URL, OPENAI_API_KEY
 
+import ssl
+import certifi
+import os
+
+os.environ["SSL_CERT_FILE"] = certifi.where()
+os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
+
 log = logging.getLogger("step5_advisor")
 
 
@@ -36,17 +44,23 @@ log = logging.getLogger("step5_advisor")
 class OutlookDriver(BaseModel):
     title: str = Field(description="Short headline for this driver, e.g. 'ECB Holds Rates at 2.75%'")
     commentary: str = Field(description="short 1 sentence portfolio-specific commentary on this driver")
+    status: Literal["Increase", "Decrease", "Neutral"] = Field(
+        description="Indicates whether this market event is positively increasing, "
+                    "negatively decreasing, or has neutral impact on the client's portfolio value or exposure."
+    )
 
 
 class ClientOutlookResult(BaseModel):
     headline_outlook: str = Field(
         description="A 2-3 sentence news summary covering key recent happenings "
-                "across the sectors this client is most exposed to. Focus on "
-                "what is actually happening in the market, not on portfolio impact."
+                    "across the sectors this client is most exposed to. Focus on "
+                    "what is actually happening in the market, not on portfolio impact."
     )
     drivers: list[OutlookDriver] = Field(
         description="2-3 specific market drivers (news events, theme shifts, rate "
-                     "decisions, earnings) each with portfolio-specific commentary."
+                    "decisions, earnings) each with portfolio-specific commentary "
+                    "and a status indicating Increase, Decrease, or Neutral impact "
+                    "on the client's portfolio."
     )
 
 
@@ -63,6 +77,11 @@ it as advice or portfolio impact. Stick strictly to what the news says.
 
 For the drivers: pick 2-3 specific events from the news that are most relevant 
 to this client's sector exposure, with one sentence on what happened.
+
+For each driver status field: set "Increase" if the event positively impacts 
+the client's holdings in that sector, "Decrease" if it negatively impacts them, 
+"Neutral" if the effect is unclear or mixed. Base this strictly on the holdings 
+and sector exposure provided — not general market opinion.
 
 CLIENT SECTOR EXPOSURE
 -----------------------
@@ -174,7 +193,14 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
 
-    llm = ChatOpenAI(model="gpt-4o", temperature=0.3, api_key=OPENAI_API_KEY)
+    import httpx
+
+    llm = ChatOpenAI(
+        model="gpt-4o",
+        temperature=0.3,
+        api_key=OPENAI_API_KEY,
+        http_client=httpx.Client(verify=False)
+    )
     chain = PROMPT | llm | PARSER
 
     results = {}

@@ -104,6 +104,7 @@ class ClientOverviewOut(BaseModel):
 class OutlookDriverOut(BaseModel):
     title: str
     commentary: str
+    status: Optional[str]
 
 
 class ClientOutlookOut(BaseModel):

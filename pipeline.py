@@ -347,6 +347,7 @@ if __name__ == "__main__":
         init_db(DATABASE_URL)
         # seed_demo_data()
         run_matching()
+        run_advisor()
 
     elif args.report:
         print_report()
