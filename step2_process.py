@@ -33,6 +33,9 @@ from typing import Any
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
+import httpx
+from openai import OpenAI
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config.settings import (
     DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL,
@@ -68,7 +71,10 @@ def get_openai_client() -> OpenAI:
             "OPENAI_API_KEY not set. "
             "Export it or update OPENAI_API_KEY in config/settings.py"
         )
-    return OpenAI(api_key=api_key)
+    return OpenAI(
+    api_key=api_key,
+    http_client=httpx.Client(verify=False)
+    )
 
 
 def openai_json(client: OpenAI, prompt: str, system: str) -> Any:

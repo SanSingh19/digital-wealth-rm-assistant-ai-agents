@@ -21,20 +21,22 @@ from models import (
     ClientMeetingSummary,
     SectorMaster,
     ClientPreference,
-    ClientRiskOverview
+    ClientRiskOverview,
+    SecurityPriceHistory,
+    Transaction
 )
 
 from config.settings import DATABASE_URL
 
 
-# ---------------- Relationship Managers ----------------
+# ---------------- Relationship Managers -----------------------
 
 RMS = [
     {"id": 1, "rm_code": "RM001", "name": "John Smith"},
     {"id": 2, "rm_code": "RM002", "name": "Sarah Lee"},
 ]
 
-# ---------------- SectorMasters ----------------
+# ---------------- SectorMasters -------------------------------
 sector_master = [
 
     {
@@ -104,7 +106,7 @@ securities = [
         "security_type": "EQUITY",
         "exchange": "NASDAQ",
         "sector_id": 2,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 850.0
     },
 
@@ -114,7 +116,7 @@ securities = [
         "security_type": "EQUITY",
         "exchange": "NASDAQ",
         "sector_id": 2,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 900.0
     },
 
@@ -124,7 +126,7 @@ securities = [
         "security_type": "EQUITY",
         "exchange": "NASDAQ",
         "sector_id": 1,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 430.0
     },
 
@@ -134,7 +136,7 @@ securities = [
         "security_type": "EQUITY",
         "exchange": "NASDAQ",
         "sector_id": 1,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 195.0
     },
 
@@ -144,7 +146,7 @@ securities = [
         "security_type": "FIXED_INCOME",
         "exchange": "LSE",
         "sector_id": 3,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 98.5
     },
 
@@ -154,7 +156,7 @@ securities = [
         "security_type": "FIXED_INCOME",
         "exchange": "LSE",
         "sector_id": 3,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 95.0
     },
 
@@ -164,7 +166,7 @@ securities = [
         "security_type": "REAL_ESTATE",
         "exchange": "EURONEXT",
         "sector_id": 9,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 45.0
     },
 
@@ -174,7 +176,7 @@ securities = [
         "security_type": "ALTERNATIVES",
         "exchange": "EURONEXT",
         "sector_id": 12,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 62.0
     },
 
@@ -184,7 +186,7 @@ securities = [
         "security_type": "ALTERNATIVES",
         "exchange": "EURONEXT",
         "sector_id": 12,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 58.0
     },
 
@@ -194,8 +196,315 @@ securities = [
         "security_type": "LIQUIDITY",
         "exchange": "EURONEXT",
         "sector_id": 3,
-        "currency": "USD",
+        "currency": "EUR",
         "last_price": 1.0
+    }
+]
+
+
+security_price_history = [
+
+    # ASML (current 850)
+    ("ASML","Feb",2026,780),
+    ("ASML","Mar",2026,800),
+    ("ASML","Apr",2026,815),
+    ("ASML","May",2026,825),
+    ("ASML","Jun",2026,838),
+    ("ASML","Jul",2026,850),
+    ("ASML","Aug",2026,None),
+    ("ASML","Sep",2026,None),
+    ("ASML","Oct",2026,None),
+    ("ASML","Nov",2026,None),
+    ("ASML","Dec",2026,None),
+    ("ASML","Jan",2027,None),
+    ("ASML","Feb",2027,None),
+
+    # NVDA (current 900)
+    ("NVDA","Feb",2026,810),
+    ("NVDA","Mar",2026,835),
+    ("NVDA","Apr",2026,850),
+    ("NVDA","May",2026,865),
+    ("NVDA","Jun",2026,882),
+    ("NVDA","Jul",2026,900),
+    ("NVDA","Aug",2026,None),
+    ("NVDA","Sep",2026,None),
+    ("NVDA","Oct",2026,None),
+    ("NVDA","Nov",2026,None),
+    ("NVDA","Dec",2026,None),
+    ("NVDA","Jan",2027,None),
+    ("NVDA","Feb",2027,None),
+
+    # MSFT (current 430)
+    ("MSFT","Feb",2026,390),
+    ("MSFT","Mar",2026,402),
+    ("MSFT","Apr",2026,410),
+    ("MSFT","May",2026,418),
+    ("MSFT","Jun",2026,425),
+    ("MSFT","Jul",2026,430),
+    ("MSFT","Aug",2026,None),
+    ("MSFT","Sep",2026,None),
+    ("MSFT","Oct",2026,None),
+    ("MSFT","Nov",2026,None),
+    ("MSFT","Dec",2026,None),
+    ("MSFT","Jan",2027,None),
+    ("MSFT","Feb",2027,None),
+
+    # AAPL (current 195)
+    ("AAPL","Feb",2026,170),
+    ("AAPL","Mar",2026,178),
+    ("AAPL","Apr",2026,183),
+    ("AAPL","May",2026,188),
+    ("AAPL","Jun",2026,191),
+    ("AAPL","Jul",2026,195),
+    ("AAPL","Aug",2026,None),
+    ("AAPL","Sep",2026,None),
+    ("AAPL","Oct",2026,None),
+    ("AAPL","Nov",2026,None),
+    ("AAPL","Dec",2026,None),
+    ("AAPL","Jan",2027,None),
+    ("AAPL","Feb",2027,None),
+
+    # BOND1 (current 98.5)
+    ("BOND1","Feb",2026,94.0),
+    ("BOND1","Mar",2026,95.2),
+    ("BOND1","Apr",2026,96.1),
+    ("BOND1","May",2026,97.0),
+    ("BOND1","Jun",2026,98.0),
+    ("BOND1","Jul",2026,98.5),
+    ("BOND1","Aug",2026,None),
+    ("BOND1","Sep",2026,None),
+    ("BOND1","Oct",2026,None),
+    ("BOND1","Nov",2026,None),
+    ("BOND1","Dec",2026,None),
+    ("BOND1","Jan",2027,None),
+    ("BOND1","Feb",2027,None),
+
+    # BOND2 (current 95)
+    ("BOND2","Feb",2026,89.0),
+    ("BOND2","Mar",2026,90.5),
+    ("BOND2","Apr",2026,91.5),
+    ("BOND2","May",2026,92.7),
+    ("BOND2","Jun",2026,94.0),
+    ("BOND2","Jul",2026,95.0),
+    ("BOND2","Aug",2026,None),
+    ("BOND2","Sep",2026,None),
+    ("BOND2","Oct",2026,None),
+    ("BOND2","Nov",2026,None),
+    ("BOND2","Dec",2026,None),
+    ("BOND2","Jan",2027,None),
+    ("BOND2","Feb",2027,None),
+
+    # REIT1 (current 45)
+    ("REIT1","Feb",2026,39.0),
+    ("REIT1","Mar",2026,41.0),
+    ("REIT1","Apr",2026,42.0),
+    ("REIT1","May",2026,43.2),
+    ("REIT1","Jun",2026,44.0),
+    ("REIT1","Jul",2026,45.0),
+    ("REIT1","Aug",2026,None),
+    ("REIT1","Sep",2026,None),
+    ("REIT1","Oct",2026,None),
+    ("REIT1","Nov",2026,None),
+    ("REIT1","Dec",2026,None),
+    ("REIT1","Jan",2027,None),
+    ("REIT1","Feb",2027,None),
+
+    # ALT1 (current 62)
+    ("ALT1","Feb",2026,57.0),
+    ("ALT1","Mar",2026,60.0),
+    ("ALT1","Apr",2026,59.0),
+    ("ALT1","May",2026,60.5),
+    ("ALT1","Jun",2026,61.2),
+    ("ALT1","Jul",2026,62.0),
+    ("ALT1","Aug",2026,None),
+    ("ALT1","Sep",2026,None),
+    ("ALT1","Oct",2026,None),
+    ("ALT1","Nov",2026,None),
+    ("ALT1","Dec",2026,None),
+    ("ALT1","Jan",2027,None),
+    ("ALT1","Feb",2027,None),
+
+    # ALT2 (current 58)
+    ("ALT2","Feb",2026,51.0),
+    ("ALT2","Mar",2026,53.0),
+    ("ALT2","Apr",2026,54.0),
+    ("ALT2","May",2026,55.0),
+    ("ALT2","Jun",2026,56.5),
+    ("ALT2","Jul",2026,58.0),
+    ("ALT2","Aug",2026,None),
+    ("ALT2","Sep",2026,None),
+    ("ALT2","Oct",2026,None),
+    ("ALT2","Nov",2026,None),
+    ("ALT2","Dec",2026,None),
+    ("ALT2","Jan",2027,None),
+    ("ALT2","Feb",2027,None),
+
+    # LIQ1 (current 1)
+    ("LIQ1","Feb",2026,1.0),
+    ("LIQ1","Mar",2026,1.0),
+    ("LIQ1","Apr",2026,1.0),
+    ("LIQ1","May",2026,1.0),
+    ("LIQ1","Jun",2026,1.0),
+    ("LIQ1","Jul",2026,1.0),
+    ("LIQ1","Aug",2026,None),
+    ("LIQ1","Sep",2026,None),
+    ("LIQ1","Oct",2026,None),
+    ("LIQ1","Nov",2026,None),
+    ("LIQ1","Dec",2026,None),
+    ("LIQ1","Jan",2027,None),
+    ("LIQ1","Feb",2027,None)
+]
+
+# ---------------- Transactions ----------------
+
+transactions = [
+
+    {
+        "account_id": 1,
+        "transaction_type": "BUY",
+        "ticker": "ASML",
+        "product_name": "ASML Holding",
+        "amount": 85000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-25"
+    },
+
+    {
+        "account_id": 1,
+        "transaction_type": "BUY",
+        "ticker": "ALT1",
+        "product_name": "ESG Small Cap Fund",
+        "amount": 120000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-27"
+    },
+
+    {
+        "account_id": 1,
+        "transaction_type": "BUY",
+        "ticker": "NVDA",
+        "product_name": "NVIDIA Corporation",
+        "amount": 150000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-29"
+    },
+
+    {
+        "account_id": 1,
+        "transaction_type": "SELL",
+        "ticker": "BOND2",
+        "product_name": "Short Duration Green Bond",
+        "amount": 90000,
+        "currency": "EUR",
+        "transaction_date": "2026-07-01"
+    },
+
+    {
+        "account_id": 1,
+        "transaction_type": "BUY",
+        "ticker": "REIT1",
+        "product_name": "European Real Estate ETF",
+        "amount": 100000,
+        "currency": "EUR",
+        "transaction_date": "2026-07-02"
+    },
+
+    {
+        "account_id": 2,
+        "transaction_type": "BUY",
+        "ticker": "BOND1",
+        "product_name": "Euro Gov Bond Fund",
+        "amount": 150000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-18"
+    },
+
+    {
+        "account_id": 2,
+        "transaction_type": "BUY",
+        "ticker": "REIT1",
+        "product_name": "European Real Estate ETF",
+        "amount": 80000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-21"
+    },
+
+    {
+        "account_id": 2,
+        "transaction_type": "SELL",
+        "ticker": "MSFT",
+        "product_name": "Microsoft Corporation",
+        "amount": 110000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-24"
+    },
+
+    {
+        "account_id": 2,
+        "transaction_type": "BUY",
+        "ticker": "BOND2",
+        "product_name": "Short Duration Green Bond",
+        "amount": 100000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-28"
+    },
+
+    {
+        "account_id": 2,
+        "transaction_type": "BUY",
+        "ticker": "LIQ1",
+        "product_name": "Money Market Fund",
+        "amount": 50000,
+        "currency": "EUR",
+        "transaction_date": "2026-07-01"
+    },
+
+    {
+        "account_id": 3,
+        "transaction_type": "BUY",
+        "ticker": "BOND1",
+        "product_name": "Euro Gov Bond Fund",
+        "amount": 125000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-15"
+    },
+    {
+        "account_id": 3,
+        "transaction_type": "BUY",
+        "ticker": "AAPL",
+        "product_name": "Apple Inc.",
+        "amount": 95000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-19"
+    },
+    {
+        "account_id": 3,
+        "transaction_type": "SELL",
+        "ticker": "NVDA",
+        "product_name": "NVIDIA Corporation",
+        "amount": 85000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-23"
+    },
+
+    {
+        "account_id": 3,
+        "transaction_type": "BUY",
+        "ticker": "REIT1",
+        "product_name": "European Real Estate ETF",
+        "amount": 70000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-26"
+    },
+
+    {
+        "account_id": 3,
+        "transaction_type": "BUY",
+        "ticker": "LIQ1",
+        "product_name": "Money Market Fund",
+        "amount": 40000,
+        "currency": "EUR",
+        "transaction_date": "2026-06-30"
     }
 ]
 
@@ -310,12 +619,13 @@ CLIENTS = [
         },
 
         "holdings":[
-                ("AAPL",1000,170,195),
-                ("BOND1",25000,94,98.5),
-                ("BOND2",22000,90,95),
-                ("REIT1",10000,42,45),
-                ("ALT1",3000,55,62),
-                ("LIQ1",350000,1,1)
+
+            ("AAPL",12000,170,195),
+            ("BOND1",18000,94,98.5),
+            ("BOND2",14000,90,95),
+            ("REIT1",12000,42,45),
+            ("ALT1",5000,55,62),
+            ("LIQ1",500000,1,1)
         ],
 
         "preferences":[
@@ -457,8 +767,69 @@ def seed_all_clients():
                 )
 
         session.commit()
-        # Seed Relationship Managers
 
+        # Seed Security Price History
+
+        for ticker, month, year, price in security_price_history:
+
+            existing_history = session.query(
+                SecurityPriceHistory
+            ).filter_by(
+                ticker=ticker,
+                month=month,
+                year=year
+            ).first()
+
+            if not existing_history:
+
+                session.add(
+                    SecurityPriceHistory(
+                        ticker=ticker,
+                        month=month,
+                        year=year,
+                        price=price
+                    )
+                )
+
+        session.commit()
+
+        # ---------------- Seed Transactions ----------------
+
+        for tx in transactions:
+
+            existing_tx = session.query(
+                Transaction
+            ).filter_by(
+                account_id=tx["account_id"],
+                ticker=tx["ticker"],
+                transaction_date=datetime.strptime(
+                    tx["transaction_date"],
+                    "%Y-%m-%d"
+                ).date()
+            ).first()
+
+            if not existing_tx:
+
+                session.add(
+                    Transaction(
+                        account_id=tx["account_id"],
+                        transaction_type=tx["transaction_type"],
+                        ticker=tx["ticker"],
+                        product_name=tx["product_name"],
+                        amount=tx["amount"],
+                        currency=tx["currency"],
+                        transaction_date=datetime.strptime(
+                            tx["transaction_date"],
+                            "%Y-%m-%d"
+                        ).date()
+                    )
+                )
+
+        session.commit()
+
+        print("Transactions seeded successfully")
+
+        # Seed Relationship Managers
         for rm in RMS:
 
             existing_rm = session.query(
