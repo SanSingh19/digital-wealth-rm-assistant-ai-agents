@@ -1,9 +1,20 @@
 # ─────────────────────────────────────────────
 #  Finance Pipeline  ·  Configuration
 # ─────────────────────────────────────────────
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
+import os
+import certifi
+
+os.environ["SSL_CERT_FILE"] = certifi.where()
+os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
+
 
 load_dotenv()
 

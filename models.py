@@ -423,13 +423,32 @@ class Account(Base):
     account_number = Column(String(64), unique=True, nullable=False)
     client_id      = Column(Integer, ForeignKey("clients.id"), nullable=False)
     account_type   = Column(Enum(AccountTypeEnum), default=AccountTypeEnum.INDIVIDUAL)
-    currency       = Column(String(8), default="USD")
+    currency       = Column(String(8), default="EUR")
     is_active      = Column(Boolean, default=True)
     opened_at      = Column(DateTime, default=datetime.utcnow)
 
     client         = relationship("Client",    back_populates="accounts")
+    transactions = relationship("Transaction", back_populates="account")
     portfolios     = relationship("Portfolio", back_populates="account",
                                   cascade="all, delete-orphan")
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"),nullable=False)
+    transaction_type = Column(String(10), nullable=False)
+    ticker = Column(String(16), ForeignKey("securities.ticker"), nullable=False)
+    product_name = Column(String(100), nullable=False)
+    amount = Column(Float, nullable=False)
+    currency = Column( String(10),nullable=False)
+    transaction_date = Column(Date, nullable=False)
+
+    account = relationship(
+        "Account",
+        back_populates="transactions"
+    )
 
 
 class Portfolio(Base):
@@ -459,12 +478,23 @@ class Security(Base):
     security_type  = Column(String(32))   # EQUITY / ETF / BOND / CRYPTO
     exchange       = Column(String(32))   # NYSE / NASDAQ / LSE
     sector_id      = Column(Integer, ForeignKey("sector_master.id"))
-    currency       = Column(String(8), default="USD")
+    currency       = Column(String(8), default="EUR")
     last_price     = Column(Float)
     last_price_at  = Column(DateTime)
 
     sector         = relationship("SectorMaster", back_populates="securities")
     holdings       = relationship("Holding",      back_populates="security")
+    price_history  = relationship("SecurityPriceHistory",  back_populates="security")
+
+class SecurityPriceHistory(Base):
+    __tablename__ = "security_price_history"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ticker = Column(String(16), ForeignKey("securities.ticker"), nullable=False)
+    month = Column(String(10), nullable=False)
+    year = Column(Integer, nullable=False)
+    price = Column(Float, nullable=True)
+    security = relationship(  "Security", back_populates="price_history")
 
 
 class Holding(Base):

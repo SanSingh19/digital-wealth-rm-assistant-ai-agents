@@ -21,6 +21,9 @@ from pathlib import Path
 import feedparser
 import requests
 
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 # newspaper3k (aliased as newspaper)
 try:
     from newspaper import Article as NewspaperArticle
@@ -95,6 +98,7 @@ def fetch_feed(source: dict) -> list[dict]:
     """
     url  = source["url"]
     name = source["name"]
+    
     log.info(f"Fetching RSS -> {name}  ({url})")
 
     # -- save raw XML ---------------------------
@@ -105,10 +109,12 @@ def fetch_feed(source: dict) -> list[dict]:
     raw_content = b""
     try:
         resp = requests.get(
-            url,
-            headers=REQUEST_HEADERS,
-            timeout=REQUEST_TIMEOUT,
+        url,
+        headers=REQUEST_HEADERS,
+        timeout=REQUEST_TIMEOUT,
+        verify=False,
         )
+
         resp.raise_for_status()
         raw_content = resp.content
         raw_path.write_bytes(raw_content)

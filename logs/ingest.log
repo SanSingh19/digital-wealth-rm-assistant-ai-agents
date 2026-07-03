@@ -2467,3 +2467,711 @@ STEP 2 DONE
 2026-07-02 17:50:57,587  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-07-03 18:25:21,651  INFO      
++==========================================================+
+2026-07-03 18:25:21,653  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 12:55:21 UTC  |
+2026-07-03 18:25:21,653  INFO      +==========================================================+
+
+2026-07-03 18:25:21,653  INFO      ============================================================
+2026-07-03 18:25:21,654  INFO      STEP 1 - INGESTION  START
+2026-07-03 18:25:21,654  INFO      ============================================================
+2026-07-03 18:25:21,661  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 18:25:22,902  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:25:22,914  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 18:25:23,065  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:25:23,329  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:25:23,471  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:25:23,620  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:25:23,776  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:25:23,918  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:25:24,086  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:25:24,237  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:25:24,392  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:25:24,543  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:25:24,547  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 18:25:24,824  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:25:24,825  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 18:25:24,965  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:25:25,101  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:25:25,233  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:25:25,367  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:25:25,519  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:25:25,689  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:25:25,832  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:25:25,993  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:25:26,125  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:25:26,258  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:25:26,260  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 18:25:26,260  INFO      No new articles to process.
+2026-07-03 18:25:26,260  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 18:25:26,286  INFO      Loaded 5 themes covering 6 distinct sectors.
+2026-07-03 18:25:26,306  INFO      Processing 3 client(s)...
+2026-07-03 18:25:26,344  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:25:26,368  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:25:26,391  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:25:26,392  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-07-03 18:25:26,393  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 18:25:29,900  INFO      Retrying request to /chat/completions in 0.426657 seconds
+2026-07-03 18:25:30,356  INFO      Retrying request to /chat/completions in 0.883876 seconds
+2026-07-03 18:25:31,269  ERROR       [AB345678] LLM call failed: Connection error.
+2026-07-03 18:25:31,305  INFO      Retrying request to /chat/completions in 0.385211 seconds
+2026-07-03 18:25:31,726  INFO      Retrying request to /chat/completions in 0.759696 seconds
+2026-07-03 18:25:32,528  ERROR       [CD901234] LLM call failed: Connection error.
+2026-07-03 18:25:32,568  INFO      Retrying request to /chat/completions in 0.444084 seconds
+2026-07-03 18:25:33,053  INFO      Retrying request to /chat/completions in 0.868040 seconds
+2026-07-03 18:25:33,954  ERROR       [EF567890] LLM call failed: Connection error.
+2026-07-03 18:25:33,956  INFO      [Step 5] Done. 0 outlook(s) generated.
+2026-07-03 18:25:33,956  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 18:27:31,252  INFO      Database tables created.
+2026-07-03 18:27:40,365  INFO      
++==========================================================+
+2026-07-03 18:27:40,366  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 12:57:40 UTC  |
+2026-07-03 18:27:40,367  INFO      +==========================================================+
+
+2026-07-03 18:27:40,367  INFO      ============================================================
+2026-07-03 18:27:40,367  INFO      STEP 1 - INGESTION  START
+2026-07-03 18:27:40,368  INFO      ============================================================
+2026-07-03 18:27:40,374  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 18:27:40,573  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:27:40,575  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 18:27:40,667  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:27:40,867  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:27:40,965  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:27:41,048  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:27:41,144  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:27:41,257  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:27:41,345  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:27:41,424  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:27:41,527  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:27:41,602  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:27:41,603  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 18:27:41,783  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:27:41,784  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 18:27:41,885  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:27:41,990  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:27:42,085  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:27:42,166  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:27:42,247  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:27:42,340  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:27:42,471  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:27:42,582  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:27:42,685  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:27:42,772  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:27:42,774  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 18:27:42,775  INFO      No new articles to process.
+2026-07-03 18:27:42,775  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 18:27:42,801  INFO      Loaded 5 themes covering 6 distinct sectors.
+2026-07-03 18:27:42,829  INFO      Processing 3 client(s)...
+2026-07-03 18:27:42,876  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:27:42,904  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:27:42,934  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:27:42,941  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-07-03 18:27:42,945  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 18:27:45,833  INFO      Retrying request to /chat/completions in 0.494725 seconds
+2026-07-03 18:27:46,361  INFO      Retrying request to /chat/completions in 0.863080 seconds
+2026-07-03 18:27:47,247  ERROR       [AB345678] LLM call failed: Connection error.
+2026-07-03 18:27:47,284  INFO      Retrying request to /chat/completions in 0.408608 seconds
+2026-07-03 18:27:47,716  INFO      Retrying request to /chat/completions in 0.817835 seconds
+2026-07-03 18:27:48,588  ERROR       [CD901234] LLM call failed: Connection error.
+2026-07-03 18:27:48,636  INFO      Retrying request to /chat/completions in 0.444399 seconds
+2026-07-03 18:27:49,145  INFO      Retrying request to /chat/completions in 0.842364 seconds
+2026-07-03 18:27:50,020  ERROR       [EF567890] LLM call failed: Connection error.
+2026-07-03 18:27:50,021  INFO      [Step 5] Done. 0 outlook(s) generated.
+2026-07-03 18:27:50,021  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 18:38:07,980  INFO      
++==========================================================+
+2026-07-03 18:38:07,982  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 13:08:07 UTC  |
+2026-07-03 18:38:07,983  INFO      +==========================================================+
+
+2026-07-03 18:38:07,983  INFO      ============================================================
+2026-07-03 18:38:07,983  INFO      STEP 1 - INGESTION  START
+2026-07-03 18:38:07,984  INFO      ============================================================
+2026-07-03 18:38:07,991  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 18:38:08,642  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:38:08,643  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 18:38:09,166  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:38:09,835  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:38:10,375  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:38:10,928  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:38:11,491  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:38:12,016  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:38:12,604  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:38:13,133  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:38:13,662  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:38:14,189  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:38:14,191  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 18:38:14,425  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 18:38:14,425  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 18:38:14,945  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 18:38:15,465  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 18:38:15,632  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 18:38:15,741  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 18:38:15,865  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 18:38:15,976  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 18:38:16,060  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 18:38:16,166  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 18:38:16,272  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 18:38:16,370  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 18:38:16,372  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 18:38:16,372  INFO      No new articles to process.
+2026-07-03 18:38:16,373  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 18:38:16,402  INFO      Loaded 5 themes covering 6 distinct sectors.
+2026-07-03 18:38:16,425  INFO      Processing 3 client(s)...
+2026-07-03 18:38:16,463  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:38:16,489  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:38:16,509  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 18:38:16,510  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-07-03 18:38:16,510  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 18:38:18,972  INFO      Retrying request to /chat/completions in 0.379687 seconds
+2026-07-03 18:38:19,394  INFO      Retrying request to /chat/completions in 0.930454 seconds
+2026-07-03 18:38:20,412  ERROR       [AB345678] LLM call failed: Connection error.
+2026-07-03 18:38:20,556  INFO      Retrying request to /chat/completions in 0.465400 seconds
+2026-07-03 18:38:21,053  INFO      Retrying request to /chat/completions in 0.879496 seconds
+2026-07-03 18:38:21,980  ERROR       [CD901234] LLM call failed: Connection error.
+2026-07-03 18:38:22,017  INFO      Retrying request to /chat/completions in 0.443492 seconds
+2026-07-03 18:38:22,506  INFO      Retrying request to /chat/completions in 0.823275 seconds
+2026-07-03 18:38:23,359  ERROR       [EF567890] LLM call failed: Connection error.
+2026-07-03 18:38:23,360  INFO      [Step 5] Done. 0 outlook(s) generated.
+2026-07-03 18:38:23,360  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 19:15:33,688  INFO      Database tables created.
+2026-07-03 19:16:40,434  INFO      
++==========================================================+
+2026-07-03 19:16:40,434  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 13:46:40 UTC  |
+2026-07-03 19:16:40,435  INFO      +==========================================================+
+
+2026-07-03 19:16:40,435  INFO      ============================================================
+2026-07-03 19:16:40,436  INFO      STEP 1 - INGESTION  START
+2026-07-03 19:16:40,436  INFO      ============================================================
+2026-07-03 19:16:40,444  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 19:16:41,202  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:16:41,203  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 19:16:41,821  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:16:42,511  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:16:42,995  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:16:43,463  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:16:43,974  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:16:44,570  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:16:45,134  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:16:45,664  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:16:46,223  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:16:46,764  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:16:46,766  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 19:16:47,482  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:16:47,483  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 19:16:47,954  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:16:48,573  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:16:49,235  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:16:49,902  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:16:50,512  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:16:51,010  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:16:51,527  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:16:52,041  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:16:52,606  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:16:53,231  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:16:53,234  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 19:16:53,235  INFO      No new articles to process.
+2026-07-03 19:16:53,236  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 19:16:53,272  INFO      Loaded 5 themes covering 6 distinct sectors.
+2026-07-03 19:16:53,294  INFO      Processing 3 client(s)...
+2026-07-03 19:16:53,337  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 19:16:53,362  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 19:16:53,387  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Investment Boom', 'Regulatory and Geopolitical Pressures', 'IPO and Market Dynamics']
+2026-07-03 19:16:53,388  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-07-03 19:16:53,389  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 19:16:58,928  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:16:59,040  INFO        [AB345678] outlook generated (3 drivers).
+2026-07-03 19:17:01,530  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:17:01,569  INFO        [CD901234] outlook generated (3 drivers).
+2026-07-03 19:17:05,140  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:17:05,180  INFO        [EF567890] outlook generated (3 drivers).
+2026-07-03 19:17:05,181  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 19:17:05,182  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 19:28:51,034  INFO      Database tables created.
+2026-07-03 19:32:47,167  INFO      
++==========================================================+
+2026-07-03 19:32:47,168  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 14:02:47 UTC  |
+2026-07-03 19:32:47,170  INFO      +==========================================================+
+
+2026-07-03 19:32:47,171  INFO      ============================================================
+2026-07-03 19:32:47,172  INFO      STEP 1 - INGESTION  START
+2026-07-03 19:32:47,173  INFO      ============================================================
+2026-07-03 19:32:47,205  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 19:32:48,523  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:32:48,526  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 19:32:49,522  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:32:49,743  INFO        >> DB insert  id=1  title='NVIDIA surpasses $3 trillion market cap on AI chip dema...'
+2026-07-03 19:32:51,025  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:32:51,032  INFO        >> DB insert  id=2  title='Federal Reserve holds rates steady, hints at September ...'
+2026-07-03 19:32:52,610  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:32:52,613  INFO        >> DB insert  id=3  title='Apple unveils AI-powered iPhone 17 lineup at WWDC 2026...'
+2026-07-03 19:32:53,735  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:32:53,741  INFO        >> DB insert  id=4  title='Oil prices drop 4% as OPEC+ agrees to increase output q...'
+2026-07-03 19:32:54,801  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:32:54,807  INFO        >> DB insert  id=5  title='Microsoft Azure cloud revenue up 35% YoY, beating estim...'
+2026-07-03 19:32:56,024  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:32:56,030  INFO        >> DB insert  id=6  title='Tesla Q1 deliveries miss expectations amid pricing pres...'
+2026-07-03 19:32:57,360  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:32:57,363  INFO        >> DB insert  id=7  title='Semiconductor shortage eases as TSMC expands Arizona fa...'
+2026-07-03 19:32:58,382  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:32:58,387  INFO        >> DB insert  id=8  title='JPMorgan warns of recession risk as yield curve inverts...'
+2026-07-03 19:32:59,991  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:32:59,995  INFO        >> DB insert  id=9  title='Amazon acquires AI startup Adept for $1.2 billion...'
+2026-07-03 19:33:01,248  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:33:01,251  INFO        >> DB insert  id=10  title='Renewable energy stocks rally on new IRA extension prop...'
+2026-07-03 19:33:01,253  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 19:33:02,336  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:33:02,339  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 19:33:03,487  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:33:04,743  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:33:06,400  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:33:07,524  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:33:08,750  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:33:09,970  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:33:11,333  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:33:12,608  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:33:13,407  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:33:14,179  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:33:14,205  INFO      
+STEP 1 DONE -> 10 new articles ingested
+2026-07-03 19:33:14,207  INFO      ============================================================
+2026-07-03 19:33:14,207  INFO      STEP 2 - AI PROCESSING  START
+2026-07-03 19:33:14,208  INFO      ============================================================
+2026-07-03 19:33:15,178  INFO      Processing 10 articles ...
+2026-07-03 19:33:15,179  INFO      
+  Article [1]: NVIDIA surpasses $3 trillion market cap on AI chip demand su...
+2026-07-03 19:33:17,942  INFO      Retrying request to /chat/completions in 0.399657 seconds
+2026-07-03 19:33:18,514  INFO      Retrying request to /chat/completions in 0.830419 seconds
+2026-07-03 19:33:19,482  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:19,483  INFO        -> 0 market events found
+2026-07-03 19:33:19,484  INFO      
+  Article [2]: Federal Reserve holds rates steady, hints at September cut...
+2026-07-03 19:33:19,602  INFO      Retrying request to /chat/completions in 0.393004 seconds
+2026-07-03 19:33:20,093  INFO      Retrying request to /chat/completions in 0.808751 seconds
+2026-07-03 19:33:21,007  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:21,008  INFO        -> 0 market events found
+2026-07-03 19:33:21,031  INFO      
+  Article [3]: Apple unveils AI-powered iPhone 17 lineup at WWDC 2026...
+2026-07-03 19:33:21,130  INFO      Retrying request to /chat/completions in 0.468424 seconds
+2026-07-03 19:33:21,717  INFO      Retrying request to /chat/completions in 0.985742 seconds
+2026-07-03 19:33:22,809  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:22,810  INFO        -> 0 market events found
+2026-07-03 19:33:22,812  INFO      
+  Article [4]: Oil prices drop 4% as OPEC+ agrees to increase output quotas...
+2026-07-03 19:33:22,918  INFO      Retrying request to /chat/completions in 0.455069 seconds
+2026-07-03 19:33:23,527  INFO      Retrying request to /chat/completions in 0.949426 seconds
+2026-07-03 19:33:24,686  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:24,689  INFO        -> 0 market events found
+2026-07-03 19:33:24,693  INFO      
+  Article [5]: Microsoft Azure cloud revenue up 35% YoY, beating estimates...
+2026-07-03 19:33:24,842  INFO      Retrying request to /chat/completions in 0.443890 seconds
+2026-07-03 19:33:25,397  INFO      Retrying request to /chat/completions in 0.873428 seconds
+2026-07-03 19:33:26,368  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:26,368  INFO        -> 0 market events found
+2026-07-03 19:33:26,375  INFO      
+  Article [6]: Tesla Q1 deliveries miss expectations amid pricing pressure...
+2026-07-03 19:33:26,490  INFO      Retrying request to /chat/completions in 0.375502 seconds
+2026-07-03 19:33:27,038  INFO      Retrying request to /chat/completions in 0.925235 seconds
+2026-07-03 19:33:28,059  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:28,060  INFO        -> 0 market events found
+2026-07-03 19:33:28,062  INFO      
+  Article [7]: Semiconductor shortage eases as TSMC expands Arizona fab cap...
+2026-07-03 19:33:28,189  INFO      Retrying request to /chat/completions in 0.478312 seconds
+2026-07-03 19:33:28,785  INFO      Retrying request to /chat/completions in 0.872984 seconds
+2026-07-03 19:33:29,780  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:29,782  INFO        -> 0 market events found
+2026-07-03 19:33:29,785  INFO      
+  Article [8]: JPMorgan warns of recession risk as yield curve inverts furt...
+2026-07-03 19:33:29,880  INFO      Retrying request to /chat/completions in 0.434140 seconds
+2026-07-03 19:33:30,468  INFO      Retrying request to /chat/completions in 0.902406 seconds
+2026-07-03 19:33:31,542  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:31,545  INFO        -> 0 market events found
+2026-07-03 19:33:31,552  INFO      
+  Article [9]: Amazon acquires AI startup Adept for $1.2 billion...
+2026-07-03 19:33:31,670  INFO      Retrying request to /chat/completions in 0.442881 seconds
+2026-07-03 19:33:32,275  INFO      Retrying request to /chat/completions in 0.818249 seconds
+2026-07-03 19:33:33,212  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:33,213  INFO        -> 0 market events found
+2026-07-03 19:33:33,219  INFO      
+  Article [10]: Renewable energy stocks rally on new IRA extension proposals...
+2026-07-03 19:33:33,345  INFO      Retrying request to /chat/completions in 0.427270 seconds
+2026-07-03 19:33:33,859  INFO      Retrying request to /chat/completions in 0.768241 seconds
+2026-07-03 19:33:34,750  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:33:34,759  INFO        -> 0 market events found
+2026-07-03 19:33:34,779  INFO      No market events extracted.
+2026-07-03 19:33:34,782  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 19:33:34,871  WARNING   No themes found. Run step 2 first.
+2026-07-03 19:33:34,872  INFO      [Step 3] Done. 0 client(s), 0 theme match(es).
+2026-07-03 19:33:34,873  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 19:33:39,361  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:33:39,531  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-03 19:33:42,086  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:33:42,272  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-03 19:33:43,917  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:33:43,977  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-03 19:33:43,979  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 19:33:43,980  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 19:40:27,734  INFO      
++==========================================================+
+2026-07-03 19:40:27,739  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 14:10:27 UTC  |
+2026-07-03 19:40:27,741  INFO      +==========================================================+
+
+2026-07-03 19:40:27,742  INFO      ============================================================
+2026-07-03 19:40:27,744  INFO      STEP 1 - INGESTION  START
+2026-07-03 19:40:27,746  INFO      ============================================================
+2026-07-03 19:40:27,788  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 19:40:29,621  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:40:29,624  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 19:40:30,710  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:40:31,808  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:40:32,741  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:40:33,726  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:40:34,483  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:40:35,255  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:40:36,386  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:40:37,183  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:40:38,139  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:40:39,519  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:40:39,524  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 19:40:40,472  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:40:40,473  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 19:40:41,261  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:40:42,030  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:40:42,776  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:40:43,666  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:40:44,495  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:40:45,318  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:40:46,463  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:40:47,227  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:40:48,031  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:40:48,983  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:40:48,987  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 19:40:48,988  INFO      No new articles to process.
+2026-07-03 19:40:48,989  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 19:40:49,052  WARNING   No themes found. Run step 2 first.
+2026-07-03 19:40:49,055  INFO      [Step 3] Done. 0 client(s), 0 theme match(es).
+2026-07-03 19:40:49,056  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 19:40:55,299  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:40:55,672  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-03 19:40:57,697  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:40:57,767  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-03 19:40:59,357  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:40:59,415  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-03 19:40:59,417  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 19:40:59,418  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 19:48:23,849  INFO      
++==========================================================+
+2026-07-03 19:48:23,852  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 14:18:23 UTC  |
+2026-07-03 19:48:23,852  INFO      +==========================================================+
+
+2026-07-03 19:48:23,853  INFO      ============================================================
+2026-07-03 19:48:23,854  INFO      STEP 1 - INGESTION  START
+2026-07-03 19:48:23,855  INFO      ============================================================
+2026-07-03 19:48:23,882  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 19:48:25,136  WARNING     Live fetch failed: HTTPSConnectionPool(host='finance.yahoo.com', port=443): Max retries exceeded with url: /news/rssindex (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:48:25,139  INFO        Processing 10 / 10 entries from Yahoo Finance
+2026-07-03 19:48:25,719  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:48:26,490  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:48:27,197  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:48:27,960  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:48:28,756  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:48:29,705  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:48:30,614  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:48:31,297  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:48:31,931  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:48:32,571  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:48:32,575  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 19:48:33,392  WARNING     Live fetch failed: HTTPSConnectionPool(host='feeds.finance.yahoo.com', port=443): Max retries exceeded with url: /rss/2.0/headline?region=US&lang=en-US (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)'))) – using mock data for dev/demo
+2026-07-03 19:48:33,393  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 19:48:34,439  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:48:35,270  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:48:35,917  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:48:36,617  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:48:37,226  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:48:38,191  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:48:38,949  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:48:39,697  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:48:40,355  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:48:41,022  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:48:41,035  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-03 19:48:41,035  INFO      No new articles to process.
+2026-07-03 19:48:41,036  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 19:48:41,087  WARNING   No themes found. Run step 2 first.
+2026-07-03 19:48:41,088  INFO      [Step 3] Done. 0 client(s), 0 theme match(es).
+2026-07-03 19:48:41,089  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 19:48:46,514  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:48:46,643  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-03 19:48:47,769  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:48:47,812  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-03 19:48:49,011  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:48:49,047  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-03 19:48:49,052  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 19:48:49,053  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 19:51:48,459  INFO      
++==========================================================+
+2026-07-03 19:51:48,461  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 14:21:48 UTC  |
+2026-07-03 19:51:48,462  INFO      +==========================================================+
+
+2026-07-03 19:51:48,462  INFO      ============================================================
+2026-07-03 19:51:48,463  INFO      STEP 1 - INGESTION  START
+2026-07-03 19:51:48,463  INFO      ============================================================
+2026-07-03 19:51:48,479  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 19:51:49,704  INFO        Raw XML saved -> yahoo_finance_20260703_142148.xml  (24175 bytes)
+2026-07-03 19:51:49,774  INFO        Parsed 42 entries
+2026-07-03 19:51:49,781  INFO        Processing 10 / 42 entries from Yahoo Finance
+2026-07-03 19:51:50,767  INFO        >> saved  retail_giant_exits_us_fashion_after_multi_million_dollar_scandal__27add60f.json
+2026-07-03 19:51:51,042  INFO        >> DB insert  id=11  title='Retail giant exits U.S. fashion after multi-million-dol...'
+2026-07-03 19:51:51,830  INFO        >> saved  what_makes_visa_v_a_lucrative_investment__a8c6587b.json
+2026-07-03 19:51:51,837  INFO        >> DB insert  id=12  title='What Makes Visa (V) a Lucrative Investment?...'
+2026-07-03 19:51:52,622  INFO        >> saved  american_bitcoin_conducts_reverse_stock_split_to_avoid_delisting__eae137ff.json
+2026-07-03 19:51:52,626  INFO        >> DB insert  id=13  title='American Bitcoin Conducts Reverse Stock Split To Avoid ...'
+2026-07-03 19:51:53,506  INFO        >> saved  dow_jones_futures_fall_techs_rise_after_tesla_sandisk_ai_stocks_dive_apple_robin__a9942e6e.json
+2026-07-03 19:51:53,517  INFO        >> DB insert  id=14  title='Dow Jones Futures Fall Techs Rise After Tesla, Sandisk,...'
+2026-07-03 19:51:55,455  INFO        >> saved  wall_street_sees_huge_upside_as_seabridge_gold_sa_builds_for_long_term__ae1d2b06.json
+2026-07-03 19:51:55,461  INFO        >> DB insert  id=15  title='Wall Street Sees Huge Upside As Seabridge Gold (SA) Bui...'
+2026-07-03 19:51:56,464  INFO        >> saved  kiewit_receives_lntp_for_glenfarnes_texas_lng_export_terminal__6af72e0f.json
+2026-07-03 19:51:56,468  INFO        >> DB insert  id=16  title='Kiewit receives LNTP for Glenfarne’s Texas LNG export t...'
+2026-07-03 19:51:57,381  INFO        >> saved  bitmine_immersion_bmnr_close_to_reaching_5_ethereum_ownership_milestone__2a5756d3.json
+2026-07-03 19:51:57,386  INFO        >> DB insert  id=17  title='Bitmine Immersion (BMNR) Close To Reaching 5% Ethereum ...'
+2026-07-03 19:51:58,294  INFO        >> saved  vaxcyte_inc_pcvx_is_a_hidden_multibagger_stock_to_buy_now__ae7dc2d1.json
+2026-07-03 19:51:58,299  INFO        >> DB insert  id=18  title='Vaxcyte Inc (PCVX) Is A Hidden Multibagger Stock To Buy...'
+2026-07-03 19:51:59,164  INFO        >> saved  structure_therapeutics_gpcr_is_a_hidden_biotech_multibagger_stock_to_buy_now__5fc6713e.json
+2026-07-03 19:51:59,169  INFO        >> DB insert  id=19  title='Structure Therapeutics (GPCR) Is A Hidden Biotech Multi...'
+2026-07-03 19:52:00,007  INFO        >> saved  a_500_million_funding_deal_could_make_mineralys_therapeutics_mlys_stock_a_multib__8463e6be.json
+2026-07-03 19:52:00,018  INFO        >> DB insert  id=20  title='A $500 Million Funding Deal Could Make Mineralys Therap...'
+2026-07-03 19:52:00,025  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 19:52:01,443  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-03 19:52:01,447  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 19:52:02,229  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 19:52:02,943  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 19:52:03,656  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 19:52:04,310  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 19:52:04,958  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 19:52:05,683  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 19:52:06,369  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 19:52:06,998  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 19:52:07,650  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 19:52:08,316  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 19:52:08,340  INFO      
+STEP 1 DONE -> 10 new articles ingested
+2026-07-03 19:52:08,342  INFO      ============================================================
+2026-07-03 19:52:08,343  INFO      STEP 2 - AI PROCESSING  START
+2026-07-03 19:52:08,344  INFO      ============================================================
+2026-07-03 19:52:09,127  INFO      Processing 10 articles ...
+2026-07-03 19:52:09,128  INFO      
+  Article [11]: Retail giant exits U.S. fashion after multi-million-dollar s...
+2026-07-03 19:52:12,030  INFO      Retrying request to /chat/completions in 0.381122 seconds
+2026-07-03 19:52:12,475  INFO      Retrying request to /chat/completions in 0.899547 seconds
+2026-07-03 19:52:13,410  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:13,411  INFO        -> 0 market events found
+2026-07-03 19:52:13,412  INFO      
+  Article [12]: What Makes Visa (V) a Lucrative Investment?...
+2026-07-03 19:52:13,451  INFO      Retrying request to /chat/completions in 0.431029 seconds
+2026-07-03 19:52:13,926  INFO      Retrying request to /chat/completions in 0.842298 seconds
+2026-07-03 19:52:14,810  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:14,811  INFO        -> 0 market events found
+2026-07-03 19:52:14,827  INFO      
+  Article [13]: American Bitcoin Conducts Reverse Stock Split To Avoid Delis...
+2026-07-03 19:52:14,878  INFO      Retrying request to /chat/completions in 0.454131 seconds
+2026-07-03 19:52:15,368  INFO      Retrying request to /chat/completions in 0.829278 seconds
+2026-07-03 19:52:16,257  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:16,259  INFO        -> 0 market events found
+2026-07-03 19:52:16,263  INFO      
+  Article [14]: Dow Jones Futures Fall Techs Rise After Tesla, Sandisk, AI S...
+2026-07-03 19:52:16,317  INFO      Retrying request to /chat/completions in 0.418342 seconds
+2026-07-03 19:52:16,779  INFO      Retrying request to /chat/completions in 0.872642 seconds
+2026-07-03 19:52:17,684  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:17,685  INFO        -> 0 market events found
+2026-07-03 19:52:17,687  INFO      
+  Article [15]: Wall Street Sees Huge Upside As Seabridge Gold (SA) Builds F...
+2026-07-03 19:52:17,727  INFO      Retrying request to /chat/completions in 0.399027 seconds
+2026-07-03 19:52:18,166  INFO      Retrying request to /chat/completions in 0.907558 seconds
+2026-07-03 19:52:19,107  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:19,108  INFO        -> 0 market events found
+2026-07-03 19:52:19,111  INFO      
+  Article [16]: Kiewit receives LNTP for Glenfarne’s Texas LNG export termin...
+2026-07-03 19:52:19,173  INFO      Retrying request to /chat/completions in 0.403068 seconds
+2026-07-03 19:52:19,608  INFO      Retrying request to /chat/completions in 0.953695 seconds
+2026-07-03 19:52:20,597  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:20,598  INFO        -> 0 market events found
+2026-07-03 19:52:20,601  INFO      
+  Article [17]: Bitmine Immersion (BMNR) Close To Reaching 5% Ethereum Owner...
+2026-07-03 19:52:20,657  INFO      Retrying request to /chat/completions in 0.483875 seconds
+2026-07-03 19:52:21,206  INFO      Retrying request to /chat/completions in 0.922518 seconds
+2026-07-03 19:52:22,209  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:22,212  INFO        -> 0 market events found
+2026-07-03 19:52:22,218  INFO      
+  Article [18]: Vaxcyte Inc (PCVX) Is A Hidden Multibagger Stock To Buy Now...
+2026-07-03 19:52:22,267  INFO      Retrying request to /chat/completions in 0.478628 seconds
+2026-07-03 19:52:22,780  INFO      Retrying request to /chat/completions in 0.991447 seconds
+2026-07-03 19:52:23,854  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:23,855  INFO        -> 0 market events found
+2026-07-03 19:52:23,857  INFO      
+  Article [19]: Structure Therapeutics (GPCR) Is A Hidden Biotech Multibagge...
+2026-07-03 19:52:23,903  INFO      Retrying request to /chat/completions in 0.429067 seconds
+2026-07-03 19:52:24,390  INFO      Retrying request to /chat/completions in 0.761048 seconds
+2026-07-03 19:52:25,199  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:25,201  INFO        -> 0 market events found
+2026-07-03 19:52:25,203  INFO      
+  Article [20]: A $500 Million Funding Deal Could Make Mineralys Therapeutic...
+2026-07-03 19:52:25,248  INFO      Retrying request to /chat/completions in 0.388327 seconds
+2026-07-03 19:52:25,703  INFO      Retrying request to /chat/completions in 0.964514 seconds
+2026-07-03 19:52:26,721  ERROR       Event extraction failed: Connection error.
+2026-07-03 19:52:26,723  INFO        -> 0 market events found
+2026-07-03 19:52:26,733  INFO      No market events extracted.
+2026-07-03 19:52:26,734  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 19:52:26,788  WARNING   No themes found. Run step 2 first.
+2026-07-03 19:52:26,789  INFO      [Step 3] Done. 0 client(s), 0 theme match(es).
+2026-07-03 19:52:26,790  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 19:52:29,203  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:52:29,346  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-03 19:52:30,885  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:52:30,930  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-03 19:52:32,354  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 19:52:32,383  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-03 19:52:32,385  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 19:52:32,386  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-03 20:00:07,794  INFO      
++==========================================================+
+2026-07-03 20:00:07,798  INFO      |  FINANCE PIPELINE RUN  -  2026-07-03 14:30:07 UTC  |
+2026-07-03 20:00:07,799  INFO      +==========================================================+
+
+2026-07-03 20:00:07,800  INFO      ============================================================
+2026-07-03 20:00:07,802  INFO      STEP 1 - INGESTION  START
+2026-07-03 20:00:07,803  INFO      ============================================================
+2026-07-03 20:00:07,875  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-03 20:00:09,852  INFO        Raw XML saved -> yahoo_finance_20260703_143007.xml  (24131 bytes)
+2026-07-03 20:00:09,982  INFO        Parsed 42 entries
+2026-07-03 20:00:09,997  INFO        Processing 10 / 42 entries from Yahoo Finance
+2026-07-03 20:00:12,060  INFO        >> saved  retail_giant_exits_us_fashion_after_multi_million_dollar_scandal__27add60f.json
+2026-07-03 20:00:13,878  INFO        >> saved  vltava_fund_sold_lam_research_due_lrcx_to_overvaluation__59880a42.json
+2026-07-03 20:00:13,908  INFO        >> DB insert  id=21  title='Vltava Fund Sold Lam Research Due (LRCX) to Overvaluati...'
+2026-07-03 20:00:14,680  INFO        >> saved  what_makes_visa_v_a_lucrative_investment__a8c6587b.json
+2026-07-03 20:00:15,419  INFO        >> saved  alumni_stay_proud_but_grow_distant_as_b_school_grads_demand_more__721ac799.json
+2026-07-03 20:00:15,424  INFO        >> DB insert  id=22  title='Alumni Stay Proud But Grow Distant As B-School Grads De...'
+2026-07-03 20:00:16,111  INFO        >> saved  american_bitcoin_conducts_reverse_stock_split_to_avoid_delisting__eae137ff.json
+2026-07-03 20:00:16,936  INFO        >> saved  vintaes_restructuring_plan_for_bodegas_riojanas_receives_judicial_approval__1aa0890e.json
+2026-07-03 20:00:16,943  INFO        >> DB insert  id=23  title='Vintae’s restructuring plan for Bodegas Riojanas receiv...'
+2026-07-03 20:00:17,782  INFO        >> saved  boston_scientifics_quarterly_earnings_preview_what_you_need_to_know__ef64bc6e.json
+2026-07-03 20:00:17,785  INFO        >> DB insert  id=24  title='Boston Scientific’s Quarterly Earnings Preview: What Yo...'
+2026-07-03 20:00:18,443  INFO        >> saved  google_loses_fight_against_record_41_billion_eu_antitrust_fine__fad627a4.json
+2026-07-03 20:00:18,447  INFO        >> DB insert  id=25  title='Google loses fight against record €4.1 billion EU antit...'
+2026-07-03 20:00:19,251  INFO        >> saved  is_mp_materials_corp_mp_among_the_most_promising_ev_stocks_to_buy_according_to_a__05eecf23.json
+2026-07-03 20:00:19,257  INFO        >> DB insert  id=26  title='Is MP Materials Corp. (MP) Among the Most Promising EV ...'
+2026-07-03 20:00:19,890  INFO        >> saved  li_auto_inc_li_launches_the_all_new_li_l8_five_seat_flagship_suv__d94416ab.json
+2026-07-03 20:00:19,893  INFO        >> DB insert  id=27  title='Li Auto Inc. (LI) Launches the all-new Li L8 five-seat ...'
+2026-07-03 20:00:19,894  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-03 20:00:21,329  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-03 20:00:21,337  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-03 20:00:22,089  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-03 20:00:23,094  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-03 20:00:23,846  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-03 20:00:27,867  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-03 20:00:28,533  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-03 20:00:29,183  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-03 20:00:29,833  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-03 20:00:30,457  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-03 20:00:31,088  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-03 20:00:31,712  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-03 20:00:31,721  INFO      
+STEP 1 DONE -> 7 new articles ingested
+2026-07-03 20:00:31,722  INFO      ============================================================
+2026-07-03 20:00:31,722  INFO      STEP 2 - AI PROCESSING  START
+2026-07-03 20:00:31,723  INFO      ============================================================
+2026-07-03 20:00:31,983  INFO      Processing 7 articles ...
+2026-07-03 20:00:31,984  INFO      
+  Article [21]: Vltava Fund Sold Lam Research Due (LRCX) to Overvaluation...
+2026-07-03 20:00:37,127  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:37,172  INFO        -> 1 market events found
+2026-07-03 20:00:37,183  INFO      
+  Article [22]: Alumni Stay Proud But Grow Distant As B-School Grads Demand ...
+2026-07-03 20:00:38,075  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:38,082  INFO        -> 0 market events found
+2026-07-03 20:00:38,113  INFO      
+  Article [23]: Vintae’s restructuring plan for Bodegas Riojanas receives ju...
+2026-07-03 20:00:39,676  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:39,679  INFO        -> 1 market events found
+2026-07-03 20:00:39,682  INFO      
+  Article [24]: Boston Scientific’s Quarterly Earnings Preview: What You Nee...
+2026-07-03 20:00:40,618  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:40,631  INFO        -> 0 market events found
+2026-07-03 20:00:40,634  INFO      
+  Article [25]: Google loses fight against record €4.1 billion EU antitrust ...
+2026-07-03 20:00:42,349  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:42,354  INFO        -> 1 market events found
+2026-07-03 20:00:42,359  INFO      
+  Article [26]: Is MP Materials Corp. (MP) Among the Most Promising EV Stock...
+2026-07-03 20:00:43,154  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:43,158  INFO        -> 0 market events found
+2026-07-03 20:00:43,160  INFO      
+  Article [27]: Li Auto Inc. (LI) Launches the all-new Li L8 five-seat flags...
+2026-07-03 20:00:44,382  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:44,388  INFO        -> 1 market events found
+2026-07-03 20:00:44,395  INFO      
+  Clustering 4 events into trends ...
+2026-07-03 20:00:48,425  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:48,444  INFO        -> 3 trends identified
+2026-07-03 20:00:48,488  INFO      
+  Distilling 3 trends into investment themes ...
+2026-07-03 20:00:53,775  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:53,780  INFO        -> 3 themes identified
+2026-07-03 20:00:53,854  INFO      
+============================================================
+2026-07-03 20:00:53,855  INFO        THEMES STORED: 3
+2026-07-03 20:00:53,863  INFO      
+  > THEME: Corporate and Regulatory Adjustments
+2026-07-03 20:00:53,864  INFO          Companies are increasingly facing either structural changes or heightened regulatory scrutiny, neces
+2026-07-03 20:00:53,868  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.80
+2026-07-03 20:00:53,872  INFO          - Sector: Industrials                     Sentiment: Mixed       Confidence: 0.60
+2026-07-03 20:00:53,877  INFO      
+  > THEME: Electric Vehicles Evolution
+2026-07-03 20:00:53,878  INFO          The electric vehicle market continues to expand with new model launches, signifying robust industry 
+2026-07-03 20:00:53,881  INFO          - Sector: Automotive                      Sentiment: Positive    Confidence: 0.90
+2026-07-03 20:00:53,882  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.70
+2026-07-03 20:00:53,886  INFO      
+  > THEME: Valuation Reevaluation in Technology
+2026-07-03 20:00:53,890  INFO          As the tech industry faces scrutiny over high asset valuations, investment funds are exhibiting caut
+2026-07-03 20:00:53,897  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.75
+2026-07-03 20:00:53,901  INFO          - Sector: Financials                      Sentiment: Neutral     Confidence: 0.60
+2026-07-03 20:00:53,904  INFO      ============================================================
+2026-07-03 20:00:53,906  INFO      
+STEP 2 DONE
+2026-07-03 20:00:53,917  INFO      [Step 3] Matching client holdings to themes...
+2026-07-03 20:00:54,081  INFO      Loaded 3 themes covering 5 distinct sectors.
+2026-07-03 20:00:54,131  INFO      Processing 3 client(s)...
+2026-07-03 20:00:54,246  INFO        [AB345678] Arjun Mehta -> 2 theme(s) matched: ['Corporate and Regulatory Adjustments', 'Valuation Reevaluation in Technology']
+2026-07-03 20:00:54,337  INFO        [CD901234] Priya Sharma -> 2 theme(s) matched: ['Corporate and Regulatory Adjustments', 'Valuation Reevaluation in Technology']
+2026-07-03 20:00:54,381  INFO        [EF567890] Rahul Gupta -> 2 theme(s) matched: ['Corporate and Regulatory Adjustments', 'Valuation Reevaluation in Technology']
+2026-07-03 20:00:54,385  INFO      [Step 3] Done. 3 client(s), 6 theme match(es).
+2026-07-03 20:00:54,386  INFO      [Step 5] Generating client market outlooks...
+2026-07-03 20:00:58,011  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:00:58,120  INFO        [AB345678] outlook generated (2 drivers).
+2026-07-03 20:01:00,466  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:01:00,530  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-03 20:01:02,833  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-03 20:01:02,885  INFO        [EF567890] outlook generated (2 drivers).
+2026-07-03 20:01:02,886  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-03 20:01:02,887  INFO      
+[OK]  Pipeline run completed successfully.
+
