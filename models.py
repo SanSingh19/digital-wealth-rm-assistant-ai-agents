@@ -334,7 +334,7 @@ class Meeting(Base):
 
     client_id = Column(
         String,
-        ForeignKey("clients.client_code"),
+        ForeignKey("clients.id"),
         nullable=False
     )
 
@@ -363,9 +363,9 @@ class ClientPersonalDetails(Base):
 
     id = Column(Integer, primary_key=True)
 
-    client_code = Column(
+    client_id = Column(
         String(32),
-        ForeignKey("clients.client_code"),
+        ForeignKey("clients.id"),
         unique=True,
         nullable=False
     )
@@ -398,7 +398,7 @@ class ClientMeetingSummary(Base):
 
     client_id = Column(
         String,
-        ForeignKey("clients.client_code"),
+        ForeignKey("clients.id"),
         nullable=False
     )
 
@@ -520,7 +520,7 @@ class ClientPreference(Base):
     __tablename__ = "client_preferences"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(String, ForeignKey("clients.client_code"), nullable=False)
+    client_id = Column(String, ForeignKey("clients.id"), nullable=False)
     security_type = Column(String(32), nullable=False)
     bandwidth_min = Column(Float)
     bandwidth_max = Column(Float)
@@ -533,7 +533,7 @@ class ClientRiskOverview(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     client_id = Column(
         String,
-        ForeignKey("clients.client_code"),
+        ForeignKey("clients.id"),
         nullable=False
     )
     concentration_pct = Column(String(10))

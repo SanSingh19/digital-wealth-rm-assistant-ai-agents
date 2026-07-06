@@ -32,8 +32,8 @@ from config.settings import DATABASE_URL
 # ---------------- Relationship Managers -----------------------
 
 RMS = [
-    {"id": 1, "rm_code": "RM001", "name": "John Smith"},
-    {"id": 2, "rm_code": "RM002", "name": "Sarah Lee"},
+    {"id": 1001, "rm_code": "RM001", "name": "John Smith"},
+    {"id": 1002, "rm_code": "RM002", "name": "Sarah Lee"},
 ]
 
 # ---------------- SectorMasters -------------------------------
@@ -516,7 +516,7 @@ CLIENTS = [
         "name": "Arjun Mehta",
         "risk": "Aggressive",
         "strategy": "Growth",
-        "rm_id": 1,
+        "rm_id": 1001,
         "age":50,
         "phone":"+91-9923456789",
         "profession":"Entrepreneur (TECH)",
@@ -585,7 +585,7 @@ CLIENTS = [
         "name":"Priya Sharma",
         "risk":"Conservative",
         "strategy":"Income",
-        "rm_id":1,
+        "rm_id":1001,
         "age":40,
         "phone":"+91-9812345678",
         "profession":"AI Engineer",
@@ -650,7 +650,7 @@ CLIENTS = [
         "name":"Rahul Gupta",
         "risk":"Moderate",
         "strategy":"Balanced",
-        "rm_id":2,
+        "rm_id":1002,
         "age":60,
         "phone":"+91-9876543210",
         "profession":"Retired Industrialist",
@@ -887,7 +887,7 @@ def seed_all_clients():
 
             session.add(
                 ClientPersonalDetails(
-                    client_code=client.client_code,
+                    client_id=client.id,
                     marital_status=pd["marital_status"],
                     kids_details=pd["kids_details"],
                     date_of_Birth=pd["date_of_Birth"],
@@ -904,7 +904,7 @@ def seed_all_clients():
             session.add(
                 Meeting(
                     rm_id=data["rm_id"],
-                    client_id=client.client_code,
+                    client_id=client.id,
                     title=meeting["title"],
                     date=date.today(),
                     time=time(10,30),
@@ -920,7 +920,7 @@ def seed_all_clients():
             session.add(
                 ClientMeetingSummary(
                     rm_id=data["rm_id"],
-                    client_id=client.client_code,
+                    client_id=client.id,
                     main_discussion_points=summary["discussion_points"],
                     client_questions=summary["questions"],
                     last_meeting_date=date.today()
@@ -995,7 +995,7 @@ def seed_all_clients():
 
                 session.add(
                     ClientPreference(
-                        client_id=client.client_code,
+                        client_id=client.id,
                         security_type=security_type,
                         bandwidth_min=bw_min,
                         bandwidth_max=bw_max
@@ -1007,7 +1007,7 @@ def seed_all_clients():
 
             session.add(
                 ClientRiskOverview(
-                    client_id=client.client_code,
+                    client_id=client.id,
                     concentration_pct=risk["concentration_pct"],
                     concentration_asset=risk["concentration_asset"],
                     sharpe_ratio=risk["sharpe_ratio"],

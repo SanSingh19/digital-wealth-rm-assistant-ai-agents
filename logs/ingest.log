@@ -3175,3 +3175,318 @@ STEP 2 DONE
 2026-07-03 20:01:02,887  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-07-06 15:22:41,324  INFO      Database tables created.
+2026-07-06 15:23:56,855  INFO      
++==========================================================+
+2026-07-06 15:23:56,857  INFO      |  FINANCE PIPELINE RUN  -  2026-07-06 09:53:56 UTC  |
+2026-07-06 15:23:56,857  INFO      +==========================================================+
+
+2026-07-06 15:23:56,858  INFO      ============================================================
+2026-07-06 15:23:56,859  INFO      STEP 1 - INGESTION  START
+2026-07-06 15:23:56,860  INFO      ============================================================
+2026-07-06 15:23:56,885  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-06 15:23:58,192  INFO        Raw XML saved -> yahoo_finance_20260706_095356.xml  (27634 bytes)
+2026-07-06 15:23:58,315  INFO        Parsed 46 entries
+2026-07-06 15:23:58,322  INFO        Processing 10 / 46 entries from Yahoo Finance
+2026-07-06 15:23:59,125  INFO        >> saved  panesar_foods_adds_yps_shrink_wrapping_lines_at_west_midlands_site__e690063e.json
+2026-07-06 15:23:59,367  INFO        >> DB insert  id=1  title='Panesar Foods adds YPS shrink wrapping lines at West Mi...'
+2026-07-06 15:24:00,844  INFO        >> saved  dow_jones_futures_rise_nasdaq_set_to_reclaim_key_level_apple_spacex_sandisk_robi__a9942e6e.json
+2026-07-06 15:24:00,849  INFO        >> DB insert  id=2  title='Dow Jones Futures Rise, Nasdaq Set To Reclaim Key Level...'
+2026-07-06 15:24:01,569  INFO        >> saved  europes_pe_capital_consolidates_around_established_firms__7bfb4777.json
+2026-07-06 15:24:01,572  INFO        >> DB insert  id=3  title='Europe's PE capital consolidates around established fir...'
+2026-07-06 15:24:02,354  INFO        >> saved  stock_market_today_nasdaq_leads_sp_500_dow_futures_higher_after_long_holiday_wee__6f2dde28.json
+2026-07-06 15:24:02,366  INFO        >> DB insert  id=4  title='Stock market today: Nasdaq leads S&P 500, Dow futures h...'
+2026-07-06 15:24:03,141  INFO        >> saved  stocks_inch_up_as_oil_weighed_by_supply_while_earnings_loom__14f6aca1.json
+2026-07-06 15:24:03,144  INFO        >> DB insert  id=5  title='Stocks inch up as oil weighed by supply while earnings ...'
+2026-07-06 15:24:03,905  INFO        >> saved  this_ai_stock_just_joined_the_dow_jones_its_up_300_since_2023_and_history_says_t__679a7dae.json
+2026-07-06 15:24:03,909  INFO        >> DB insert  id=6  title='This AI Stock Just Joined the Dow Jones. It's Up 300% S...'
+2026-07-06 15:24:04,670  INFO        >> saved  oil_falls_by_more_than_1_after_opec_agrees_to_raise_output_targets__68eac680.json
+2026-07-06 15:24:04,677  INFO        >> DB insert  id=7  title='Oil falls by more than 1% after OPEC+ agrees to raise o...'
+2026-07-06 15:24:05,600  INFO        >> saved  easyjet_shares_jump_10_after_airline_backs_73_billion_castlelake_takeover__8df01016.json
+2026-07-06 15:24:05,604  INFO        >> DB insert  id=8  title='EasyJet shares jump 10% after airline backs $7.3 billio...'
+2026-07-06 15:24:06,782  INFO        >> saved  yen_pinned_near_40_year_lows_as_intervention_risks_mount__428d0ff7.json
+2026-07-06 15:24:06,789  INFO        >> DB insert  id=9  title='Yen pinned near 40-year lows as intervention risks moun...'
+2026-07-06 15:24:08,152  INFO        >> saved  the_strait_of_hormuz_has_reopened_why_that_might_be_a_problem_for_the_oil_market__a036d14d.json
+2026-07-06 15:24:08,156  INFO        >> DB insert  id=10  title='The Strait of Hormuz has reopened — why that might be a...'
+2026-07-06 15:24:08,157  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-06 15:24:09,288  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-06 15:24:09,293  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-06 15:24:10,408  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-06 15:24:10,412  INFO        >> DB insert  id=11  title='NVIDIA surpasses $3 trillion market cap on AI chip dema...'
+2026-07-06 15:24:11,693  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-06 15:24:11,707  INFO        >> DB insert  id=12  title='Federal Reserve holds rates steady, hints at September ...'
+2026-07-06 15:24:12,899  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-06 15:24:12,902  INFO        >> DB insert  id=13  title='Apple unveils AI-powered iPhone 17 lineup at WWDC 2026...'
+2026-07-06 15:24:13,952  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-06 15:24:13,957  INFO        >> DB insert  id=14  title='Oil prices drop 4% as OPEC+ agrees to increase output q...'
+2026-07-06 15:24:14,969  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-06 15:24:14,974  INFO        >> DB insert  id=15  title='Microsoft Azure cloud revenue up 35% YoY, beating estim...'
+2026-07-06 15:24:16,009  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-06 15:24:16,026  INFO        >> DB insert  id=16  title='Tesla Q1 deliveries miss expectations amid pricing pres...'
+2026-07-06 15:24:17,090  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-06 15:24:17,094  INFO        >> DB insert  id=17  title='Semiconductor shortage eases as TSMC expands Arizona fa...'
+2026-07-06 15:24:18,279  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-06 15:24:18,286  INFO        >> DB insert  id=18  title='JPMorgan warns of recession risk as yield curve inverts...'
+2026-07-06 15:24:19,490  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-06 15:24:19,494  INFO        >> DB insert  id=19  title='Amazon acquires AI startup Adept for $1.2 billion...'
+2026-07-06 15:24:20,632  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-06 15:24:20,648  INFO        >> DB insert  id=20  title='Renewable energy stocks rally on new IRA extension prop...'
+2026-07-06 15:24:20,668  INFO      
+STEP 1 DONE -> 20 new articles ingested
+2026-07-06 15:24:20,675  INFO      ============================================================
+2026-07-06 15:24:20,676  INFO      STEP 2 - AI PROCESSING  START
+2026-07-06 15:24:20,677  INFO      ============================================================
+2026-07-06 15:24:21,189  INFO      Processing 10 articles ...
+2026-07-06 15:24:21,189  INFO      
+  Article [1]: Panesar Foods adds YPS shrink wrapping lines at West Midland...
+2026-07-06 15:24:28,665  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:28,714  INFO        -> 1 market events found
+2026-07-06 15:24:28,730  INFO      
+  Article [2]: Dow Jones Futures Rise, Nasdaq Set To Reclaim Key Level; App...
+2026-07-06 15:24:34,348  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:34,435  INFO        -> 0 market events found
+2026-07-06 15:24:34,446  INFO      
+  Article [3]: Europe's PE capital consolidates around established firms...
+2026-07-06 15:24:35,079  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:35,083  INFO        -> 0 market events found
+2026-07-06 15:24:35,086  INFO      
+  Article [4]: Stock market today: Nasdaq leads S&P 500, Dow futures higher...
+2026-07-06 15:24:36,923  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:36,937  INFO        -> 0 market events found
+2026-07-06 15:24:36,940  INFO      
+  Article [5]: Stocks inch up as oil weighed by supply while earnings loom...
+2026-07-06 15:24:41,485  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:41,489  INFO        -> 0 market events found
+2026-07-06 15:24:41,492  INFO      
+  Article [6]: This AI Stock Just Joined the Dow Jones. It's Up 300% Since ...
+2026-07-06 15:24:42,188  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:42,192  INFO        -> 0 market events found
+2026-07-06 15:24:42,193  INFO      
+  Article [7]: Oil falls by more than 1% after OPEC+ agrees to raise output...
+2026-07-06 15:24:43,954  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:43,965  INFO        -> 2 market events found
+2026-07-06 15:24:43,975  INFO      
+  Article [8]: EasyJet shares jump 10% after airline backs $7.3 billion Cas...
+2026-07-06 15:24:44,985  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:44,993  INFO        -> 1 market events found
+2026-07-06 15:24:44,998  INFO      
+  Article [9]: Yen pinned near 40-year lows as intervention risks mount...
+2026-07-06 15:24:45,626  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:45,647  INFO        -> 0 market events found
+2026-07-06 15:24:45,650  INFO      
+  Article [10]: The Strait of Hormuz has reopened — why that might be a prob...
+2026-07-06 15:24:46,322  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:46,341  INFO        -> 0 market events found
+2026-07-06 15:24:46,344  INFO      
+  Clustering 4 events into trends ...
+2026-07-06 15:24:49,727  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:49,733  INFO        -> 3 trends identified
+2026-07-06 15:24:49,783  INFO      
+  Distilling 3 trends into investment themes ...
+2026-07-06 15:24:53,887  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:53,914  INFO        -> 3 themes identified
+2026-07-06 15:24:53,980  INFO      
+============================================================
+2026-07-06 15:24:53,981  INFO        THEMES STORED: 3
+2026-07-06 15:24:53,988  INFO      
+  > THEME: Energy Market Fluctuations
+2026-07-06 15:24:53,988  INFO          The oil market is experiencing notable fluctuations due to changes in output targets by OPEC+ and ge
+2026-07-06 15:24:53,991  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.80
+2026-07-06 15:24:53,994  INFO      
+  > THEME: Industrial Consolidation
+2026-07-06 15:24:53,995  INFO          The elevated activity in mergers and acquisitions signals a trend towards consolidation across vario
+2026-07-06 15:24:53,995  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.75
+2026-07-06 15:24:53,995  INFO          - Sector: Consumer Discretionary          Sentiment: Positive    Confidence: 0.70
+2026-07-06 15:24:54,004  INFO      
+  > THEME: Supply Chain Optimization
+2026-07-06 15:24:54,007  INFO          Enhancements in supply chain operations are picking up pace as companies invest in efficiency improv
+2026-07-06 15:24:54,011  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.80
+2026-07-06 15:24:54,015  INFO      ============================================================
+2026-07-06 15:24:54,017  INFO      
+STEP 2 DONE
+2026-07-06 15:24:54,018  INFO      [Step 3] Matching client holdings to themes...
+2026-07-06 15:24:54,109  INFO      Loaded 3 themes covering 3 distinct sectors.
+2026-07-06 15:24:54,147  INFO      Processing 3 client(s)...
+2026-07-06 15:24:54,179  INFO        [AB345678] Arjun Mehta -> 0 theme(s) matched: []
+2026-07-06 15:24:54,197  INFO        [CD901234] Priya Sharma -> 0 theme(s) matched: []
+2026-07-06 15:24:54,224  INFO        [EF567890] Rahul Gupta -> 0 theme(s) matched: []
+2026-07-06 15:24:54,225  INFO      [Step 3] Done. 3 client(s), 0 theme match(es).
+2026-07-06 15:24:54,226  INFO      [Step 5] Generating client market outlooks...
+2026-07-06 15:24:57,795  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:57,870  INFO        [AB345678] outlook generated (0 drivers).
+2026-07-06 15:24:58,949  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:24:58,995  INFO        [CD901234] outlook generated (0 drivers).
+2026-07-06 15:25:00,459  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:25:00,499  INFO        [EF567890] outlook generated (0 drivers).
+2026-07-06 15:25:00,501  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-06 15:25:00,502  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-06 15:27:05,703  INFO      
++==========================================================+
+2026-07-06 15:27:05,705  INFO      |  FINANCE PIPELINE RUN  -  2026-07-06 09:57:05 UTC  |
+2026-07-06 15:27:05,706  INFO      +==========================================================+
+
+2026-07-06 15:27:05,706  INFO      ============================================================
+2026-07-06 15:27:05,706  INFO      STEP 1 - INGESTION  START
+2026-07-06 15:27:05,707  INFO      ============================================================
+2026-07-06 15:27:05,721  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-06 15:27:06,890  INFO        Raw XML saved -> yahoo_finance_20260706_095705.xml  (29072 bytes)
+2026-07-06 15:27:06,959  INFO        Parsed 48 entries
+2026-07-06 15:27:06,970  INFO        Processing 10 / 48 entries from Yahoo Finance
+2026-07-06 15:27:07,714  INFO        >> saved  bdo_uk_and_bdo_ireland_finalise_merger_to_form_14bn_business__8c0a31da.json
+2026-07-06 15:27:07,962  INFO        >> DB insert  id=21  title='BDO UK and BDO Ireland finalise merger to form $1.4bn b...'
+2026-07-06 15:27:08,822  INFO        >> saved  indian_it_firms_face_muted_q1_as_ai_shift_weak_demand_weigh__49d57b90.json
+2026-07-06 15:27:08,828  INFO        >> DB insert  id=22  title='Indian IT firms face muted Q1 as AI shift, weak demand ...'
+2026-07-06 15:27:09,780  INFO        >> saved  stock_market_today_nasdaq_leads_sp_500_dow_futures_higher_after_long_holiday_wee__6f2dde28.json
+2026-07-06 15:27:10,698  INFO        >> saved  its_a_bull_market_wall_street_sees_more_upside_in_stocks_for_the_second_half_of___34e3c712.json
+2026-07-06 15:27:10,709  INFO        >> DB insert  id=23  title=''It's a bull market': Wall Street sees more upside in s...'
+2026-07-06 15:27:11,417  INFO        >> saved  dow_jones_futures_rise_nasdaq_set_to_reclaim_key_level_apple_spacex_sandisk_robi__a9942e6e.json
+2026-07-06 15:27:12,376  INFO        >> saved  after_surging_4885_is_sandisk_stock_still_a_buy_heres_what_history_says__21a1790f.json
+2026-07-06 15:27:12,381  INFO        >> DB insert  id=24  title='After Surging 4,885%, Is Sandisk Stock Still a Buy? Her...'
+2026-07-06 15:27:13,233  INFO        >> saved  europes_pe_capital_consolidates_around_established_firms__7bfb4777.json
+2026-07-06 15:27:13,996  INFO        >> saved  stocks_inch_up_as_oil_weighed_by_supply_while_earnings_loom__14f6aca1.json
+2026-07-06 15:27:14,801  INFO        >> saved  oil_falls_by_more_than_1_after_opec_agrees_to_raise_output_targets__68eac680.json
+2026-07-06 15:27:15,709  INFO        >> saved  easyjet_shares_jump_10_after_airline_backs_73_billion_castlelake_takeover__8df01016.json
+2026-07-06 15:27:15,710  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-06 15:27:16,761  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-06 15:27:16,768  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-06 15:27:17,962  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-06 15:27:18,766  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-06 15:27:19,651  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-06 15:27:20,724  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-06 15:27:21,507  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-06 15:27:22,269  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-06 15:27:23,269  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-06 15:27:24,209  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-06 15:27:25,357  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-06 15:27:26,205  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-06 15:27:26,228  INFO      
+STEP 1 DONE -> 4 new articles ingested
+2026-07-06 15:27:26,231  INFO      ============================================================
+2026-07-06 15:27:26,232  INFO      STEP 2 - AI PROCESSING  START
+2026-07-06 15:27:26,233  INFO      ============================================================
+2026-07-06 15:27:26,521  INFO      Processing 4 articles ...
+2026-07-06 15:27:26,522  INFO      
+  Article [21]: BDO UK and BDO Ireland finalise merger to form $1.4bn busine...
+2026-07-06 15:27:30,947  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:31,023  INFO        -> 1 market events found
+2026-07-06 15:27:31,041  INFO      
+  Article [22]: Indian IT firms face muted Q1 as AI shift, weak demand weigh...
+2026-07-06 15:27:31,834  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:31,839  INFO        -> 0 market events found
+2026-07-06 15:27:31,861  INFO      
+  Article [23]: 'It's a bull market': Wall Street sees more upside in stocks...
+2026-07-06 15:27:32,686  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:32,690  INFO        -> 0 market events found
+2026-07-06 15:27:32,693  INFO      
+  Article [24]: After Surging 4,885%, Is Sandisk Stock Still a Buy? Here's W...
+2026-07-06 15:27:33,502  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:33,506  INFO        -> 0 market events found
+2026-07-06 15:27:33,511  INFO      
+  Clustering 1 events into trends ...
+2026-07-06 15:27:34,808  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:34,820  INFO        -> 1 trends identified
+2026-07-06 15:27:34,843  INFO      
+  Distilling 1 trends into investment themes ...
+2026-07-06 15:27:38,697  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:38,707  INFO        -> 1 themes identified
+2026-07-06 15:27:38,806  INFO      
+============================================================
+2026-07-06 15:27:38,817  INFO        THEMES STORED: 4
+2026-07-06 15:27:38,828  INFO      
+  > THEME: Energy Market Fluctuations
+2026-07-06 15:27:38,830  INFO          The oil market is experiencing notable fluctuations due to changes in output targets by OPEC+ and ge
+2026-07-06 15:27:38,833  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.80
+2026-07-06 15:27:38,841  INFO      
+  > THEME: Industrial Consolidation
+2026-07-06 15:27:38,842  INFO          The elevated activity in mergers and acquisitions signals a trend towards consolidation across vario
+2026-07-06 15:27:38,843  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.75
+2026-07-06 15:27:38,843  INFO          - Sector: Consumer Discretionary          Sentiment: Positive    Confidence: 0.70
+2026-07-06 15:27:38,851  INFO      
+  > THEME: Supply Chain Optimization
+2026-07-06 15:27:38,853  INFO          Enhancements in supply chain operations are picking up pace as companies invest in efficiency improv
+2026-07-06 15:27:38,856  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.80
+2026-07-06 15:27:38,872  INFO      
+  > THEME: Global M&A Boom
+2026-07-06 15:27:38,874  INFO          The current phase of cross-border mergers and acquisitions signals a strong trend towards global con
+2026-07-06 15:27:38,876  INFO          - Sector: Financials                      Sentiment: Positive    Confidence: 0.90
+2026-07-06 15:27:38,878  INFO          - Sector: Industrials                     Sentiment: Positive    Confidence: 0.80
+2026-07-06 15:27:38,883  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.70
+2026-07-06 15:27:38,887  INFO      ============================================================
+2026-07-06 15:27:38,890  INFO      
+STEP 2 DONE
+2026-07-06 15:27:38,892  INFO      [Step 3] Matching client holdings to themes...
+2026-07-06 15:27:39,005  INFO      Loaded 4 themes covering 5 distinct sectors.
+2026-07-06 15:27:39,107  INFO      Processing 3 client(s)...
+2026-07-06 15:27:39,229  INFO        [AB345678] Arjun Mehta -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:27:39,330  INFO        [CD901234] Priya Sharma -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:27:39,390  INFO        [EF567890] Rahul Gupta -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:27:39,393  INFO      [Step 3] Done. 3 client(s), 3 theme match(es).
+2026-07-06 15:27:39,394  INFO      [Step 5] Generating client market outlooks...
+2026-07-06 15:27:44,622  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:44,731  INFO        [AB345678] outlook generated (1 drivers).
+2026-07-06 15:27:46,792  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:46,877  INFO        [CD901234] outlook generated (1 drivers).
+2026-07-06 15:27:48,660  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:27:48,895  INFO        [EF567890] outlook generated (1 drivers).
+2026-07-06 15:27:48,976  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-06 15:27:49,070  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-06 15:30:03,085  INFO      
++==========================================================+
+2026-07-06 15:30:03,086  INFO      |  FINANCE PIPELINE RUN  -  2026-07-06 10:00:03 UTC  |
+2026-07-06 15:30:03,087  INFO      +==========================================================+
+
+2026-07-06 15:30:03,088  INFO      ============================================================
+2026-07-06 15:30:03,088  INFO      STEP 1 - INGESTION  START
+2026-07-06 15:30:03,089  INFO      ============================================================
+2026-07-06 15:30:03,107  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-06 15:30:04,236  INFO        Raw XML saved -> yahoo_finance_20260706_100003.xml  (29072 bytes)
+2026-07-06 15:30:04,285  INFO        Parsed 48 entries
+2026-07-06 15:30:04,294  INFO        Processing 10 / 48 entries from Yahoo Finance
+2026-07-06 15:30:05,027  INFO        >> saved  bdo_uk_and_bdo_ireland_finalise_merger_to_form_14bn_business__8c0a31da.json
+2026-07-06 15:30:06,115  INFO        >> saved  indian_it_firms_face_muted_q1_as_ai_shift_weak_demand_weigh__49d57b90.json
+2026-07-06 15:30:07,263  INFO        >> saved  stock_market_today_nasdaq_leads_sp_500_dow_futures_higher_after_long_holiday_wee__6f2dde28.json
+2026-07-06 15:30:07,999  INFO        >> saved  its_a_bull_market_wall_street_sees_more_upside_in_stocks_for_the_second_half_of___34e3c712.json
+2026-07-06 15:30:08,770  INFO        >> saved  dow_jones_futures_rise_nasdaq_set_to_reclaim_key_level_apple_spacex_sandisk_robi__a9942e6e.json
+2026-07-06 15:30:09,566  INFO        >> saved  after_surging_4885_is_sandisk_stock_still_a_buy_heres_what_history_says__21a1790f.json
+2026-07-06 15:30:10,335  INFO        >> saved  europes_pe_capital_consolidates_around_established_firms__7bfb4777.json
+2026-07-06 15:30:11,163  INFO        >> saved  stocks_inch_up_as_oil_weighed_by_supply_while_earnings_loom__14f6aca1.json
+2026-07-06 15:30:11,913  INFO        >> saved  oil_falls_by_more_than_1_after_opec_agrees_to_raise_output_targets__68eac680.json
+2026-07-06 15:30:12,676  INFO        >> saved  easyjet_shares_jump_10_after_airline_backs_73_billion_castlelake_takeover__8df01016.json
+2026-07-06 15:30:12,681  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-06 15:30:13,853  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-06 15:30:13,862  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-06 15:30:14,833  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-06 15:30:15,726  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-06 15:30:16,475  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-06 15:30:17,263  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-06 15:30:18,031  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-06 15:30:18,802  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-06 15:30:19,818  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-06 15:30:20,908  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-06 15:30:22,085  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-06 15:30:22,956  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-06 15:30:22,961  INFO      
+STEP 1 DONE -> 0 new articles ingested
+2026-07-06 15:30:22,962  INFO      No new articles to process.
+2026-07-06 15:30:22,963  INFO      [Step 3] Matching client holdings to themes...
+2026-07-06 15:30:23,040  INFO      Loaded 4 themes covering 5 distinct sectors.
+2026-07-06 15:30:23,099  INFO      Processing 3 client(s)...
+2026-07-06 15:30:23,188  INFO        [AB345678] Arjun Mehta -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:30:23,243  INFO        [CD901234] Priya Sharma -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:30:23,293  INFO        [EF567890] Rahul Gupta -> 1 theme(s) matched: ['Global M&A Boom']
+2026-07-06 15:30:23,297  INFO      [Step 3] Done. 3 client(s), 3 theme match(es).
+2026-07-06 15:30:23,298  INFO      [Step 5] Generating client market outlooks...
+2026-07-06 15:30:30,011  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:30:30,159  INFO        [AB345678] outlook generated (1 drivers).
+2026-07-06 15:30:32,924  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:30:32,998  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-06 15:30:36,133  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-06 15:30:36,243  INFO        [EF567890] outlook generated (2 drivers).
+2026-07-06 15:30:36,291  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-06 15:30:36,373  INFO      
+[OK]  Pipeline run completed successfully.
+
