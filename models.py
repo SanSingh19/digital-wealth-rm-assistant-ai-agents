@@ -288,6 +288,13 @@ class Client(Base):
         cascade="all, delete-orphan"
     )
 
+    ai_talking_points = relationship(
+        "ClientAITalkingPoints",
+        back_populates="client",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
 
@@ -591,6 +598,19 @@ class ClientOutlook(Base):
     drivers             = Column(Text) # JSON list of {title, commentary}
 
     client = relationship("Client", back_populates = "outlook")
+
+
+class ClientAITalkingPoints(Base):
+    __tablename__ = "client_ai_talking_points"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(Integer,ForeignKey("clients.id"), nullable=False,unique=True)
+    conversation_openers = Column(JSON)
+    portfolio_discussion = Column(JSON)
+    product_introduction = Column(JSON)
+    anticipated_objections = Column(JSON)
+
+    client = relationship("Client",back_populates="ai_talking_points")
 
 
 # ═══════════════════════════════════════════════

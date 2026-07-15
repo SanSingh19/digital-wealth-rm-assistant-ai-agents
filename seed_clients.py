@@ -23,7 +23,8 @@ from models import (
     ClientPreference,
     ClientRiskOverview,
     SecurityPriceHistory,
-    Transaction
+    Transaction,
+    ClientAITalkingPoints
 )
 
 from config.settings import DATABASE_URL
@@ -204,12 +205,12 @@ securities = [
 
 security_price_history = [
 
-    # ASML (current 850)
+    # ASML
     ("ASML","Feb",2026,780),
     ("ASML","Mar",2026,800),
-    ("ASML","Apr",2026,815),
-    ("ASML","May",2026,825),
-    ("ASML","Jun",2026,838),
+    ("ASML","Apr",2026,785),
+    ("ASML","May",2026,815),
+    ("ASML","Jun",2026,805),
     ("ASML","Jul",2026,850),
     ("ASML","Aug",2026,None),
     ("ASML","Sep",2026,None),
@@ -219,12 +220,12 @@ security_price_history = [
     ("ASML","Jan",2027,None),
     ("ASML","Feb",2027,None),
 
-    # NVDA (current 900)
+    # NVDA
     ("NVDA","Feb",2026,810),
-    ("NVDA","Mar",2026,835),
-    ("NVDA","Apr",2026,850),
-    ("NVDA","May",2026,865),
-    ("NVDA","Jun",2026,882),
+    ("NVDA","Mar",2026,840),
+    ("NVDA","Apr",2026,825),
+    ("NVDA","May",2026,870),
+    ("NVDA","Jun",2026,860),
     ("NVDA","Jul",2026,900),
     ("NVDA","Aug",2026,None),
     ("NVDA","Sep",2026,None),
@@ -234,12 +235,12 @@ security_price_history = [
     ("NVDA","Jan",2027,None),
     ("NVDA","Feb",2027,None),
 
-    # MSFT (current 430)
+    # MSFT
     ("MSFT","Feb",2026,390),
-    ("MSFT","Mar",2026,402),
-    ("MSFT","Apr",2026,410),
+    ("MSFT","Mar",2026,400),
+    ("MSFT","Apr",2026,395),
     ("MSFT","May",2026,418),
-    ("MSFT","Jun",2026,425),
+    ("MSFT","Jun",2026,412),
     ("MSFT","Jul",2026,430),
     ("MSFT","Aug",2026,None),
     ("MSFT","Sep",2026,None),
@@ -249,12 +250,12 @@ security_price_history = [
     ("MSFT","Jan",2027,None),
     ("MSFT","Feb",2027,None),
 
-    # AAPL (current 195)
+    # AAPL
     ("AAPL","Feb",2026,170),
     ("AAPL","Mar",2026,178),
-    ("AAPL","Apr",2026,183),
-    ("AAPL","May",2026,188),
-    ("AAPL","Jun",2026,191),
+    ("AAPL","Apr",2026,174),
+    ("AAPL","May",2026,189),
+    ("AAPL","Jun",2026,185),
     ("AAPL","Jul",2026,195),
     ("AAPL","Aug",2026,None),
     ("AAPL","Sep",2026,None),
@@ -264,12 +265,12 @@ security_price_history = [
     ("AAPL","Jan",2027,None),
     ("AAPL","Feb",2027,None),
 
-    # BOND1 (current 98.5)
+    # BOND1
     ("BOND1","Feb",2026,94.0),
     ("BOND1","Mar",2026,95.2),
-    ("BOND1","Apr",2026,96.1),
-    ("BOND1","May",2026,97.0),
-    ("BOND1","Jun",2026,98.0),
+    ("BOND1","Apr",2026,94.8),
+    ("BOND1","May",2026,96.8),
+    ("BOND1","Jun",2026,97.4),
     ("BOND1","Jul",2026,98.5),
     ("BOND1","Aug",2026,None),
     ("BOND1","Sep",2026,None),
@@ -279,12 +280,12 @@ security_price_history = [
     ("BOND1","Jan",2027,None),
     ("BOND1","Feb",2027,None),
 
-    # BOND2 (current 95)
+    # BOND2
     ("BOND2","Feb",2026,89.0),
     ("BOND2","Mar",2026,90.5),
-    ("BOND2","Apr",2026,91.5),
-    ("BOND2","May",2026,92.7),
-    ("BOND2","Jun",2026,94.0),
+    ("BOND2","Apr",2026,89.9),
+    ("BOND2","May",2026,92.3),
+    ("BOND2","Jun",2026,93.6),
     ("BOND2","Jul",2026,95.0),
     ("BOND2","Aug",2026,None),
     ("BOND2","Sep",2026,None),
@@ -294,12 +295,12 @@ security_price_history = [
     ("BOND2","Jan",2027,None),
     ("BOND2","Feb",2027,None),
 
-    # REIT1 (current 45)
+    # REIT1
     ("REIT1","Feb",2026,39.0),
     ("REIT1","Mar",2026,41.0),
-    ("REIT1","Apr",2026,42.0),
-    ("REIT1","May",2026,43.2),
-    ("REIT1","Jun",2026,44.0),
+    ("REIT1","Apr",2026,40.2),
+    ("REIT1","May",2026,43.1),
+    ("REIT1","Jun",2026,42.5),
     ("REIT1","Jul",2026,45.0),
     ("REIT1","Aug",2026,None),
     ("REIT1","Sep",2026,None),
@@ -309,12 +310,12 @@ security_price_history = [
     ("REIT1","Jan",2027,None),
     ("REIT1","Feb",2027,None),
 
-    # ALT1 (current 62)
+    # ALT1
     ("ALT1","Feb",2026,57.0),
     ("ALT1","Mar",2026,60.0),
-    ("ALT1","Apr",2026,59.0),
-    ("ALT1","May",2026,60.5),
-    ("ALT1","Jun",2026,61.2),
+    ("ALT1","Apr",2026,58.4),
+    ("ALT1","May",2026,61.0),
+    ("ALT1","Jun",2026,60.2),
     ("ALT1","Jul",2026,62.0),
     ("ALT1","Aug",2026,None),
     ("ALT1","Sep",2026,None),
@@ -324,12 +325,12 @@ security_price_history = [
     ("ALT1","Jan",2027,None),
     ("ALT1","Feb",2027,None),
 
-    # ALT2 (current 58)
+    # ALT2
     ("ALT2","Feb",2026,51.0),
     ("ALT2","Mar",2026,53.0),
-    ("ALT2","Apr",2026,54.0),
-    ("ALT2","May",2026,55.0),
-    ("ALT2","Jun",2026,56.5),
+    ("ALT2","Apr",2026,52.0),
+    ("ALT2","May",2026,55.3),
+    ("ALT2","Jun",2026,54.5),
     ("ALT2","Jul",2026,58.0),
     ("ALT2","Aug",2026,None),
     ("ALT2","Sep",2026,None),
@@ -339,7 +340,7 @@ security_price_history = [
     ("ALT2","Jan",2027,None),
     ("ALT2","Feb",2027,None),
 
-    # LIQ1 (current 1)
+    # LIQ1
     ("LIQ1","Feb",2026,1.0),
     ("LIQ1","Mar",2026,1.0),
     ("LIQ1","Apr",2026,1.0),
@@ -352,7 +353,7 @@ security_price_history = [
     ("LIQ1","Nov",2026,None),
     ("LIQ1","Dec",2026,None),
     ("LIQ1","Jan",2027,None),
-    ("LIQ1","Feb",2027,None)
+    ("LIQ1","Feb",2027,None),
 ]
 
 # ---------------- Transactions ----------------
@@ -554,14 +555,16 @@ CLIENTS = [
         },
 
         "holdings": [
-                ("ASML",2500,780,850),
-                ("NVDA",1500,820,900),
-                ("MSFT",2000,390,430),
-                ("BOND1",12000,95,98.5),
-                ("REIT1",15000,40,45),
-                ("ALT1",10000,55,62),
-                ("ALT2",8000,52,58),
-                ("LIQ1",200000,1,1)
+
+            ("ASML",3500,780,850),
+            ("NVDA",2500,820,900),
+            ("MSFT",3000,390,430),
+            ("BOND1",18000,95,98.5),
+            ("REIT1",22000,40,45),
+            ("ALT1",15000,55,62),
+            ("ALT2",12000,52,58),
+            ("LIQ1",300000,1,1)
+
         ],
 
         "preferences":[
@@ -708,6 +711,82 @@ CLIENTS = [
             "max_drawdown":"5.4"
         }
     }
+]
+
+AI_TALKING_POINTS = [
+
+    {
+        "client_id": 1,
+
+        "conversation_openers": [
+            "Ask about how his technology business has been performing this quarter and whether the planned summer trip with family is finalized. This provides a natural transition into reviewing long-term wealth growth and investment priorities.",
+            "Mention the sustainable investment opportunities discussed during the previous meeting and ask whether his ESG investment objectives or liquidity requirements have changed since then."
+        ],
+
+        "portfolio_discussion": [
+            "Lead with the strong performance of ASML and NVIDIA, highlighting that semiconductor holdings continue to contribute positively to portfolio growth. Explain how the recent market volatility created temporary drawdowns in April before recovering to new highs in July, validating the long-term investment approach.",
+            "Discuss that ESG allocations through the ESG Small Cap Fund and Nordea Climate Fund continue to complement the technology portfolio while maintaining diversification. Review the current bond allocation and explain how a gradual shift toward shorter-duration green bonds could improve portfolio efficiency if interest rates remain elevated."
+        ],
+
+        "product_introduction": [
+            "Introduce a European AI Infrastructure Fund as a complementary investment that benefits from increasing demand for semiconductor manufacturing, cloud infrastructure and artificial intelligence adoption while remaining aligned with the client's long-term growth strategy.",
+            "Present a Sustainable Technology Innovation Fund focused on high-quality European companies benefiting from the expanding EU sustainability framework, positioning it as a natural extension of the client's existing ESG-focused investment philosophy."
+        ],
+
+        "anticipated_objections": [
+            "If the client expresses concerns about high technology valuations, explain that the recommendation focuses on companies with strong earnings growth, healthy balance sheets and long-term structural demand rather than short-term market momentum.",
+            "If the client prefers holding additional cash before investing, explain that keeping excess liquidity for extended periods may reduce long-term purchasing power, while phased investments through diversified ESG funds can lower timing risk."
+        ]
+    },
+
+    {
+        "client_id": 2,
+
+        "conversation_openers": [
+            "Ask whether her financial priorities or income requirements have changed recently and whether she remains comfortable with the current balance between growth and capital preservation.",
+            "Start a discussion about recent developments in the AI industry and ask whether she would like to gain exposure through diversified investments rather than individual technology stocks."
+        ],
+
+        "portfolio_discussion": [
+            "Highlight that the fixed-income allocation continues to provide portfolio stability while generating consistent income. Explain how the combination of government bonds and short-duration green bonds has reduced overall portfolio volatility during recent market fluctuations.",
+            "Review the steady contribution from dividend-paying assets and explain that maintaining a disciplined allocation to income-generating investments continues to support her conservative investment objectives without taking unnecessary market risk."
+        ],
+
+        "product_introduction": [
+            "Introduce a European Dividend Equity Fund that complements the existing income strategy while providing moderate long-term capital appreciation through financially strong companies with consistent dividend histories.",
+            "Recommend an Investment Grade Corporate Bond Portfolio designed to improve portfolio yield while maintaining a conservative risk profile and high credit quality."
+        ],
+
+        "anticipated_objections": [
+            "If the client is hesitant about increasing equity exposure, explain that the recommendation focuses on diversified dividend-paying companies rather than high-growth technology stocks, helping maintain portfolio stability.",
+            "If the client prefers keeping a larger allocation in cash, explain that gradually allocating part of the cash position into high-quality bonds can improve long-term income without materially increasing investment risk."
+        ]
+    },
+
+    {
+        "client_id": 3,
+
+        "conversation_openers": [
+            "Ask how retirement planning has progressed over the past few months and whether there have been any changes in family succession or estate planning priorities since the previous review.",
+            "Begin the meeting by discussing whether the current portfolio continues to generate sufficient retirement income while preserving capital for future generations."
+        ],
+
+        "portfolio_discussion": [
+            "Explain that the portfolio continues to maintain a balanced allocation between fixed income, quality equities and real estate investments, supporting capital preservation while generating dependable income throughout retirement.",
+            "Review the recent performance of Microsoft, Apple and the bond holdings, demonstrating how the diversified allocation has limited downside during periods of market volatility while continuing to participate in long-term market appreciation."
+        ],
+
+        "product_introduction": [
+            "Present a High Quality Corporate Bond Strategy focused on enhancing retirement income through diversified investment-grade issuers while maintaining low portfolio volatility.",
+            "Introduce a Global Dividend Leaders Fund that emphasizes financially stable companies with long records of increasing dividends, providing an additional source of sustainable retirement income."
+        ],
+
+        "anticipated_objections": [
+            "If the client is concerned about increasing investment risk after retirement, explain that the proposed recommendations maintain diversification and prioritize capital preservation rather than aggressive growth.",
+            "If the client prefers maintaining the current allocation, explain that only small portfolio adjustments are recommended to improve long-term income generation while preserving the existing risk profile."
+        ]
+    }
+
 ]
 
 
@@ -1013,6 +1092,21 @@ def seed_all_clients():
                     sharpe_ratio=risk["sharpe_ratio"],
                     value_at_risk=risk["value_at_risk"],
                     max_drawdown=risk["max_drawdown"]
+                )
+            )
+
+            ai_data = next(
+                item for item in AI_TALKING_POINTS
+                if item["client_id"] == client.id
+            )
+
+            session.add(
+                ClientAITalkingPoints(
+                    client_id=client.id,
+                    conversation_openers=ai_data["conversation_openers"],
+                    portfolio_discussion=ai_data["portfolio_discussion"],
+                    product_introduction=ai_data["product_introduction"],
+                    anticipated_objections=ai_data["anticipated_objections"]
                 )
             )
 
