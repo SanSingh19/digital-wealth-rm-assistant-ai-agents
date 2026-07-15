@@ -44,9 +44,9 @@ log = logging.getLogger("step5_advisor")
 class OutlookDriver(BaseModel):
     title: str = Field(description="Short headline for this driver, e.g. 'ECB Holds Rates at 2.75%'")
     commentary: str = Field(description="short 1 sentence portfolio-specific commentary on this driver")
-    status: Literal["Increase", "Decrease", "Neutral"] = Field(
+    status: Literal["Increase", "Decrease"] = Field(
         description="Indicates whether this market event is positively increasing, "
-                    "negatively decreasing, or has neutral impact on the client's portfolio value or exposure."
+                    "negatively decreasing impact on the client's portfolio value or exposure."
     )
 
 
@@ -59,7 +59,7 @@ class ClientOutlookResult(BaseModel):
     drivers: list[OutlookDriver] = Field(
         description="2-3 specific market drivers (news events, theme shifts, rate "
                     "decisions, earnings) each with portfolio-specific commentary "
-                    "and a status indicating Increase, Decrease, or Neutral impact "
+                    "and a status indicating Increase, Decrease impact "
                     "on the client's portfolio."
     )
 
@@ -79,8 +79,7 @@ For the drivers: pick 2-3 specific events from the news that are most relevant
 to this client's sector exposure, with one sentence on what happened.
 
 For each driver status field: set "Increase" if the event positively impacts 
-the client's holdings in that sector, "Decrease" if it negatively impacts them, 
-"Neutral" if the effect is unclear or mixed. Base this strictly on the holdings 
+the client's holdings in that sector, "Decrease" if it negatively impacts them. Base this strictly on the holdings 
 and sector exposure provided — not general market opinion.
 
 CLIENT SECTOR EXPOSURE
