@@ -42,10 +42,11 @@ from models import (
     Client, Account, Portfolio, Holding, Security, SectorMaster,
     AccountTypeEnum, Theme, SectorTag, Trend, MarketEvent, NewsArticle, ClientThemeMatch,
 )
-from step1_ingest  import run_ingestion
+from step1_ingest import run_ingestion
 from step2_process import run_processing
 from step3_match import run_matching
 from step5_advisor import run_advisor
+from step6_generated_talking_points import generated_talking_points
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -90,6 +91,10 @@ def run_pipeline():
         log.info(f"[Step 5] Done. {len(outlook_results)} outlook(s) generated.")
 
         log.info("\n[OK]  Pipeline run completed successfully.\n")
+        
+        # -- Step 6: AI Generated Talking Points ---------------
+        log.info("[Step 6] AI Generated Talking Points...")
+        generated_talking_points()
 
 
     except Exception as exc:
