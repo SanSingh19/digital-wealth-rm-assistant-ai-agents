@@ -47,7 +47,7 @@ from step2_process import run_processing
 from step3_match import run_matching
 from step5_advisor import run_advisor
 from step6_generated_talking_points import generated_talking_points
-from step7_meeting_summary import generate_client_meeting_summary
+from step7_client_meeting_summary import generate_client_meeting_summary
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(

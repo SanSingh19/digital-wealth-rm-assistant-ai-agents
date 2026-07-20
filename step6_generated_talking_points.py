@@ -64,7 +64,6 @@ def _summarize_client(client_details: Any, meeting: Any) -> str:
         f"client_id={client_details.id}, dob={client_details.date_of_Birth}, "
         f"marital_status={client_details.marital_status}, kids={client_details.kids_details}, "
         f"hobbies={_truncate(client_details.hobbies)}, other={_truncate(client_details.other)}, "
-        f"constraints={_truncate(client_details.client_constraints)}, "
         f"meeting_summary={_truncate(meeting_summary)}"
     )
 
@@ -83,12 +82,21 @@ Client Details and Last Meeting Summary:
 
 Generate top 2 personalized conversation openers based on the client's profile and previous discussions.
 
+
 Rules:
 - Professional and relationship-focused.
+- Maintain a warm, professional, and welcoming tone on first contact.
+- Focus on building rapport and trust.
+- First opener should be a warm greeting and personal details .
+- Second opener should use the last meeting summary as the starting point for the conversation.
+- Reference relevant topics discussed previously when appropriate.
 - Maximum two topics per opener.
 - No sensitive or intrusive questions.
 - No assumptions.
 - Keep responses concise.
+- Do not start every opener with a greeting.
+- If a greeting is used, use it only in the first opener.
+- Ensure each opener has a distinct opening style and does not repeat salutation phrases.
 
 Respond ONLY with valid JSON.
 
