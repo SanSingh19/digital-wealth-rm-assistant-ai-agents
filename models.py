@@ -295,6 +295,13 @@ class Client(Base):
         cascade="all, delete-orphan"
     )
 
+    fund_recommendations = relationship(
+        "ClientFundRecommendation",
+        back_populates="client",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
 
@@ -613,6 +620,42 @@ class ClientAITalkingPoints(Base):
     client = relationship("Client",back_populates="ai_talking_points")
 
 
+# ═══════════════════════════════════════════════
+#  STEP 8 — FUND RECOMMENDATIONS
+# ═══════════════════════════════════════════════
+ 
+class ClientFundRecommendation(Base):
+    """
+    Step 8 output: AI-scored and ranked fund recommendations per client.
+ 
+    recommendations — JSON list of:
+      {
+        rank, fund_id, fund_name,
+        action: BUY | HOLD | SWITCH | SELL,
+        priority: High | Medium | Low,
+        total_score,
+        score_breakdown: {theme_alignment, diversification,
+                          performance, cost_efficiency, risk_match},
+        rationale,
+        suggested_allocation_pct
+      }
+    """
+    __tablename__ = "client_fund_recommendations"
+ 
+    id                  = Column(Integer, primary_key=True, autoincrement=True)
+    client_id           = Column(Integer, ForeignKey("clients.id"),
+                                 nullable=False, unique=True)
+    generated_at        = Column(DateTime, default=datetime.utcnow)
+    mifid_suitability   = Column(String(256))   # e.g. "All Pass – Suitability validated against Aggressive (RP5)"
+    portfolio_rationale = Column(Text)
+    recommendations     = Column(Text)          # JSON list
+ 
+    client = relationship("Client", back_populates="fund_recommendations")
+ 
+    def __repr__(self):
+        return f"<ClientFundRecommendation client_id={self.client_id}>"
+ 
+ 
 # ═══════════════════════════════════════════════
 #  DB FACTORY
 # ═══════════════════════════════════════════════
