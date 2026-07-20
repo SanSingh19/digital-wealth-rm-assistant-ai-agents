@@ -1,0 +1,58 @@
+{
+  "mifid_suitability": "All Pass – Suitability validated against Aggressive (RP5)",
+  "portfolio_rationale": "The recommended fund mix enhances Arjun Mehta's portfolio by increasing exposure to high-growth ESG small caps, aligning with his wealth growth and sustainable impact goals. The addition of the Short Duration Green Bond Fund provides a balanced fixed income component that is ESG-compliant, while the European Real Estate Income ETF maintains a stable real estate allocation. This strategy addresses the market outlook by reducing concentration in semiconductor and technology sectors, which are currently facing declines, and diversifies into sectors with positive ESG and growth potential.",
+  "recommendations": [
+    {
+      "rank": 1,
+      "fund_id": "F005",
+      "fund_name": "ESG Small Cap Innovation Fund",
+      "action": "BUY",
+      "priority": "High",
+      "total_score": 66,
+      "score_breakdown": {
+        "theme_alignment": 3,
+        "diversification": 10,
+        "performance": 8,
+        "cost_efficiency": 4,
+        "risk_match": 10
+      },
+      "rationale": "Aligns with ESG conviction and benefits from EU taxonomy expansion. Fills small-cap gap in portfolio with high growth potential.",
+      "suggested_allocation_pct": 15
+    },
+    {
+      "rank": 2,
+      "fund_id": "F006",
+      "fund_name": "Short Duration Green Bond Fund",
+      "action": "BUY",
+      "priority": "Medium",
+      "total_score": 64,
+      "score_breakdown": {
+        "theme_alignment": 5,
+        "diversification": 10,
+        "performance": 5,
+        "cost_efficiency": 8,
+        "risk_match": 2
+      },
+      "rationale": "Provides ESG-compliant fixed income exposure with lower rate sensitivity. Complements existing renewable energy focus while diversifying financials.",
+      "suggested_allocation_pct": 10
+    },
+    {
+      "rank": 3,
+      "fund_id": "F004",
+      "fund_name": "European Real Estate Income ETF",
+      "action": "HOLD",
+      "priority": "Low",
+      "total_score": 67,
+      "score_breakdown": {
+        "theme_alignment": 5,
+        "diversification": 10,
+        "performance": 6,
+        "cost_efficiency": 6,
+        "risk_match": 6
+      },
+      "rationale": "Maintains exposure to diversified European REITs with strong income potential. Supports real estate allocation within allowed bandwidth.",
+      "suggested_allocation_pct": 10
+    }
+  ],
+  "generated_at": "2026-07-20T09:24:36.874406"
+}

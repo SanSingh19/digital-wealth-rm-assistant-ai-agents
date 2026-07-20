@@ -4082,3 +4082,265 @@ STEP 2 DONE
 2026-07-15 15:23:45,014  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-07-20 14:43:40,118  INFO      Database tables created.
+2026-07-20 14:46:34,704  INFO      
++==========================================================+
+2026-07-20 14:46:34,704  INFO      |  FINANCE PIPELINE RUN  -  2026-07-20 09:16:34 UTC  |
+2026-07-20 14:46:34,704  INFO      +==========================================================+
+
+2026-07-20 14:46:34,704  INFO      ============================================================
+2026-07-20 14:46:34,704  INFO      STEP 1 - INGESTION  START
+2026-07-20 14:46:34,704  INFO      ============================================================
+2026-07-20 14:46:34,723  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-20 14:46:38,162  INFO        Raw XML saved -> yahoo_finance_20260720_091634.xml  (28134 bytes)
+2026-07-20 14:46:38,291  INFO        Parsed 45 entries
+2026-07-20 14:46:38,295  INFO        Processing 10 / 45 entries from Yahoo Finance
+2026-07-20 14:46:39,805  INFO        >> saved  major_car_dealer_cuts_40_of_its_locations_issues_serious_warning__0c5b3d43.json
+2026-07-20 14:46:39,951  ERROR     [ERROR]  Pipeline error: Mapper 'Mapper[Client(clients)]' has no property 'fund_recommendations'.  If this property was indicated from other mappers or configure events, ensure registry.configure() has been called.
+Traceback (most recent call last):
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 2532, in get_property
+    return self._props[key]
+           ~~~~~~~~~~~^^^^^
+KeyError: 'fund_recommendations'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\pipeline.py", line 75, in run_pipeline
+    new_ids = run_ingestion()
+              ^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\step1_ingest.py", line 261, in run_ingestion
+    row = persist_article(session, entry, fpath)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\step1_ingest.py", line 205, in persist_article
+    existing = session.query(NewsArticle).filter_by(guid=article_data["guid"]).first()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2962, in query
+    return self._query_cls(entities, self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 277, in __init__
+    self._set_entities(entities)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 289, in _set_entities
+    self._raw_columns = [
+                        ^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 290, in <listcomp>
+    coercions.expect(
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\sql\coercions.py", line 389, in expect
+    insp._post_inspect
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 1234, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 2734, in _post_inspect
+    self._check_configure()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 2411, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 4228, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 4269, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 2428, in _post_configure_properties
+    prop.init()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\interfaces.py", line 595, in init
+    self.do_init()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\relationships.py", line 1661, in do_init
+    self._generate_backref()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\relationships.py", line 2145, in _generate_backref
+    self._add_reverse_property(self.back_populates)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\relationships.py", line 1592, in _add_reverse_property
+    other = self.mapper.get_property(key, _configure_mappers=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\sqlalchemy\orm\mapper.py", line 2534, in get_property
+    raise sa_exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: Mapper 'Mapper[Client(clients)]' has no property 'fund_recommendations'.  If this property was indicated from other mappers or configure events, ensure registry.configure() has been called.
+2026-07-20 14:53:16,137  INFO      
++==========================================================+
+2026-07-20 14:53:16,143  INFO      |  FINANCE PIPELINE RUN  -  2026-07-20 09:23:16 UTC  |
+2026-07-20 14:53:16,143  INFO      +==========================================================+
+
+2026-07-20 14:53:16,143  INFO      ============================================================
+2026-07-20 14:53:16,146  INFO      STEP 1 - INGESTION  START
+2026-07-20 14:53:16,146  INFO      ============================================================
+2026-07-20 14:53:16,171  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-20 14:53:17,954  INFO        Raw XML saved -> yahoo_finance_20260720_092316.xml  (28134 bytes)
+2026-07-20 14:53:18,037  INFO        Parsed 45 entries
+2026-07-20 14:53:18,044  INFO        Processing 10 / 45 entries from Yahoo Finance
+2026-07-20 14:53:19,074  INFO        >> saved  major_car_dealer_cuts_40_of_its_locations_issues_serious_warning__0c5b3d43.json
+2026-07-20 14:53:19,406  INFO        >> DB insert  id=21  title='Major car dealer cuts 40% of its locations, issues seri...'
+2026-07-20 14:53:20,607  INFO        >> saved  united_imaging_intelligence_not_undertaking_an_extreme_ai_rollout_says_co_ceo__cb6e2d5b.json
+2026-07-20 14:53:20,612  INFO        >> DB insert  id=22  title='United Imaging Intelligence not undertaking an "extreme...'
+2026-07-20 14:53:21,925  INFO        >> saved  united_imaging_intelligence_not_undertaking_an_extreme_ai_rollout_says_co_ceo__abfffb5b.json
+2026-07-20 14:53:21,941  INFO        >> DB insert  id=23  title='United Imaging Intelligence not undertaking an "extreme...'
+2026-07-20 14:53:23,066  INFO        >> saved  oil_prices_extend_gains_on_escalating_middle_east_hostilities__eaeca35d.json
+2026-07-20 14:53:23,084  INFO        >> DB insert  id=24  title='Oil prices extend gains on escalating Middle East hosti...'
+2026-07-20 14:53:24,491  INFO        >> saved  chinas_fuel_oil_exports_hit_2026_high_as_shipping_demand_rebounds__4de7eb06.json
+2026-07-20 14:53:24,491  INFO        >> DB insert  id=25  title='China’s Fuel Oil Exports Hit 2026 High as Shipping Dema...'
+2026-07-20 14:53:25,928  INFO        >> saved  amazon_closes_another_major_facility_nearly_500_workers_affected__1c0679f0.json
+2026-07-20 14:53:25,928  INFO        >> DB insert  id=26  title='Amazon closes another major facility, nearly 500 worker...'
+2026-07-20 14:53:27,591  INFO        >> saved  could_ai_chip_boom_make_asml_europes_first_trillion_dollar_firm__ea40bee9.json
+2026-07-20 14:53:27,591  INFO        >> DB insert  id=27  title='Could AI chip boom make ASML Europe's first trillion-do...'
+2026-07-20 14:53:28,960  INFO        >> saved  chinas_moonshot_pauses_kimi_subscriptions_amid_hot_demand_ipo_push__b4c47704.json
+2026-07-20 14:53:28,960  INFO        >> DB insert  id=28  title='China's Moonshot pauses Kimi subscriptions amid hot dem...'
+2026-07-20 14:53:30,357  INFO        >> saved  kmpg_australia_fines_staff_up_to_126000_for_unacceptable_misconduct_in_audit_sca__ab92312e.json
+2026-07-20 14:53:30,359  INFO        >> DB insert  id=29  title='KMPG Australia fines staff up to $126,000 for 'unaccept...'
+2026-07-20 14:53:32,065  INFO        >> saved  i_couldnt_breathesouth_koreas_frenzied_stock_trading_exposes_margin_loan_risks__200ef8d8.json
+2026-07-20 14:53:32,069  INFO        >> DB insert  id=30  title=''I couldn't breathe':South Korea's frenzied stock tradi...'
+2026-07-20 14:53:32,069  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-20 14:53:33,142  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-20 14:53:33,153  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-20 14:53:34,741  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-20 14:53:37,095  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-20 14:53:38,362  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-20 14:53:40,159  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-20 14:53:42,107  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-20 14:53:43,864  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-20 14:53:45,585  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-20 14:53:47,129  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-20 14:53:48,483  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-20 14:53:49,891  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-20 14:53:49,911  INFO      
+STEP 1 DONE -> 10 new articles ingested
+2026-07-20 14:53:49,911  INFO      ============================================================
+2026-07-20 14:53:49,911  INFO      STEP 2 - AI PROCESSING  START
+2026-07-20 14:53:49,916  INFO      ============================================================
+2026-07-20 14:53:50,395  INFO      Processing 10 articles ...
+2026-07-20 14:53:50,395  INFO      
+  Article [21]: Major car dealer cuts 40% of its locations, issues serious w...
+2026-07-20 14:53:58,073  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:53:58,112  INFO        -> 1 market events found
+2026-07-20 14:53:58,128  INFO      
+  Article [22]: United Imaging Intelligence not undertaking an "extreme" AI ...
+2026-07-20 14:53:59,412  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:53:59,443  INFO        -> 0 market events found
+2026-07-20 14:53:59,463  INFO      
+  Article [23]: United Imaging Intelligence not undertaking an "extreme" AI ...
+2026-07-20 14:54:00,157  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:00,173  INFO        -> 0 market events found
+2026-07-20 14:54:00,173  INFO      
+  Article [24]: Oil prices extend gains on escalating Middle East hostilitie...
+2026-07-20 14:54:01,154  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:01,159  INFO        -> 1 market events found
+2026-07-20 14:54:01,167  INFO      
+  Article [25]: China’s Fuel Oil Exports Hit 2026 High as Shipping Demand Re...
+2026-07-20 14:54:02,836  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:02,863  INFO        -> 1 market events found
+2026-07-20 14:54:02,866  INFO      
+  Article [26]: Amazon closes another major facility, nearly 500 workers aff...
+2026-07-20 14:54:04,212  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:04,219  INFO        -> 1 market events found
+2026-07-20 14:54:04,223  INFO      
+  Article [27]: Could AI chip boom make ASML Europe's first trillion-dollar ...
+2026-07-20 14:54:05,078  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:05,089  INFO        -> 0 market events found
+2026-07-20 14:54:05,096  INFO      
+  Article [28]: China's Moonshot pauses Kimi subscriptions amid hot demand, ...
+2026-07-20 14:54:06,128  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:06,139  INFO        -> 0 market events found
+2026-07-20 14:54:06,146  INFO      
+  Article [29]: KMPG Australia fines staff up to $126,000 for 'unacceptable'...
+2026-07-20 14:54:06,872  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:06,895  INFO        -> 0 market events found
+2026-07-20 14:54:06,897  INFO      
+  Article [30]: 'I couldn't breathe':South Korea's frenzied stock trading ex...
+2026-07-20 14:54:07,685  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:07,701  INFO        -> 0 market events found
+2026-07-20 14:54:07,701  INFO      
+  Clustering 4 events into trends ...
+2026-07-20 14:54:10,369  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:10,371  INFO        -> 2 trends identified
+2026-07-20 14:54:10,408  INFO      
+  Distilling 2 trends into investment themes ...
+2026-07-20 14:54:15,585  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:15,590  INFO        -> 2 themes identified
+2026-07-20 14:54:15,643  INFO      
+============================================================
+2026-07-20 14:54:15,643  INFO        THEMES STORED: 4
+2026-07-20 14:54:15,651  INFO      
+  > THEME: Tech Market Volatility
+2026-07-20 14:54:15,651  INFO          Recent fluctuations in the technology sector indicate increased volatility, affecting major indices 
+2026-07-20 14:54:15,651  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.80
+2026-07-20 14:54:15,656  INFO      
+  > THEME: Geopolitical Oil Dynamics
+2026-07-20 14:54:15,659  INFO          Rising tensions between the US and Iran are elevating oil prices, highlighting the sensitivity of en
+2026-07-20 14:54:15,659  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-07-20 14:54:15,659  INFO          - Sector: Industrials                     Sentiment: Negative    Confidence: 0.70
+2026-07-20 14:54:15,661  INFO          - Sector: Consumer Staples                Sentiment: Negative    Confidence: 0.60
+2026-07-20 14:54:15,661  INFO      
+  > THEME: Energy Market Dynamics
+2026-07-20 14:54:15,661  INFO          Geopolitical tensions and shifts in global supply dynamics are creating volatility and opportunities
+2026-07-20 14:54:15,661  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.85
+2026-07-20 14:54:15,661  INFO          - Sector: Shipping                        Sentiment: Positive    Confidence: 0.75
+2026-07-20 14:54:15,667  INFO      
+  > THEME: Retail and Logistics Transformation
+2026-07-20 14:54:15,667  INFO          The retail and logistics sectors are realigning due to operational downsizing and strategic shifts. 
+2026-07-20 14:54:15,667  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.90
+2026-07-20 14:54:15,672  INFO          - Sector: Logistics                       Sentiment: Negative    Confidence: 0.85
+2026-07-20 14:54:15,672  INFO          - Sector: Automotive                      Sentiment: Negative    Confidence: 0.80
+2026-07-20 14:54:15,672  INFO      ============================================================
+2026-07-20 14:54:15,676  INFO      
+STEP 2 DONE
+2026-07-20 14:54:15,676  INFO      [Step 3] Matching client holdings to themes...
+2026-07-20 14:54:15,744  INFO      Loaded 4 themes covering 8 distinct sectors.
+2026-07-20 14:54:15,789  INFO      Processing 3 client(s)...
+2026-07-20 14:54:16,103  INFO        [AB345678] Arjun Mehta -> 1 theme(s) matched: ['Tech Market Volatility']
+2026-07-20 14:54:16,156  INFO        [CD901234] Priya Sharma -> 1 theme(s) matched: ['Tech Market Volatility']
+2026-07-20 14:54:16,196  INFO        [EF567890] Rahul Gupta -> 1 theme(s) matched: ['Tech Market Volatility']
+2026-07-20 14:54:16,272  INFO      [Step 3] Done. 3 client(s), 3 theme match(es).
+2026-07-20 14:54:16,321  INFO      [Step 5] Generating client market outlooks...
+2026-07-20 14:54:19,400  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:19,498  INFO        [AB345678] outlook generated (2 drivers).
+2026-07-20 14:54:21,508  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:21,589  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-20 14:54:23,538  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:23,596  INFO        [EF567890] outlook generated (2 drivers).
+2026-07-20 14:54:23,596  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-20 14:54:23,596  INFO      [Step 6] AI Generated Talking Points...
+2026-07-20 14:54:23,646  INFO      Starting talking-point generation for 3 client(s)
+2026-07-20 14:54:23,646  INFO      Processing client 1: client_id=1, dob=1975-04-10, marital_status=Married, kids=2 children, hobbies=Golf, Travel, other=Prefers face-to-face meetings, constraints=Maintain ESG focus,Limit single stock exposure below 35%,Avoid crypto investments,Prefer long-term growth opportunities, meeting_summary=["Client's business performed well in H2 2025 with strong revenue growth.", 'Client accumulated €800K cash from dividends and business income and wanted to deploy it.', 'Prefere...
+2026-07-20 14:54:23,646  INFO      Preparing prompt with 1 client entry/entries
+2026-07-20 14:54:25,719  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:25,729  INFO      OpenAI returned structured JSON with 5 opener(s)
+2026-07-20 14:54:25,731  INFO      OpenAI returned 5 opener(s) for client_id=1
+2026-07-20 14:54:25,743  INFO      Updating existing talking points for client_id=1 with 5 opener(s)
+2026-07-20 14:54:25,761  INFO      Processing client 2: client_id=2, dob=1985-07-15, marital_status=Single, kids=None, hobbies=Reading, other=Interested in AI sector, constraints=Low risk investments only,Minimum 25% allocation to fixed income,Avoid high volatility sectors,Prefer dividend generating assets,Long-term investments only, meeting_summary=['Client focused on stable income investments.', 'Discussed dividend-paying healthcare and banking stocks.', 'Reviewed current bond allocation strategy.', 'Explored tax-efficien...
+2026-07-20 14:54:25,761  INFO      Preparing prompt with 1 client entry/entries
+2026-07-20 14:54:28,895  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:28,895  INFO      OpenAI returned structured JSON with 5 opener(s)
+2026-07-20 14:54:28,895  INFO      OpenAI returned 5 opener(s) for client_id=2
+2026-07-20 14:54:28,895  INFO      Updating existing talking points for client_id=2 with 5 opener(s)
+2026-07-20 14:54:28,906  INFO      Processing client 3: client_id=3, dob=1965-09-08, marital_status=Married, kids=1 child, hobbies=Tennis, other=Interested in AI, constraints=Capital preservation priority,Minimum 30% allocation to fixed income,Prefer dividend-paying assets,Avoid speculative investments,Maintain moderate portfolio volatility, meeting_summary=['Reviewed retirement income sustainability.', 'Discussed balancing equity exposure with fixed income holdings.', 'Evaluated dividend strategies for stable cash flow.', 'Reviewe...
+2026-07-20 14:54:28,906  INFO      Preparing prompt with 1 client entry/entries
+2026-07-20 14:54:30,731  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:30,764  INFO      OpenAI returned structured JSON with 5 opener(s)
+2026-07-20 14:54:30,764  INFO      OpenAI returned 5 opener(s) for client_id=3
+2026-07-20 14:54:30,767  INFO      Updating existing talking points for client_id=3 with 5 opener(s)
+2026-07-20 14:54:30,806  INFO      Completed talking-point generation for 3 client(s)
+2026-07-20 14:54:30,806  INFO      --------------------------------------------------
+2026-07-20 14:54:30,806  INFO      [Step 8] Generating fund recommendations...
+2026-07-20 14:54:30,898  INFO      
+[Step 6] AB345678 – Arjun Mehta
+2026-07-20 14:54:30,922  INFO        8 funds eligible after filtering
+2026-07-20 14:54:36,682  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:36,849  INFO        [AB345678] MiFID: All Pass – Suitability validated against Aggressive (RP5)
+2026-07-20 14:54:36,849  INFO          #1 [BUY] ESG Small Cap Innovation Fund | Priority: High | Score: 66/100
+2026-07-20 14:54:36,866  INFO          #2 [BUY] Short Duration Green Bond Fund | Priority: Medium | Score: 64/100
+2026-07-20 14:54:36,867  INFO          #3 [HOLD] European Real Estate Income ETF | Priority: Low | Score: 67/100
+2026-07-20 14:54:36,927  INFO      
+[Step 6] CD901234 – Priya Sharma
+2026-07-20 14:54:36,942  INFO        3 funds eligible after filtering
+2026-07-20 14:54:42,304  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:42,478  INFO        [CD901234] MiFID: All Pass – Suitability validated against Conservative (RP2)
+2026-07-20 14:54:42,478  INFO          #1 [BUY] Short Duration Green Bond Fund | Priority: High | Score: 60/100
+2026-07-20 14:54:42,478  INFO          #2 [HOLD] Euro Government Bond Fund | Priority: Medium | Score: 50/100
+2026-07-20 14:54:42,478  INFO          #3 [BUY] Money Market Plus Fund | Priority: Low | Score: 50/100
+2026-07-20 14:54:42,507  INFO      
+[Step 6] EF567890 – Rahul Gupta
+2026-07-20 14:54:42,521  INFO        7 funds eligible after filtering
+2026-07-20 14:54:47,939  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-20 14:54:48,057  INFO        [EF567890] MiFID: All Pass – Suitability validated against Moderately Offensive (RP4)
+2026-07-20 14:54:48,057  INFO          #1 [BUY] Short Duration Green Bond Fund | Priority: High | Score: 56/100
+2026-07-20 14:54:48,057  INFO          #2 [HOLD] European Real Estate Income ETF | Priority: Medium | Score: 71/100
+2026-07-20 14:54:48,057  INFO          #3 [BUY] European Dividend Leaders Fund | Priority: Medium | Score: 48/100
+2026-07-20 14:54:48,093  INFO      [Step 8] Done. 3 client(s) recommended funds.
+2026-07-20 14:54:48,094  INFO      
+[OK]  Pipeline run completed successfully.
+
