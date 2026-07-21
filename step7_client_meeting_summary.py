@@ -13,10 +13,14 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
+import httpx
 
 from config.settings import DATABASE_URL, OPENAI_API_KEY
 
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY,
+    http_client=httpx.Client(verify=False),
+)
 
 
 # ---------------- OUTPUT SCHEMA ----------------
@@ -65,7 +69,8 @@ Meeting Transcript
 llm = ChatOpenAI(
     model="gpt-4o",
     temperature=0.2,
-    api_key=OPENAI_API_KEY
+    api_key=OPENAI_API_KEY,
+    http_client=httpx.Client(verify=False),
 )
 
 chain = PROMPT | llm | PARSER
