@@ -4344,3 +4344,261 @@ STEP 2 DONE
 2026-07-20 14:54:48,094  INFO      
 [OK]  Pipeline run completed successfully.
 
+2026-07-21 12:41:27,518  INFO      
++==========================================================+
+2026-07-21 12:41:27,518  INFO      |  FINANCE PIPELINE RUN  -  2026-07-21 07:11:27 UTC  |
+2026-07-21 12:41:27,518  INFO      +==========================================================+
+
+2026-07-21 12:41:27,518  INFO      ============================================================
+2026-07-21 12:41:27,518  INFO      STEP 1 - INGESTION  START
+2026-07-21 12:41:27,518  INFO      ============================================================
+2026-07-21 12:41:27,531  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-21 12:41:28,136  INFO        Raw XML saved -> yahoo_finance_20260721_071127.xml  (29233 bytes)
+2026-07-21 12:41:28,173  INFO        Parsed 47 entries
+2026-07-21 12:41:28,188  INFO        Processing 10 / 47 entries from Yahoo Finance
+2026-07-21 12:41:28,657  INFO        >> saved  amazon_closes_another_major_facility_nearly_500_workers_affected__1c0679f0.json
+2026-07-21 12:41:29,177  INFO        >> saved  alibaba_stock_just_got_apples_biggest_ai_endorsement_this_could_be_a_game_change__8fda5f17.json
+2026-07-21 12:41:29,677  INFO        >> saved  europe_was_supposed_to_run_out_of_jet_fuel_by_june_it_didnt__da57e346.json
+2026-07-21 12:41:30,098  INFO        >> saved  venture_global_vg_soars_as_geopolitical_tensions_fuel_natural_gas_rally__448bca1b.json
+2026-07-21 12:41:30,507  INFO        >> saved  trump_media_djt_climbs_on_paid_early_access_to_market_moving_posts__68475023.json
+2026-07-21 12:41:30,971  INFO        >> saved  the_uk_is_getting_a_new_prime_minister_but_bond_investors_are_really_in_charge_a__eee893be.json
+2026-07-21 12:41:30,971  INFO        >> DB insert  id=41  title='The U.K. is getting a new prime minister, but bond inve...'
+2026-07-21 12:41:31,372  INFO        >> saved  the_cattle_conundrum__501b1ef2.json
+2026-07-21 12:41:31,805  INFO        >> saved  dow_jones_futures_oil_prices_rise_amid_iran_news_google_tesla_ahead__a9942e6e.json
+2026-07-21 12:41:32,322  INFO        >> saved  the_mania_stocks_are_tanking_heres_how_to_take_advantage_of_semiconductor_volati__230592e4.json
+2026-07-21 12:41:32,340  INFO        >> DB insert  id=42  title='The MANIA Stocks Are Tanking. Here's How to Take Advant...'
+2026-07-21 12:41:32,761  INFO        >> saved  bearish_investors_give_elon_musk_the_boot_from_trillionaire_club__e8f954d4.json
+2026-07-21 12:41:32,774  INFO        >> DB insert  id=43  title='Bearish Investors Give Elon Musk the Boot From Trillion...'
+2026-07-21 12:41:32,774  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-21 12:41:33,469  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-21 12:41:33,469  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-21 12:41:33,917  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-21 12:41:34,484  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-21 12:41:34,944  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-21 12:41:35,399  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-21 12:41:35,793  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-21 12:41:36,224  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-21 12:41:36,641  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-21 12:41:37,122  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-21 12:41:37,608  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-21 12:41:38,028  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-21 12:41:38,048  INFO      
+STEP 1 DONE -> 3 new articles ingested
+2026-07-21 12:41:38,048  INFO      ============================================================
+2026-07-21 12:41:38,048  INFO      STEP 2 - AI PROCESSING  START
+2026-07-21 12:41:38,048  INFO      ============================================================
+2026-07-21 12:41:38,065  INFO      Processing 3 articles ...
+2026-07-21 12:41:38,074  INFO      
+  Article [41]: The U.K. is getting a new prime minister, but bond investors...
+2026-07-21 12:41:40,222  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:40,266  INFO        -> 0 market events found
+2026-07-21 12:41:40,266  INFO      
+  Article [42]: The MANIA Stocks Are Tanking. Here's How to Take Advantage o...
+2026-07-21 12:41:41,021  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:41,037  INFO        -> 0 market events found
+2026-07-21 12:41:41,046  INFO      
+  Article [43]: Bearish Investors Give Elon Musk the Boot From Trillionaire ...
+2026-07-21 12:41:41,686  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:41,709  INFO        -> 0 market events found
+2026-07-21 12:41:41,719  INFO      No market events extracted.
+2026-07-21 12:41:41,720  INFO      [Step 3] Matching client holdings to themes...
+2026-07-21 12:41:41,757  INFO      Loaded 6 themes covering 12 distinct sectors.
+2026-07-21 12:41:41,759  INFO      Processing 3 client(s)...
+2026-07-21 12:41:41,798  INFO        [AB345678] Arjun Mehta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:41:41,832  INFO        [CD901234] Priya Sharma -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:41:41,854  INFO        [EF567890] Rahul Gupta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:41:41,854  INFO      [Step 3] Done. 3 client(s), 6 theme match(es).
+2026-07-21 12:41:41,857  INFO      [Step 5] Generating client market outlooks...
+2026-07-21 12:41:45,197  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:45,257  INFO        [AB345678] outlook generated (2 drivers).
+2026-07-21 12:41:48,114  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:48,291  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-21 12:41:50,866  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:41:50,892  INFO        [EF567890] outlook generated (2 drivers).
+2026-07-21 12:41:50,892  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-21 12:41:50,892  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-21 12:41:50,892  INFO      [Step 6] AI Meeting Summary...
+2026-07-21 12:41:51,137  INFO      Retrying request to /audio/transcriptions in 0.422607 seconds
+2026-07-21 12:41:51,601  INFO      Retrying request to /audio/transcriptions in 0.781810 seconds
+2026-07-21 12:41:52,427  ERROR     [ERROR]  Pipeline error: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_sync\connection.py", line 156, in _connect
+    stream = stream.start_tls(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_backends\sync.py", line 154, in start_tls
+    with map_exceptions(exc_map):
+  File "C:\Users\sadiya rafiq\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    response = self._send_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_client.py", line 440, in _send_request
+    return self._send_with_auth_retry(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_client.py", line 418, in _send_with_auth_retry
+    response = super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_base_client.py", line 964, in _send_request
+    return self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "C:\Users\sadiya rafiq\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\pipeline.py", line 98, in run_pipeline
+    generate_client_meeting_summary()
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\step7_client_meeting_summary.py", line 155, in generate_client_meeting_summary
+    summary = generate_meeting_summary(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\step7_client_meeting_summary.py", line 98, in generate_meeting_summary
+    meeting_text = load_meeting(client_code)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\step7_client_meeting_summary.py", line 86, in load_meeting
+    transcript = openai_client.audio.transcriptions.create(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_utils\_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\resources\audio\transcriptions.py", line 485, in create
+    return self._post(  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sadiya rafiq\Documents\agentic AI\Finance_Pipeline_main\Finance_Pipeline-main\venv\Lib\site-packages\openai\_base_client.py", line 1072, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-07-21 12:44:40,065  INFO      
++==========================================================+
+2026-07-21 12:44:40,065  INFO      |  FINANCE PIPELINE RUN  -  2026-07-21 07:14:40 UTC  |
+2026-07-21 12:44:40,065  INFO      +==========================================================+
+
+2026-07-21 12:44:40,065  INFO      ============================================================
+2026-07-21 12:44:40,065  INFO      STEP 1 - INGESTION  START
+2026-07-21 12:44:40,065  INFO      ============================================================
+2026-07-21 12:44:40,073  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-07-21 12:44:40,714  INFO        Raw XML saved -> yahoo_finance_20260721_071440.xml  (29233 bytes)
+2026-07-21 12:44:40,765  INFO        Parsed 47 entries
+2026-07-21 12:44:40,770  INFO        Processing 10 / 47 entries from Yahoo Finance
+2026-07-21 12:44:41,190  INFO        >> saved  amazon_closes_another_major_facility_nearly_500_workers_affected__1c0679f0.json
+2026-07-21 12:44:41,754  INFO        >> saved  alibaba_stock_just_got_apples_biggest_ai_endorsement_this_could_be_a_game_change__8fda5f17.json
+2026-07-21 12:44:42,633  INFO        >> saved  europe_was_supposed_to_run_out_of_jet_fuel_by_june_it_didnt__da57e346.json
+2026-07-21 12:44:43,598  INFO        >> saved  venture_global_vg_soars_as_geopolitical_tensions_fuel_natural_gas_rally__448bca1b.json
+2026-07-21 12:44:44,107  INFO        >> saved  trump_media_djt_climbs_on_paid_early_access_to_market_moving_posts__68475023.json
+2026-07-21 12:44:44,547  INFO        >> saved  utility_etfs_soar_8_ytd_on_ai_power_demand_heres_which_one_to_buy__4567cad4.json
+2026-07-21 12:44:44,559  INFO        >> DB insert  id=44  title='Utility ETFs Soar 8% YTD on AI Power Demand. Here’s Whi...'
+2026-07-21 12:44:44,997  INFO        >> saved  the_cattle_conundrum__501b1ef2.json
+2026-07-21 12:44:45,431  INFO        >> saved  dow_jones_futures_oil_prices_rise_amid_iran_news_google_tesla_ahead__a9942e6e.json
+2026-07-21 12:44:45,849  INFO        >> saved  the_mania_stocks_are_tanking_heres_how_to_take_advantage_of_semiconductor_volati__230592e4.json
+2026-07-21 12:44:46,282  INFO        >> saved  bearish_investors_give_elon_musk_the_boot_from_trillionaire_club__e8f954d4.json
+2026-07-21 12:44:46,282  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-07-21 12:44:46,948  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-07-21 12:44:46,956  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-07-21 12:44:47,404  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-07-21 12:44:47,998  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-07-21 12:44:48,452  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-07-21 12:44:48,859  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-07-21 12:44:49,376  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-07-21 12:44:49,809  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-07-21 12:44:50,231  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-07-21 12:44:50,640  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-07-21 12:44:51,034  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-07-21 12:44:51,470  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-07-21 12:44:51,470  INFO      
+STEP 1 DONE -> 1 new articles ingested
+2026-07-21 12:44:51,483  INFO      ============================================================
+2026-07-21 12:44:51,483  INFO      STEP 2 - AI PROCESSING  START
+2026-07-21 12:44:51,483  INFO      ============================================================
+2026-07-21 12:44:51,502  INFO      Processing 1 articles ...
+2026-07-21 12:44:51,503  INFO      
+  Article [44]: Utility ETFs Soar 8% YTD on AI Power Demand. Here’s Which On...
+2026-07-21 12:44:52,499  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:44:52,521  INFO        -> 0 market events found
+2026-07-21 12:44:52,538  INFO      No market events extracted.
+2026-07-21 12:44:52,539  INFO      [Step 3] Matching client holdings to themes...
+2026-07-21 12:44:52,574  INFO      Loaded 6 themes covering 12 distinct sectors.
+2026-07-21 12:44:52,591  INFO      Processing 3 client(s)...
+2026-07-21 12:44:52,618  INFO        [AB345678] Arjun Mehta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:44:52,648  INFO        [CD901234] Priya Sharma -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:44:52,666  INFO        [EF567890] Rahul Gupta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-07-21 12:44:52,667  INFO      [Step 3] Done. 3 client(s), 6 theme match(es).
+2026-07-21 12:44:52,668  INFO      [Step 5] Generating client market outlooks...
+2026-07-21 12:44:55,625  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:44:55,665  INFO        [AB345678] outlook generated (2 drivers).
+2026-07-21 12:44:58,745  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:44:58,782  INFO        [CD901234] outlook generated (2 drivers).
+2026-07-21 12:45:01,504  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:45:01,537  INFO        [EF567890] outlook generated (2 drivers).
+2026-07-21 12:45:01,537  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-07-21 12:45:01,537  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-07-21 12:45:01,537  INFO      [Step 6] AI Meeting Summary...
+2026-07-21 12:45:09,033  INFO      HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-07-21 12:45:11,780  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:45:11,854  INFO      [Step 7] AI Generated Talking Points...
+2026-07-21 12:45:11,868  INFO      Starting talking-point generation for 3 client(s)
+2026-07-21 12:45:11,868  INFO      Processing client 1: client_id=1, dob=1975-04-10, marital_status=Married, kids=2 children, hobbies=Golf, Travel, other=Prefers face-to-face meetings, meeting_summary=['Arjun Mehta has accumulated €800,000 in cash and wants to invest it.', 'His portfolio market value is approximately €7.48 million, with an aggressive risk profile.', 'Sustaina...
+2026-07-21 12:45:11,868  INFO      Preparing prompt with 1 client entry/entries
+2026-07-21 12:45:13,640  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:45:13,656  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-07-21 12:45:13,656  INFO      OpenAI returned 2 opener(s) for client_id=1
+2026-07-21 12:45:13,666  INFO      Updating existing talking points for client_id=1 with 2 opener(s)
+2026-07-21 12:45:13,670  INFO      Processing client 2: client_id=2, dob=1985-07-15, marital_status=Single, kids=None, hobbies=Reading, other=Interested in AI sector, meeting_summary=
+2026-07-21 12:45:13,670  INFO      Preparing prompt with 1 client entry/entries
+2026-07-21 12:45:15,002  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:45:15,038  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-07-21 12:45:15,038  INFO      OpenAI returned 2 opener(s) for client_id=2
+2026-07-21 12:45:15,038  INFO      Updating existing talking points for client_id=2 with 2 opener(s)
+2026-07-21 12:45:15,038  INFO      Processing client 3: client_id=3, dob=1965-09-08, marital_status=Married, kids=1 child, hobbies=Tennis, other=Interested in AI, meeting_summary=
+2026-07-21 12:45:15,038  INFO      Preparing prompt with 1 client entry/entries
+2026-07-21 12:45:18,551  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 12:45:18,570  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-07-21 12:45:18,570  INFO      OpenAI returned 2 opener(s) for client_id=3
+2026-07-21 12:45:18,572  INFO      Updating existing talking points for client_id=3 with 2 opener(s)
+2026-07-21 12:45:18,574  INFO      Completed talking-point generation for 3 client(s)
+2026-07-21 12:45:18,574  INFO      --------------------------------------------------
+2026-07-21 12:45:18,574  INFO      [Step 7] Done.

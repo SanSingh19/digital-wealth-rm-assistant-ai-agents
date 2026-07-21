@@ -64,37 +64,45 @@ def _summarize_client(client_details: Any, meeting: Any) -> str:
         f"client_id={client_details.id}, dob={client_details.date_of_Birth}, "
         f"marital_status={client_details.marital_status}, kids={client_details.kids_details}, "
         f"hobbies={_truncate(client_details.hobbies)}, other={_truncate(client_details.other)}, "
-        f"constraints={_truncate(client_details.client_constraints)}, "
         f"meeting_summary={_truncate(meeting_summary)}"
     )
 
 
-SYSTEM_THEMES = """
+SYSTEM_CONVERSATION_OPENERS = """
 You are a Relationship Manager AI Assistant.
 Your role is to create personalized conversation openers for clients using their personal details, interests, and previous meeting conversations.
 Don't ask more sensible personal topics.
 Respond ONLY with valid JSON – no preamble, no markdown fences.
 """.strip()
 
-PROMPT_THEMES = """
+PROMPT_CONVERSATION_OPENERS = """
 Client Details and Last Meeting Summary:
 
 {client_block}
 
-Generate 3-5 personalized conversation openers based on the client's profile and previous discussions.
+Generate top 2 personalized conversation openers based on the client's profile and previous discussions.
+
 
 Rules:
 - Professional and relationship-focused.
+- Maintain a warm, professional, and welcoming tone on first contact.
+- Focus on building rapport and trust.
+- First opener should be a warm greeting and personal details .
+- Second opener should use the last meeting summary as the starting point for the conversation.
+- Reference relevant topics discussed previously when appropriate.
 - Maximum two topics per opener.
 - No sensitive or intrusive questions.
 - No assumptions.
 - Keep responses concise.
+- Do not start every opener with a greeting.
+- If a greeting is used, use it only in the first opener.
+- Ensure each opener has a distinct opening style and does not repeat salutation phrases.
 
 Respond ONLY with valid JSON.
 
 
 {{
-  "client_id": "<use the current client's id from the client block>",  
+  "client_id": "<use the current client's id from the client block>",
   "conversationOpeners": ["string"]
 }}
 """.strip()
@@ -158,11 +166,11 @@ def get_or_create_client_talking_points(session, client_result):
             client_id,
             len(openers),
         )
-        existing_row.conversation_openers = json.dumps(openers)
+        existing_row.conversation_openers = openers
         session.flush()
         return existing_row
 
-    row = ClientAITalkingPoints(client_id=client_id, conversation_openers=json.dumps(openers))
+    row = ClientAITalkingPoints(client_id=client_id, conversation_openers=openers)
     session.add(row)
     session.flush()
     log.info("Created talking points for client_id=%s with %s opener(s)", client_id, len(openers))
@@ -186,10 +194,10 @@ def populate_conversation_openers(clients, openai_client):
 
     trends_block = "\n".join(client_lines)
     log.info("Preparing prompt with %s client entry/entries", len(client_lines))
-    prompt = PROMPT_THEMES.format(client_block=trends_block)
+    prompt = PROMPT_CONVERSATION_OPENERS.format(client_block=trends_block)
     log.debug("Prompt length: %s characters", len(prompt))
 
-    result = openai_json(openai_client, prompt, SYSTEM_THEMES)
+    result = openai_json(openai_client, prompt, SYSTEM_CONVERSATION_OPENERS)
     if isinstance(result, dict):
         opener_count = len(result.get("conversationOpeners", []))
         client_id = result.get("client_id")
