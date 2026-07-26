@@ -48,6 +48,7 @@ from step3_match import run_matching
 from step5_advisor import run_advisor
 from step6_generated_talking_points import generated_talking_points
 from step7_client_meeting_summary import generate_client_meeting_summary
+from step8_recommend import run_recommendations
 
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -91,17 +92,22 @@ def run_pipeline():
         outlook_results = run_advisor()
         log.info(f"[Step 5] Done. {len(outlook_results)} outlook(s) generated.")
 
-        log.info("\n[OK]  Pipeline run completed successfully.\n")
-
-        # -- Step 6: Meeting Summary -----------------
+         # -- Step 6: Meeting Summary -----------------
         log.info("[Step 6] AI Meeting Summary...")
         generate_client_meeting_summary()
 
         # -- Step 7: AI Generated Talking Points ---------------
         log.info("[Step 7] AI Generated Talking Points...")
         generated_talking_points()
-
         log.info("[Step 7] Done.")
+
+        # -- Step 8: Sector recommendations -----
+        log.info("[Step 8] Generating sector recommendations...")
+        rec_results = run_recommendations()
+        total_recs  = sum(len(v) for v in rec_results.values())
+        log.info(f"[Step 8] Done. {len(rec_results)} client(s), {total_recs} sector recommendation(s).")
+
+        log.info("\n[OK]  Pipeline run completed successfully.\n")
 
 
     except Exception as exc:
