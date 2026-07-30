@@ -32,6 +32,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
+from portfolio_api import PortfolioApi
 
 import httpx
 from openai import OpenAI
@@ -42,6 +43,12 @@ from models import (
     ClientAITalkingPoints,
     ClientMeetingSummary,
     ClientPersonalDetails,
+    ClientRiskOverview,
+    ClientThemeMatch,
+    Account,
+    Portfolio,
+    Holding,
+    Security,
     get_session_factory,
     init_db,
 )
@@ -73,6 +80,14 @@ You are a Relationship Manager AI Assistant.
 Your role is to create personalized conversation openers for clients using their personal details, interests, and previous meeting conversations.
 Don't ask more sensible personal topics.
 Respond ONLY with valid JSON – no preamble, no markdown fences.
+""".strip()
+
+SYSTEM_PORTFOLIO_DISCUSSION = """
+You are an experienced Wealth Relationship Manager.
+
+Generate portfolio discussion points for the relationship manager.
+
+Return ONLY valid JSON.
 """.strip()
 
 PROMPT_CONVERSATION_OPENERS = """
@@ -107,8 +122,68 @@ Respond ONLY with valid JSON.
 }}
 """.strip()
 
+PROMPT_PORTFOLIO_DISCUSSION = """
+Client Information
 
+{portfolio_context}
 
+Generate ONLY TWO portfolio discussion points.
+
+Discussion Point 1
+------------------
+Decide automatically.
+
+IF every asset allocation is within its recommended bandwidth:
+- Write a Positive Portfolio Highlight.
+- Mention portfolio performance or diversification.
+- Mention strong holdings only if supported by the data.
+- Do NOT recommend any portfolio changes.
+
+ELSE
+- Generate an Investment Allocation discussion.
+- Identify the asset class that is outside its bandwidth.
+- Explain whether it is overweight or underweight.
+- Suggest an appropriate Buy, Sell or Rebalance action.
+- Base the recommendation ONLY on the provided portfolio data.
+
+Discussion Point 2
+------------------
+Generate a Risk & Concerns discussion.
+
+Use:
+- Risk Indicators
+- Theme Matches
+- Market Sentiment
+- Concentration Risk
+- Security/Sector exposure
+
+If a sector or security has negative sentiment,
+mention it and explain why monitoring or reducing exposure may be appropriate.
+
+If no major risk exists,
+mention the primary risk indicator that should continue to be monitored.
+
+Rules
+
+- Return EXACTLY TWO discussion points.
+- Make them client specific.
+- Use ONLY the provided data.
+- Never invent holdings or sectors.
+- Professional Relationship Manager tone.
+- Each discussion should be 2-3 sentences.
+- No headings.
+- No bullet points.
+
+Return ONLY JSON.
+
+{{
+    "client_id":"client id",
+    "portfolioDiscussion":[
+        "discussion point 1",
+        "discussion point 2"
+    ]
+}}
+""".strip()
 
 def generated_talking_points(client_ids: list[int] | None = None) -> dict:
     results = {}
@@ -139,10 +214,39 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 client_details.id,
                 _summarize_client(client_details, meeting),
             )
-            client_result = populate_conversation_openers([(client_details, meeting)], openai_client)
-            if isinstance(client_result, dict):
-                row = get_or_create_client_talking_points(session, client_result)
-                results[client_details.id] = row
+            conversation_result = populate_conversation_openers(
+                session,
+                [(client_details, meeting)],
+                openai_client
+            )
+
+            portfolio_result = populate_portfolio_discussion(
+                session,
+                [(client_details, meeting)],
+                openai_client
+            )
+
+            client_result = {
+                "client_id": (
+                        conversation_result.get("client_id")
+                        or portfolio_result.get("client_id")
+                ),
+                "conversationOpeners": conversation_result.get(
+                    "conversationOpeners",
+                    []
+                ),
+                "portfolioDiscussion": portfolio_result.get(
+                    "portfolioDiscussion",
+                    []
+                ),
+            }
+
+            row = get_or_create_client_talking_points(
+                session,
+                client_result
+            )
+
+            results[client_details.id] = row
 
         session.commit()
         log.info("Completed talking-point generation for %s client(s)", len(results))
@@ -154,6 +258,10 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
 def get_or_create_client_talking_points(session, client_result):
     client_id = client_result.get("client_id")
     openers = client_result.get("conversationOpeners", [])
+    portfolio_discussion = client_result.get(
+        "portfolioDiscussion",
+        []
+    )
 
     if not client_id:
         log.warning("Skipping DB write because no client_id was returned from the AI response")
@@ -167,17 +275,20 @@ def get_or_create_client_talking_points(session, client_result):
             len(openers),
         )
         existing_row.conversation_openers = openers
+        existing_row.portfolio_discussion = portfolio_discussion
         session.flush()
         return existing_row
 
-    row = ClientAITalkingPoints(client_id=client_id, conversation_openers=openers)
+    row = ClientAITalkingPoints(client_id=client_id,
+                                conversation_openers=openers,
+                                portfolio_discussion=portfolio_discussion)
     session.add(row)
     session.flush()
     log.info("Created talking points for client_id=%s with %s opener(s)", client_id, len(openers))
     return row
 
 
-def populate_conversation_openers(clients, openai_client):
+def populate_conversation_openers(session, clients, openai_client):
     if not clients:
         return {"client_id": None, "conversationOpeners": []}
 
@@ -208,6 +319,118 @@ def populate_conversation_openers(clients, openai_client):
 
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
     return {"client_id": None, "conversationOpeners": result}
+
+def populate_portfolio_discussion(session, clients, openai_client):
+
+    if not clients:
+        return {"client_id": None, "portfolioDiscussion": []}
+
+    portfolio_sections = []
+
+    for i, (client_details, meeting) in enumerate(clients):
+
+        client = (
+            session.query(Client)
+            .filter(Client.id == client_details.client_id)
+            .first()
+        )
+
+        portfolio_data = PortfolioApi.get_portfolio(client.id)
+
+        performance_data = PortfolioApi.get_performance(
+            client.id,
+            client.rm_id
+        )
+
+        portfolio_text = f"""
+        Portfolio Details:
+        {json.dumps(portfolio_data, indent=2)}
+
+        Performance Details:
+        {json.dumps(performance_data, indent=2)}
+        """
+
+
+        risk = (
+            session.query(ClientRiskOverview)
+            .filter(ClientRiskOverview.client_id == client.id)
+            .first()
+        )
+
+        risk_text = ""
+
+        if risk:
+
+            risk_text = f"""
+    Concentration : {risk.concentration_pct}
+    Largest Asset : {risk.concentration_asset}
+    Sharpe Ratio : {risk.sharpe_ratio}
+    Value At Risk : {risk.value_at_risk}
+    Max Drawdown : {risk.max_drawdown}
+    """
+
+        theme_matches = (
+            session.query(ClientThemeMatch)
+            .filter(ClientThemeMatch.client_id == client.id)
+            .all()
+        )
+
+        theme_text = []
+
+        for theme in theme_matches:
+
+            theme_text.append(
+                f"""
+    Theme : {theme.theme.name}
+    Exposure : {theme.exposure_pct}
+    Sentiment : {theme.sentiment}
+    Confidence : {theme.confidence}
+    """
+            )
+
+    portfolio_sections.append(
+    f"""
+    Client ID:{client.id}
+
+    Risk Profile:
+    {client.risk_profile}
+
+    Portfolio Details:
+    {portfolio_text}
+
+    Risk Overview:
+    {risk_text}
+
+    Theme Matches:
+    {''.join(theme_text)}
+    """
+        )
+
+    portfolio_context = "\n".join(portfolio_sections)
+
+    prompt = PROMPT_PORTFOLIO_DISCUSSION.format(
+        portfolio_context = portfolio_context
+    )
+
+    result = openai_json(
+        openai_client,
+        prompt,
+        SYSTEM_PORTFOLIO_DISCUSSION
+    )
+
+    if isinstance(result, dict):
+        return {
+            "client_id": result.get("client_id"),
+            "portfolioDiscussion": result.get(
+                "portfolioDiscussion",
+                []
+            ),
+        }
+
+    return {
+        "client_id": None,
+        "portfolioDiscussion": [],
+    }
 
 def get_openai_client() -> OpenAI:
     api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
@@ -242,28 +465,33 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
                     raw = raw[4:]
 
             parsed = json.loads(raw.strip())
+
             if isinstance(parsed, list):
-                log.info("OpenAI returned a list payload with %s item(s)", len(parsed))
-                return {"client_id": None, "conversationOpeners": parsed}
+                return parsed
+
             if isinstance(parsed, dict):
-                conversation_openers = parsed.get("conversationOpeners")
-                if isinstance(conversation_openers, list):
-                    log.info("OpenAI returned structured JSON with %s opener(s)", len(conversation_openers))
+
+                if "conversationOpeners" in parsed:
                     return {
                         "client_id": parsed.get("client_id"),
-                        "conversationOpeners": conversation_openers,
+                        "conversationOpeners": parsed.get(
+                            "conversationOpeners",
+                            []
+                        ),
                     }
-                for v in parsed.values():
-                    if isinstance(v, list):
-                        log.info("OpenAI returned a wrapped list payload with %s item(s)", len(v))
-                        return {
-                            "client_id": parsed.get("client_id"),
-                            "conversationOpeners": v,
-                        }
-                log.warning("OpenAI returned JSON without a conversationOpeners list. Keys: %s", list(parsed.keys()))
-                return {"client_id": parsed.get("client_id"), "conversationOpeners": []}
-            log.warning("OpenAI returned an unexpected payload type: %s", type(parsed).__name__)
-            return {"client_id": None, "conversationOpeners": []}
+
+                if "portfolioDiscussion" in parsed:
+                    return {
+                        "client_id": parsed.get("client_id"),
+                        "portfolioDiscussion": parsed.get(
+                            "portfolioDiscussion",
+                            []
+                        ),
+                    }
+
+                return parsed
+
+            return {}
         except json.JSONDecodeError as e:
             if attempt == 0:
                 log.warning("JSON decode error, retrying: %s", e)
