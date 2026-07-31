@@ -70,7 +70,9 @@ from models import (
     Client, Account, Portfolio, Holding, Security,
     ClientThemeMatch, ClientOutlook, ClientPersonalDetails,
     SectorTag, Theme,
+    SectorMaster,
     ClientSectorRecommendation,
+    ClientFundRecommendation
 )
 
 log = logging.getLogger("step6_recommend")
@@ -135,8 +137,36 @@ class SectorRecommendationsResult(BaseModel):
         description="One description per sector, matching the sector names provided."
     )
 
+class InvestmentRecommendation(BaseModel):
+
+    rank: int = Field( description="Recommendation ranking")
+    recommendation_type: str = Field(description="SECURITY or FUND")
+    investment_id: str = Field(description="Ticker or Fund ID")
+    investment_name: str = Field( description="Security name or Fund name")
+    sector: str = Field( description="Sector")
+    action: str = Field(description="Always BUY")
+    priority: str = Field(description="High / Medium / Low")
+    rationale: str = Field(
+        description="One concise sentence explaining why this investment is recommended."
+    )
+
+
+class InvestmentRecommendationResult(BaseModel):
+
+    mifid_suitability: str = Field(
+        description="One concise MiFID suitability statement (maximum 15 words)."
+    )
+
+    portfolio_rationale: str = Field(
+        description="Overall summary of why these recommendations fit the client."
+    )
+
+
+    recommendations: list[InvestmentRecommendation]
+
 
 PARSER = PydanticOutputParser(pydantic_object=SectorRecommendationsResult)
+FUND_RECOMMENDATION_PARSER = PydanticOutputParser(pydantic_object=InvestmentRecommendationResult)
 
 PROMPT = ChatPromptTemplate.from_template(
     """You are a wealth management advisor. Write one-sentence descriptions for each
@@ -173,6 +203,300 @@ INSTRUCTIONS
 """
 )
 
+# ==============================================
+# FUND UNIVERSE
+# ==============================================
+
+FUND_UNIVERSE = {
+
+    "Technology": [
+
+        {
+            "fund_id": "F001",
+            "fund_name": "Global Technology Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Technology",
+            "investment_style": "Growth"
+        },
+
+        {
+            "fund_id": "F002",
+            "fund_name": "Digital Innovation Fund",
+            "risk": "Aggressive",
+            "sector": "Technology",
+            "investment_style": "Growth"
+        }
+
+    ],
+
+    "Semiconductors": [
+
+        {
+            "fund_id": "F003",
+            "fund_name": "Global Semiconductor Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Semiconductors",
+            "investment_style": "Growth"
+        },
+
+        {
+            "fund_id": "F004",
+            "fund_name": "AI Infrastructure Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Semiconductors",
+            "investment_style": "Growth"
+        }
+
+    ],
+
+    "Financials": [
+
+        {
+            "fund_id": "F005",
+            "fund_name": "European Financial Opportunities Fund",
+            "risk": "Moderate",
+            "sector": "Financials",
+            "investment_style": "Balanced"
+        },
+
+        {
+            "fund_id": "F006",
+            "fund_name": "Dividend Income Fund",
+            "risk": "Conservative",
+            "sector": "Financials",
+            "investment_style": "Income"
+        }
+
+    ],
+
+    "Healthcare": [
+
+        {
+            "fund_id": "F007",
+            "fund_name": "Global Healthcare Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Healthcare",
+            "investment_style": "Growth"
+        }
+
+    ],
+
+    "Renewable Energy": [
+
+        {
+            "fund_id": "F008",
+            "fund_name": "Clean Energy Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Renewable Energy",
+            "investment_style": "Growth"
+        }
+
+    ],
+
+    "Consumer Discretionary": [
+
+        {
+            "fund_id": "F013",
+            "fund_name": "Global Consumer Growth Fund",
+            "risk": "Moderate",
+            "sector": "Consumer Discretionary",
+            "investment_style": "Growth"
+        },
+
+        {
+            "fund_id": "F014",
+            "fund_name": "Consumer Lifestyle Opportunities Fund",
+            "risk": "Aggressive",
+            "sector": "Consumer Discretionary",
+            "investment_style": "Growth"
+        }
+
+    ],
+
+    "Energy": [
+
+        {
+            "fund_id": "F009",
+            "fund_name": "Global Energy Opportunities Fund",
+            "risk": "Moderate",
+            "sector": "Energy",
+            "investment_style": "Balanced"
+        }
+
+    ],
+
+    "Real Estate": [
+
+        {
+            "fund_id": "F010",
+            "fund_name": "European Real Estate Income Fund",
+            "risk": "Conservative",
+            "sector": "Real Estate",
+            "investment_style": "Income"
+        }
+
+    ]
+
+}
+
+FUND_RECOMMENDATION_PROMPT = ChatPromptTemplate.from_template("""
+You are a Senior Wealth Relationship Manager at a leading global private bank.
+Recommend investments that maximize client suitability while leveraging current market opportunities.
+Client suitability always takes priority over expected return.
+
+========================
+CLIENT PROFILE
+========================
+Client Name          : {client_name}
+Risk Profile         : {risk_profile}
+Investment Goals     : {investment_goals}
+Profession           : {profession}
+Service Model        : {service_model}
+Investment Preference: {preference}
+Client Constraints   : {constraints}
+
+========================
+MARKET CONTEXT
+========================
+
+Market Drivers
+{drivers_text}
+
+Matched Investment Themes
+{themes_text}
+
+========================
+SHORTLISTED CANDIDATES
+========================
+
+Security Candidates
+{candidate_securities}
+
+Fund Candidates
+{candidate_funds}
+
+========================
+PORTFOLIO OPPORTUNITIES
+========================
+
+Positive Existing Sector Opportunities
+{owned_positive_sectors}
+
+Positive New Diversification Opportunities
+{unowned_positive_sectors}
+
+========================
+DECISION PROCESS
+========================
+
+Step 1 — Suitability
+Every recommendation must satisfy:
+• Risk Profile
+• Investment Goals
+• Investment Preference
+• Client Constraints
+• Existing Portfolio
+• Service Model
+Reject any investment that violates any requirement.
+
+Step 2 — Market Opportunity
+Evaluate remaining investments using:
+• Market Drivers
+• Investment Themes
+• Sector Momentum
+• News Sentiment
+
+Step 3 — Portfolio Enhancement
+Improve the portfolio by:
+• Strengthening high-conviction existing sectors
+• Adding attractive new sector exposure
+Maintain diversification.
+Avoid unnecessary concentration.
+Recommend multiple investments from one sector only when strongly justified.
+
+Step 4 — Final Ranking
+
+Rank recommendations using the following priority:
+1. Client Suitability
+2. Portfolio Improvement
+3. Market Opportunity
+4. Long-term Value Creation
+
+Suitability ALWAYS has higher priority than market momentum.
+
+========================
+MANDATORY RULES
+========================
+
+You MUST strictly follow every rule below.
+MANDATORY RULES:
+• Recommend EXACTLY THREE BUY investments.
+• Use ONLY investments from the supplied candidate lists.
+• Never invent, rename, abbreviate, or modify Investment IDs, Names, or Sectors.
+• Copy Investment ID, Name, and Sector exactly as provided.
+• Do not recommend duplicate investments.
+• Every recommendation must satisfy the client's Risk Profile, Goals, Preference, Constraints, and Service Model.
+• Prefer different sectors whenever suitable.
+• Recommend multiple investments from one sector only when justified.
+• Every rationale must explain:
+   - why it suits THIS client
+   - which market driver, theme, or opportunity supports it.
+
+========================
+OUTPUT
+========================
+
+Return EXACTLY THREE BUY recommendations.
+Each recommendation MUST include:
+
+• Rank
+• Recommendation Type (SECURITY or FUND)
+• Investment ID
+• Investment Name
+• Sector
+• Action = BUY
+• Priority (High / Medium / Low)
+• One rationale (maximum 30 words)
+
+Every rationale MUST explain:
+1. Why the investment suits THIS client.
+2. Which market driver, investment theme, or sector opportunity supports the recommendation.
+
+Avoid generic market commentary.
+Write naturally as a Senior Wealth Relationship Manager preparing recommendations for another experienced RM.
+
+========================
+MiFID SUITABILITY
+========================
+
+Provide ONE concise suitability statement(maximum 15 words).
+
+The statement must explain why the final recommendations are suitable for this client's:
+
+• Risk Profile
+• Investment Goals
+• Investment Preference
+• Client Constraints
+
+Do NOT mention individual investments.
+Examples:
+• Suitability validated for a Moderate Growth investor with long-term capital appreciation objectives.
+• Suitable for a Balanced investor seeking diversified long-term growth within stated constraints.
+• Recommendations align with the client's Moderate Offensive profile and long-term investment objectives.
+
+========================
+PORTFOLIO RATIONALE
+========================
+
+Finally provide one concise portfolio rationale (maximum 60 words) explaining:
+• Why these three recommendations were selected
+• How they improve diversification
+• How they align with the client's goals
+• How they respect the client's risk profile
+• How they strengthen the long-term portfolio
+
+{format_instructions}
+""")
 
 # ==============================================
 #  SIGNAL ENGINE (pure Python)
@@ -258,7 +582,7 @@ def compute_signal(
     s2 = _score_from_themes(sector_name, matches, session)
     s3 = _score_from_sector_tags(sector_name, session)
 
-    weighted = (s1 * 0.50) + (s2 * 0.30) + (s3 * 0.20)
+    weighted = (s1 * 0.20) + (s2 * 0.30) + (s3 * 0.50)
 
     if weighted > BUY_THRESHOLD:
         action = "BUY"
@@ -278,6 +602,53 @@ def compute_signal(
         },
     }
 
+def _compute_unowned_sector_signals(
+    session,
+    drivers,
+    matches,
+    owned_sector_names,
+):
+    """
+    Compute signals ONLY for sectors the client does NOT own.
+    """
+
+    signals = []
+
+    log.info("========== PART 2 ==========")
+
+    sectors = (
+        session.query(SectorMaster)
+        .order_by(SectorMaster.name)
+        .all()
+    )
+
+    log.info(
+        "SectorMaster contains %d sectors",
+        len(sectors),
+    )
+
+    for sector in sectors:
+
+        if sector.name in owned_sector_names:
+            continue
+
+        sig = compute_signal(
+            sector.name,
+            drivers,
+            matches,
+            session,
+        )
+
+        signals.append(sig)
+
+        log.info(
+            "[PART 2] %-22s -> %-4s (%.2f)",
+            sig["sector_name"],
+            sig["action"],
+            sig["signal_score"],
+        )
+
+    return signals
 
 # ==============================================
 #  PROMPT BUILDERS
@@ -288,7 +659,7 @@ def _build_sector_signals_text(signals: list[dict]) -> str:
     for s in signals:
         d = s["signals_detail"]
         lines.append(
-            f"- {s['sector_name']:<25} → {s['action']:<4}  "
+            f"- {s['sector_name']:<25} -> {s['action']:<4}  "
             f"(score={s['signal_score']:+.2f} | "
             f"driver={d['driver_signal']:+.2f}, "
             f"theme={d['theme_signal']:+.2f}, "
@@ -345,6 +716,261 @@ def _save_sector_recommendations(
                 description  = desc,
             ))
     session.commit()
+
+def _save_fund_recommendations(
+    session: Session,
+    client_id: int,
+    recommendation_result: InvestmentRecommendationResult,
+):
+    """
+    Save AI generated fund recommendations.
+    """
+
+    existing = (
+        session.query(ClientFundRecommendation)
+        .filter_by(client_id=client_id)
+        .first()
+    )
+
+    recommendation_json = []
+
+    for rec in recommendation_result.recommendations:
+
+        recommendation_json.append(
+            {
+                "rank": rec.rank,
+                "recommendation_type": rec.recommendation_type,
+                "investment_id": rec.investment_id,
+                "investment_name": rec.investment_name,
+                "sector": rec.sector,
+                "action": rec.action,
+                "priority": rec.priority,
+                "rationale": rec.rationale
+            }
+        )
+
+    if existing:
+
+        existing.generated_at = datetime.utcnow()
+        existing.mifid_suitability = (recommendation_result.mifid_suitability )
+        existing.portfolio_rationale = (recommendation_result.portfolio_rationale)
+        existing.recommendations = json.dumps(
+            recommendation_json,
+            indent=2
+        )
+
+    else:
+
+        session.add(
+            ClientFundRecommendation(
+                client_id=client_id,
+                generated_at=datetime.utcnow(),
+                mifid_suitability=recommendation_result.mifid_suitability,
+                portfolio_rationale= recommendation_result.portfolio_rationale,
+                recommendations=json.dumps(
+                    recommendation_json,
+                    indent=2
+                )
+            )
+        )
+
+    session.commit()
+
+
+def _get_client_owned_security_ids(session, client_id):
+    """
+    Returns all Security IDs currently owned by the client.
+    """
+
+    holdings = (
+        session.query(Holding)
+        .join(Portfolio)
+        .join(Account)
+        .filter(Account.client_id == client_id)
+        .all()
+    )
+
+    return {holding.security_id for holding in holdings}
+
+def _split_owned_and_unowned_sectors(
+    positive_signals,
+    owned_sector_names,
+):
+    """
+    Split positive sectors into:
+    1. Owned sectors
+    2. Unowned sectors
+    """
+
+    owned_positive = []
+    unowned_positive = []
+
+    for signal in positive_signals:
+
+        if signal["sector_name"] in owned_sector_names:
+            owned_positive.append(signal)
+        else:
+            unowned_positive.append(signal)
+
+    return owned_positive, unowned_positive
+
+def _get_candidate_securities(
+    session,
+    buy_sectors,
+    owned_security_ids
+):
+
+    candidates = []
+
+    for sector_name in buy_sectors:
+
+        securities = (
+            session.query(Security)
+            .join(SectorMaster)
+            .filter(
+                SectorMaster.name == sector_name
+            )
+            .all()
+        )
+
+        for security in securities:
+
+            if security.id in owned_security_ids:
+                continue
+            candidates.append(security)
+
+    return candidates
+
+def _build_candidate_text(candidates):
+    """
+    Converts candidate securities into prompt text.
+    """
+
+    if not candidates:
+        return "No candidate securities found."
+
+    lines = []
+
+    for security in candidates:
+
+        lines.append(
+            f"""
+Ticker : {security.ticker}
+Name : {security.name}
+Sector : {security.sector.name if security.sector else "Unknown"}
+Security Type : {security.security_type}
+""".strip()
+        )
+
+    return "\n\n".join(lines)
+
+def _get_candidate_funds(buy_sectors):
+    """
+    Returns all candidate funds belonging to BUY sectors.
+    """
+
+    candidate_funds = []
+
+    for sector in buy_sectors:
+        funds = FUND_UNIVERSE.get(sector, [])
+        candidate_funds.extend(funds)
+
+    return candidate_funds
+
+def _build_fund_text(candidate_funds):
+    """
+    Converts candidate funds into prompt text.
+    """
+
+    if not candidate_funds:
+        return "No candidate funds found."
+
+    lines = []
+
+    for fund in candidate_funds:
+
+        lines.append(
+            f"""
+            Fund ID : {fund['fund_id']}
+            Fund Name : {fund['fund_name']}
+            Sector : {fund['sector']}
+            Risk : {fund['risk']}
+            Investment Style : {fund['investment_style']}
+            """.strip()
+        )
+    return "\n\n".join(lines)
+
+
+def _generate_fund_recommendations(
+    llm,
+    client,
+    candidate_securities,
+    candidate_funds,
+    owned_positive_sectors,
+    unowned_positive_sectors,
+    drivers_text,
+    themes_text,
+    constraints
+):
+    """
+    Generates AI-based investment recommendations.
+    """
+
+    chain = (
+        FUND_RECOMMENDATION_PROMPT
+        | llm
+        | FUND_RECOMMENDATION_PARSER
+    )
+
+    candidate_security_text = _build_candidate_text(
+        candidate_securities
+    )
+
+    candidate_fund_text = _build_fund_text(
+        candidate_funds
+    )
+
+    owned_sector_text = "\n".join(
+        f"- {s['sector_name']} (Existing Allocation)"
+        for s in owned_positive_sectors
+    ) or "None"
+
+    unowned_sector_text = "\n".join(
+        f"- {s['sector_name']} (New Diversification Opportunity)"
+        for s in unowned_positive_sectors
+    ) or "None"
+
+    log.info(
+        "[PART 2] Candidate Securities=%d | Candidate Funds=%d",
+        len(candidate_securities),
+        len(candidate_funds),
+    )
+
+    result = chain.invoke(
+        {
+            "client_name": client.name,
+            "risk_profile": client.risk_profile or "N/A",
+            "investment_goals": client.investment_goals or "N/A",
+            "profession": client.profession or "N/A",
+            "service_model": client.service_model or "N/A",
+            "preference": client.preference or "N/A",
+            "constraints": constraints,
+            "drivers_text": drivers_text,
+            "themes_text": themes_text,
+            "candidate_securities": candidate_security_text,
+            "candidate_funds": candidate_fund_text,
+            "owned_positive_sectors": owned_sector_text,
+            "unowned_positive_sectors": unowned_sector_text,
+            "format_instructions":
+                FUND_RECOMMENDATION_PARSER.get_format_instructions()
+        }
+
+    )
+
+    return result
+
+
+
 
 
 # ==============================================
@@ -430,9 +1056,11 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 sig = compute_signal(sector_name, drivers, matches, session)
                 signals.append(sig)
                 log.info(
-                    f"  {sector_name:<25} → {sig['action']:<4}  "
+                    f"  {sector_name:<25} -> {sig['action']:<4}  "
                     f"score={sig['signal_score']:+.2f}"
                 )
+
+            owned_signals = signals.copy()
 
             # -- LLM: generate 1 description per sector (single call)
             personal     = client.personal_details
@@ -463,6 +1091,102 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
 
             # -- Save to DB --------------------
             _save_sector_recommendations(session, client.id, signals, descriptions)
+
+
+            # ---------- NEW PART 2 STARTS HERE ----------
+
+            unowned_signals = _compute_unowned_sector_signals(
+                session=session,
+                drivers=drivers,
+                matches=matches,
+                owned_sector_names=set(sectors_held.keys()),
+            )
+
+            all_sector_signals = owned_signals + unowned_signals
+
+            positive_opportunity_signals = [
+                signal
+                for signal in all_sector_signals
+                if signal["signal_score"] > BUY_THRESHOLD
+            ]
+
+            log.info(
+                "[PART 2] Positive Opportunity Sectors (%d): %s",
+                len(positive_opportunity_signals),
+                ", ".join(
+                    s["sector_name"]
+                    for s in positive_opportunity_signals
+                ) or "None",
+            )
+
+            owned_positive_sectors, unowned_positive_sectors = (
+                _split_owned_and_unowned_sectors(positive_opportunity_signals, set(sectors_held.keys()))
+            )
+
+            opportunity_sectors = [
+                signal["sector_name"]
+                for signal in positive_opportunity_signals
+            ]
+
+            owned_security_ids = _get_client_owned_security_ids(session,client.id)
+            candidate_securities = _get_candidate_securities(session, opportunity_sectors, owned_security_ids )
+
+            log.info( "[PART 2] Candidate Securities:")
+
+            for sec in candidate_securities:
+                log.info(
+                    "   %-8s %-35s %-20s",
+                    sec.ticker,
+                    sec.name,
+                    sec.sector.name,
+                )
+
+            candidate_funds = _get_candidate_funds(opportunity_sectors)
+
+            log.info(
+                "[PART 2] Candidate Funds:"
+            )
+
+            for fund in candidate_funds:
+                log.info(
+                    "   %-6s %-35s %-20s",
+                    fund["fund_id"],
+                    fund["fund_name"],
+                    fund["sector"],
+                )
+
+            if not candidate_securities and not candidate_funds:
+                log.info(
+                    f"  [{client.client_code}] No investment candidates found."
+                )
+                continue
+
+            constraints = (
+                client.personal_details.client_constraints
+                if client.personal_details
+                else "None"
+            )
+
+            drivers_text = _build_drivers_text(drivers)
+            themes_text = _build_themes_text(matches)
+
+            fund_recommendations = _generate_fund_recommendations(
+                llm=llm,
+                client=client,
+                candidate_securities=candidate_securities,
+                candidate_funds=candidate_funds,
+                owned_positive_sectors=owned_positive_sectors,
+                unowned_positive_sectors=unowned_positive_sectors,
+                drivers_text=drivers_text,
+                themes_text=themes_text,
+                constraints=constraints
+            )
+
+            _save_fund_recommendations(
+                session=session,
+                client_id=client.id,
+                recommendation_result=fund_recommendations
+            )
 
             results[client.id] = {s["sector_name"]: s["action"] for s in signals}
             log.info(f"  [{client.client_code}] {len(signals)} sector recommendation(s) saved.")

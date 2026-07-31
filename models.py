@@ -302,6 +302,12 @@ class Client(Base):
         cascade="all, delete-orphan"
     )
 
+    sector_recommendations = relationship(
+        "ClientSectorRecommendation",
+        back_populates="client",
+        cascade="all, delete-orphan"
+    )
+
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
 
@@ -621,13 +627,63 @@ class ClientAITalkingPoints(Base):
 
 
 # ═══════════════════════════════════════════════
+#  STEP 8B — SECTOR RECOMMENDATIONS
+# ═══════════════════════════════════════════════
+
+class ClientSectorRecommendation(Base):
+    """
+    Step 8 Part 1 output:
+    Sector-level BUY / HOLD / SELL recommendations generated
+    using market outlook, themes and sector sentiment.
+
+    One row per client per sector.
+    """
+
+    __tablename__ = "client_sector_recommendations"
+
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    client_id = Column( Integer,ForeignKey("clients.id"), nullable=False)
+    sector_name = Column(String(128),nullable=False )
+    action = Column(  String(20),nullable=False )       # BUY / HOLD / SELL
+
+    signal_score = Column(  Float, nullable=False)
+
+    description = Column(Text)       # AI-generated one-line explanation
+
+    generated_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "client_id",
+            "sector_name",
+            name="uq_client_sector_recommendation"
+        ),
+    )
+
+    client = relationship(
+        "Client",
+        back_populates="sector_recommendations"
+    )
+
+    def __repr__(self):
+        return (
+            f"<ClientSectorRecommendation "
+            f"client_id={self.client_id} "
+            f"sector='{self.sector_name}' "
+            f"action='{self.action}'>"
+        )
+
+# ═══════════════════════════════════════════════
 #  STEP 8 — FUND RECOMMENDATIONS
 # ═══════════════════════════════════════════════
- 
+
 class ClientFundRecommendation(Base):
     """
     Step 8 output: AI-scored and ranked fund recommendations per client.
- 
+
     recommendations — JSON list of:
       {
         rank, fund_id, fund_name,
@@ -641,7 +697,7 @@ class ClientFundRecommendation(Base):
       }
     """
     __tablename__ = "client_fund_recommendations"
- 
+
     id                  = Column(Integer, primary_key=True, autoincrement=True)
     client_id           = Column(Integer, ForeignKey("clients.id"),
                                  nullable=False, unique=True)
@@ -649,13 +705,13 @@ class ClientFundRecommendation(Base):
     mifid_suitability   = Column(String(256))   # e.g. "All Pass – Suitability validated against Aggressive (RP5)"
     portfolio_rationale = Column(Text)
     recommendations     = Column(Text)          # JSON list
- 
+
     client = relationship("Client", back_populates="fund_recommendations")
- 
+
     def __repr__(self):
         return f"<ClientFundRecommendation client_id={self.client_id}>"
- 
- 
+
+
 # ═══════════════════════════════════════════════
 #  DB FACTORY
 # ═══════════════════════════════════════════════
