@@ -96,16 +96,18 @@ def run_pipeline():
         log.info("[Step 6] AI Meeting Summary...")
         generate_client_meeting_summary()
 
-        # -- Step 7: AI Generated Talking Points ---------------
-        log.info("[Step 7] AI Generated Talking Points...")
-        generated_talking_points()
-        log.info("[Step 7] Done.")
-
         # -- Step 8: Sector recommendations -----
         log.info("[Step 8] Generating sector recommendations...")
         rec_results = run_recommendations()
         total_recs  = sum(len(v) for v in rec_results.values())
         log.info(f"[Step 8] Done. {len(rec_results)} client(s), {total_recs} sector recommendation(s).")
+
+        # -- Step 7: AI Generated Talking Points ---------------
+        log.info("[Step 7] AI Generated Talking Points...")
+        generated_talking_points()
+        log.info("[Step 7] Done.")
+
+        
 
         log.info("\n[OK]  Pipeline run completed successfully.\n")
 

@@ -47,10 +47,6 @@ from models import (
     ClientPersonalDetails,
     ClientRiskOverview,
     ClientThemeMatch,
-    Account,
-    Portfolio,
-    Holding,
-    Security,
     get_session_factory,
     init_db,
 )
@@ -263,6 +259,8 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
             log.warning("No clients found for talking-point generation")
             return results
 
+        product_introduction_results = generated_product_introductions(client_ids)
+
         for client_details, meeting in clients:
             log.info(
                 "Processing client %s: %s",
@@ -275,6 +273,11 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 openai_client
             )
 
+            product_introduction_result = product_introduction_results.get(
+                client_details.id,
+                {"client_id": client_details.id, "product_introduction": []},
+            )
+
             portfolio_result = populate_portfolio_discussion(
                 session,
                 [(client_details, meeting)],
@@ -285,9 +288,15 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 "client_id": (
                         conversation_result.get("client_id")
                         or portfolio_result.get("client_id")
+                        or product_introduction_result.get("client_id")
+                        or client_details.id
                 ),
                 "conversationOpeners": conversation_result.get(
                     "conversationOpeners",
+                    []
+                ),
+                "product_introduction": product_introduction_result.get(
+                    "product_introduction",
                     []
                 ),
                 "portfolioDiscussion": portfolio_result.get(
@@ -348,11 +357,14 @@ def generated_product_introductions(client_ids: list[int] | None = None) -> dict
             )
             client_result = populate_product_introductions([(outlook, meeting_summary, recommendation)], openai_client)
             if isinstance(client_result, dict):
-                row = get_or_create_client_talking_points(session, client_result)
-                results[client_details.id] = row
+                results[client_details.id] = client_result
+            else:
+                results[client_details.id] = {
+                    "client_id": client_details.id,
+                    "product_introduction": [],
+                }
 
-        session.commit()
-        log.info("Completed talking-point generation for %s client(s)", len(results))
+        log.info("Completed Product Introduction generation for %s client(s)", len(results))
         log.info("%s", "-" * 50)
 
     return results
@@ -365,9 +377,14 @@ def get_or_create_client_talking_points(session, client_result):
         "portfolioDiscussion",
         []
     )
+    product_introduction = client_result.get("product_introduction", [])
 
-    introductions = client_result.get("product_introduction")
-        log.info("openersFromAI=%s, introductionsFromAI=%s", openers, introductions)
+    log.info(
+        "openersFromAI=%s, introductionsFromAI=%s, portfolioDiscussionFromAI=%s",
+        openers,
+        product_introduction,
+        portfolio_discussion,
+    )
 
     if not client_id:
         log.warning("Skipping DB write because no client_id was returned from the AI response")
@@ -382,12 +399,16 @@ def get_or_create_client_talking_points(session, client_result):
         )
         existing_row.conversation_openers = openers
         existing_row.portfolio_discussion = portfolio_discussion
+        existing_row.product_introduction = product_introduction
         session.flush()
         return existing_row
 
-    row = ClientAITalkingPoints(client_id=client_id,
-                                conversation_openers=openers,
-                                portfolio_discussion=portfolio_discussion)
+    row = ClientAITalkingPoints(
+        client_id=client_id,
+        conversation_openers=openers,
+        portfolio_discussion=portfolio_discussion,
+        product_introduction=product_introduction,
+    )
     session.add(row)
     session.flush()
     log.info("Created talking points for client_id=%s with %s opener(s)", client_id, len(openers))
