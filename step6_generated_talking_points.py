@@ -40,6 +40,8 @@ from openai import OpenAI
 from config.settings import DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL
 from models import (
     Client,
+    ClientOutlook,
+    ClientFundRecommendation,
     ClientAITalkingPoints,
     ClientMeetingSummary,
     ClientPersonalDetails,
@@ -72,6 +74,18 @@ def _summarize_client(client_details: Any, meeting: Any) -> str:
         f"marital_status={client_details.marital_status}, kids={client_details.kids_details}, "
         f"hobbies={_truncate(client_details.hobbies)}, other={_truncate(client_details.other)}, "
         f"meeting_summary={_truncate(meeting_summary)}"
+    )
+
+def _summarize_client_product_introductions(
+    outlook: Any,
+    meeting_summary: Any,
+    recommendation: Any
+) -> str:
+    return (
+        f"client_id={outlook.client_id if outlook else recommendation.client_id if recommendation else 'Unknown'}, "
+        f"client_question={_truncate(meeting_summary.client_questions) if meeting_summary else 'No Client Questions'}, "
+        f"market_outlook={_truncate(outlook.headline_outlook) if outlook else 'No Market Outlook'}, "
+        f"funds={_truncate(recommendation.recommendations) if recommendation else 'No Funds'} "
     )
 
 
@@ -121,6 +135,47 @@ Respond ONLY with valid JSON.
   "conversationOpeners": ["string"]
 }}
 """.strip()
+
+SYSTEM_PRODUCT_INTRODUCTION = """
+You are a Relationship Manager AI Assistant.
+
+Your role is to suggest relevant financial products based on the client's questions, available market outlook, and fund information.
+
+Respond ONLY with valid JSON – no preamble, no markdown fences.
+""".strip()
+
+PROMPT_PRODUCT_INTRODUCTION = """
+Client Questions, Market Outlook, Funds and AI Recommendations:
+
+{client_block}
+
+Generate the top 2 personalized product introductions.
+
+Rules:
+- Always generate exactly 2 product_introduction items.
+- Professional, client-friendly, and relationship-focused.
+- Keep responses concise and conversational.
+- Prioritize products, funds, or investment themes relevant to the client context.
+- If the client question mentions a specific product or fund:
+  - The first product introduction should directly address that product or fund.
+  - The second product introduction should be based on the available AI recommendation about products or funds, refer funds in input if available.
+- If the client question does not mention a specific product or fund:
+  - Generate both product introductions based on the available AI recommendations.
+- When using market outlook information, connect it naturally to the suggested product or fund.
+- Do not make guarantees, predictions, or personalized investment advice.
+- Do not introduce products that are not present in the provided inputs.
+- Avoid repeating the same product, fund, or recommendation in both introductions.
+- Ensure each product introduction has a distinct style and focus.
+- No assumptions beyond the provided information.
+
+Respond ONLY with valid JSON.
+
+{{
+  "client_id": "<use the current client's id from the client block>",
+  "product_introduction": ["string", "string"]
+}}
+""".strip()
+
 
 PROMPT_PORTFOLIO_DISCUSSION = """
 Client Information
@@ -254,6 +309,54 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
 
     return results
 
+def generated_product_introductions(client_ids: list[int] | None = None) -> dict:
+    results = {}
+    engine = init_db(DATABASE_URL)
+    Session = get_session_factory(engine)
+    openai_client = get_openai_client()
+
+    with Session() as session:
+        client_query = (
+            session.query(Client, ClientMeetingSummary, ClientOutlook, ClientFundRecommendation)
+            .outerjoin(
+                ClientMeetingSummary,
+                Client.id == ClientMeetingSummary.client_id,
+            )
+            .outerjoin(
+                ClientOutlook,
+                Client.id == ClientOutlook.client_id,
+            )
+            .outerjoin(
+                ClientFundRecommendation,
+                Client.id == ClientFundRecommendation.client_id,
+            )
+        )
+        if client_ids:
+            client_query = client_query.filter(Client.id.in_(client_ids))
+        clients = client_query.all()
+
+        log.info("Starting Product Introduction generation for %s client(s)", len(clients))
+        if not clients:
+            log.warning("No clients found for Product Introduction generation")
+            return results
+
+        for client_details, meeting_summary, outlook, recommendation in clients:
+            log.info(
+                "Processing client %s: %s",
+                client_details.id,
+                _summarize_client_product_introductions(outlook, meeting_summary, recommendation),
+            )
+            client_result = populate_product_introductions([(outlook, meeting_summary, recommendation)], openai_client)
+            if isinstance(client_result, dict):
+                row = get_or_create_client_talking_points(session, client_result)
+                results[client_details.id] = row
+
+        session.commit()
+        log.info("Completed talking-point generation for %s client(s)", len(results))
+        log.info("%s", "-" * 50)
+
+    return results
+
 
 def get_or_create_client_talking_points(session, client_result):
     client_id = client_result.get("client_id")
@@ -262,6 +365,9 @@ def get_or_create_client_talking_points(session, client_result):
         "portfolioDiscussion",
         []
     )
+
+    introductions = client_result.get("product_introduction")
+        log.info("openersFromAI=%s, introductionsFromAI=%s", openers, introductions)
 
     if not client_id:
         log.warning("Skipping DB write because no client_id was returned from the AI response")
@@ -319,6 +425,70 @@ def populate_conversation_openers(session, clients, openai_client):
 
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
     return {"client_id": None, "conversationOpeners": result}
+
+def populate_product_introductions(clients, openai_client):
+    if not clients:
+        return {"client_id": None, "product_introduction": []}
+
+    client_lines = [
+        _summarize_client_product_introductions(
+            outlook,
+            meeting_summary,
+            recommendation
+        )
+        for outlook, meeting_summary, recommendation in clients
+    ]
+
+    client_block = "\n".join(
+        f"[{i}] {line}" for i, line in enumerate(client_lines)
+    )
+
+    log.info(
+        "Preparing product introduction prompt with %s client entry/entries",
+        len(client_lines)
+    )
+
+    prompt = PROMPT_PRODUCT_INTRODUCTION.format(
+        client_block=client_block
+    )
+
+    log.debug("Prompt length: %s characters", len(prompt))
+
+    result = openai_json(
+        openai_client,
+        prompt,
+        SYSTEM_PRODUCT_INTRODUCTION
+    )
+
+    if isinstance(result, dict):
+        introduction_count = len(
+            result.get("product_introduction", [])
+        )
+        client_id = result.get("client_id")
+
+        log.info(
+            "OpenAI returned %s product introduction(s) for client_id=%s",
+            introduction_count,
+            client_id
+        )
+
+        if introduction_count == 0:
+            log.warning(
+                "No product introductions were returned for client_id=%s",
+                client_id
+            )
+
+        return result
+
+    log.warning(
+        "Unexpected response shape from OpenAI: %s",
+        type(result).__name__
+    )
+
+    return {
+        "client_id": None,
+        "product_introduction": result
+    }
 
 def populate_portfolio_discussion(session, clients, openai_client):
 
