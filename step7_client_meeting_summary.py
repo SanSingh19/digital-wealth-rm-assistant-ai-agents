@@ -54,7 +54,7 @@ You are an experienced Wealth Management Assistant.
 
 Below is the transcript of the previous client meeting.
 
-Your task is to summarize it.
+Your task is to summarize it and it should not be more than 100 words.
 
 Meeting Transcript
 

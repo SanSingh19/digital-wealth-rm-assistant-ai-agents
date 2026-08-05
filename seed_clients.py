@@ -94,6 +94,92 @@ sector_master = [
         "name": "Renewable Energy",
         "gics_code": "10RE",
         "description": "ESG focused green and renewable energy investments"
+    },
+
+    {
+        "id": 13,
+        "name": "Industrials",
+        "gics_code": "20",
+        "description": "Industrial manufacturing, automation and infrastructure companies"
+    },
+
+    {
+        "id": 14,
+        "name": "Communication Services",
+        "gics_code": "50",
+        "description": "Telecom, media and internet platform companies"
+    },
+
+    {
+        "id": 15,
+        "name": "Materials",
+        "gics_code": "15",
+        "description": "Mining, metals and commodity producers"
+    },
+
+    {
+        "id": 16,
+        "name": "Utilities",
+        "gics_code": "55",
+        "description": "Electricity, water and regulated utility companies"
+    },
+
+    {
+        "id": 17,
+        "name": "E-Commerce",
+        "gics_code": "2550",
+        "description": "Online retail and digital commerce companies"
+    },
+
+    {
+        "id": 23,
+        "name": "Small Cap",
+        "gics_code": "4520",
+        "description": "Small-cap companies with high growth potential"
+    },
+
+    {
+        "id": 24,
+        "name": "Artificial Intelligence",
+        "gics_code": "4511",
+        "description": "Artificial intelligence, machine learning and AI software companies"
+    },
+
+    {
+        "id": 25,
+        "name": "Cloud Computing",
+        "gics_code": "4512",
+        "description": "Cloud infrastructure, SaaS and cloud platform providers"
+    },
+
+    {
+        "id": 20,
+        "name": "Digital Infrastructure",
+        "gics_code": "4513",
+        "description": "Data centers, networking, compute infrastructure and digital connectivity"
+    },
+
+    {
+        "id": 21,
+        "name": "Cybersecurity",
+        "gics_code": "4514",
+        "description": "Cybersecurity, identity protection and network security companies"
+    },
+
+    {
+        "id": 22,
+        "name": "Blockchain",
+        "gics_code": "4515",
+        "description": "Blockchain technology, distributed ledger and digital asset ecosystem"
+    },
+
+
+
+    {
+        "id": 18,
+        "name": "Cryptocurrency",
+        "gics_code": "4510",
+        "description": "Blockchain and digital asset ecosystem"
     }
 
 ]
@@ -199,6 +285,132 @@ securities = [
         "sector_id": 3,
         "currency": "EUR",
         "last_price": 1.0
+    },
+
+    # Industrials
+    {
+        "ticker": "CAT",
+        "name": "Caterpillar Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NYSE",
+        "sector_id": 13,
+        "currency": "EUR",
+        "last_price": 340.0
+    },
+
+    {
+        "ticker": "SIEM",
+        "name": "Siemens AG",
+        "security_type": "EQUITY",
+        "exchange": "XETRA",
+        "sector_id": 13,
+        "currency": "EUR",
+        "last_price": 195.0
+    },
+
+    # Communication Services
+    {
+        "ticker": "META",
+        "name": "Meta Platforms",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 14,
+        "currency": "EUR",
+        "last_price": 540.0
+    },
+
+    {
+        "ticker": "GOOG",
+        "name": "Alphabet Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 14,
+        "currency": "EUR",
+        "last_price": 185.0
+    },
+
+    # Materials
+    {
+        "ticker": "RIO",
+        "name": "Rio Tinto plc",
+        "security_type": "EQUITY",
+        "exchange": "LSE",
+        "sector_id": 15,
+        "currency": "EUR",
+        "last_price": 68.0
+    },
+
+    {
+        "ticker": "BHP",
+        "name": "BHP Group",
+        "security_type": "EQUITY",
+        "exchange": "LSE",
+        "sector_id": 15,
+        "currency": "EUR",
+        "last_price": 45.0
+    },
+
+    # Utilities
+    {
+        "ticker": "NEE",
+        "name": "NextEra Energy",
+        "security_type": "EQUITY",
+        "exchange": "NYSE",
+        "sector_id": 16,
+        "currency": "EUR",
+        "last_price": 81.0
+    },
+
+    {
+        "ticker": "ENEL",
+        "name": "Enel S.p.A.",
+        "security_type": "EQUITY",
+        "exchange": "MIL",
+        "sector_id": 16,
+        "currency": "EUR",
+        "last_price": 7.5
+    },
+
+    # E-Commerce
+    {
+        "ticker": "AMZN",
+        "name": "Amazon.com Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 17,
+        "currency": "EUR",
+        "last_price": 210.0
+    },
+
+    {
+        "ticker": "SHOP",
+        "name": "Shopify Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NYSE",
+        "sector_id": 17,
+        "currency": "EUR",
+        "last_price": 92.0
+    },
+
+    # Cryptocurrency
+    {
+        "ticker": "COIN",
+        "name": "Coinbase Global",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 18,
+        "currency": "EUR",
+        "last_price": 290.0
+    },
+
+    {
+        "ticker": "MSTR",
+        "name": "Strategy Inc.",
+        "security_type": "EQUITY",
+        "exchange": "NASDAQ",
+        "sector_id": 18,
+        "currency": "EUR",
+        "last_price": 390.0
     }
 ]
 
@@ -623,9 +835,9 @@ CLIENTS = [
 
         "holdings":[
 
-            ("AAPL",12000,170,195),
+            ("AAPL",18000,170,195),
             ("BOND1",18000,94,98.5),
-            ("BOND2",14000,90,95),
+            ("BOND2",8000,90,95),
             ("REIT1",12000,42,45),
             ("ALT1",5000,55,62),
             ("LIQ1",500000,1,1)

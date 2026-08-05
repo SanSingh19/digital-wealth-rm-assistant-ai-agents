@@ -1,5 +1,5 @@
 """
-step6_recommend.py – Step 6: Sector-Level AI Recommendations
+step8_recommend.py – Step 8: Sector-Level AI Recommendations
 
 Goal: For each sector a client holds, produce a BUY / HOLD / SELL action
       with a 1-line description, driven entirely by existing pipeline data.
@@ -41,7 +41,7 @@ Architecture
   OUTPUT → client_sector_recommendations table (upserted each run)
     sector_name, action, signal_score, description
 
-Flow: Step 3 → Step 5 → Step 6
+Flow: Step 3 → Step 5 → Step 8
 """
 
 import json
@@ -75,7 +75,7 @@ from models import (
     ClientFundRecommendation
 )
 
-log = logging.getLogger("step6_recommend")
+log = logging.getLogger("step8_recommend")
 
 
 # ==============================================
@@ -90,13 +90,23 @@ SECTOR_KEYWORDS: dict[str, list[str]] = {
     "Financials":           ["bank", "financ", "rate", "bond", "ecb", "fed", "interest", "credit"],
     "Energy":               ["energy", "oil", "gas", "opec", "crude"],
     "Renewable Energy":     ["renewable", "solar", "wind", "green", "esg", "climate", "nordea", "alt"],
-    "Real Estate":          ["real estate", "reit", "property", "housing"],
-    "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon"],
+    "Real Estate":          ["real estate", "reit", "property", "housing", "flats", "house"],
+    "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon", "flipkart"],
     "Healthcare":           ["health", "pharma", "biotech", "drug", "medical"],
-    "Industrials":          ["industrial", "manufacturing", "infrastructure"],
-    "Materials":            ["material", "mining", "commodity", "gold"],
     "Utilities":            ["utility", "utilities", "power", "electric"],
-    "Communication Services": ["telecom", "media", "communication", "meta", "google"],
+    "Industrials":          ["industrial", "manufacturing", "factory", "automation", "robotics", "infrastructure", "construction", "engineering", "machinery", "capital goods", "caterpillar", "siemens"],
+    "Communication Services": ["communication","AI","Interest Rates","Fed","NVIDIA","Semiconductor", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
+    "Materials":             ["materials", "mining", "metals", "steel", "aluminium", "aluminum", "copper", "commodity", "commodities", "gold", "silver", "lithium", "iron ore", "rio tinto", "bhp"],
+    "Utilities":             ["utilities","electric", "utility", "electricity", "power", "power grid", "grid", "renewable grid", "water", "gas distribution", "electric utility", "energy distribution", "next era", "nextera", "enel"],
+    "E-Commerce":            ["e-commerce", "ecommerce", "online retail", "digital commerce", "online shopping", "marketplace", "consumer internet", "retail", "amazon", "shopify", "flipkart", "ebay", "etsy"],
+    "Cryptocurrency":        ["bitcoin", "btc", "ethereum", "eth", "crypto", "cryptocurrency", "blockchain", "digital asset", "digital assets", "stablecoin", "web3", "defi", "token", "coinbase", "binance"],
+    "Small Cap": ["small cap", "small-cap", "mid cap", "mid-cap", "growth companies", "emerging companies", "high growth", "small capitalization", "small business"],
+    "Artificial Intelligence": ["ai", "artificial intelligence", "machine learning", "deep learning", "generative ai", "chatgpt", "llm", "openai", "copilot", "automation", "ai infrastructure"],
+    "Cloud Computing": ["cloud", "cloud computing", "azure", "aws", "amazon web services", "google cloud", "gcp", "saas", "software as a service", "cloud infrastructure"],
+    "Digital Infrastructure": ["digital infrastructure", "data center", "datacenter", "server", "compute", "gpu", "network", "fiber", "5g", "hyperscaler", "digital backbone"],
+    "Cybersecurity": ["cybersecurity", "cyber", "security", "ransomware", "endpoint", "firewall", "identity security", "crowdstrike", "palo alto", "zero trust"],
+    "Blockchain": ["blockchain", "distributed ledger", "smart contract", "web3", "ethereum", "bitcoin", "tokenization", "crypto infrastructure"]
+
 }
 
 # Sentiment → numeric score
@@ -277,6 +287,22 @@ FUND_UNIVERSE = {
             "risk": "Moderate",
             "sector": "Healthcare",
             "investment_style": "Growth"
+        },
+
+        {
+            "fund_id": "F0202",
+            "fund_name": "Healthcare Opportunities ESG Fund",
+            "risk": "Moderate",
+            "sector": "Healthcare",
+            "investment_style": "Balanced"
+        },
+
+        {
+            "fund_id": "F0230",
+            "fund_name": "Global Life Sciences Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Healthcare",
+            "investment_style": "Growth"
         }
 
     ],
@@ -335,6 +361,183 @@ FUND_UNIVERSE = {
             "investment_style": "Income"
         }
 
+    ],
+
+    "Industrials": [
+        {
+            "fund_id": "F015",
+            "fund_name": "Global Industrials Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Industrials",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F016",
+            "fund_name": "Infrastructure Opportunities Fund",
+            "risk": "Moderate",
+            "sector": "Industrials",
+            "investment_style": "Balanced"
+        },
+        {
+            "fund_id": "F017",
+            "fund_name": "Smart Manufacturing Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Industrials",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Communication Services": [
+        {
+            "fund_id": "F018",
+            "fund_name": "Global Communication Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Communication Services",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F019",
+            "fund_name": "Digital Media Opportunities Fund",
+            "risk": "Aggressive",
+            "sector": "Communication Services",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Materials": [
+        {
+            "fund_id": "F020",
+            "fund_name": "Global Materials Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Materials",
+            "investment_style": "Balanced"
+        },
+        {
+            "fund_id": "F021",
+            "fund_name": "Commodity Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Materials",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Utilities": [
+        {
+            "fund_id": "F022",
+            "fund_name": "Global Utilities Income Fund",
+            "risk": "Conservative",
+            "sector": "Utilities",
+            "investment_style": "Income"
+        },
+        {
+            "fund_id": "F023",
+            "fund_name": "Essential Infrastructure Fund",
+            "risk": "Moderate",
+            "sector": "Utilities",
+            "investment_style": "Balanced"
+        }
+    ],
+
+    "E-Commerce": [
+        {
+            "fund_id": "F024",
+            "fund_name": "Global E-Commerce Growth Fund",
+            "risk": "Moderate",
+            "sector": "E-Commerce",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F025",
+            "fund_name": "Digital Commerce Innovation Fund",
+            "risk": "Aggressive",
+            "sector": "E-Commerce",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Small Cap": [
+        {
+            "fund_id": "F028",
+            "fund_name": "Global Small Cap Growth Fund",
+            "risk": "Aggressive",
+            "sector": "Small Cap",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F029",
+            "fund_name": "Emerging Companies Fund",
+            "risk": "Moderate",
+            "sector": "Small Cap",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Artificial Intelligence": [
+        {
+            "fund_id": "F030",
+            "fund_name": "AI Innovation Fund",
+            "risk": "Aggressive",
+            "sector": "Artificial Intelligence",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F031",
+            "fund_name": "Global AI Leaders Fund",
+            "risk": "Moderate",
+            "sector": "Artificial Intelligence",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Cloud Computing": [
+        {
+            "fund_id": "F032",
+            "fund_name": "Cloud Infrastructure Fund",
+            "risk": "Moderate",
+            "sector": "Cloud Computing",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F033",
+            "fund_name": "Global Cloud Leaders Fund",
+            "risk": "Aggressive",
+            "sector": "Cloud Computing",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Cloud Computing": [
+        {
+            "fund_id": "F032",
+            "fund_name": "Cloud Infrastructure Fund",
+            "risk": "Moderate",
+            "sector": "Cloud Computing",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F033",
+            "fund_name": "Global Cloud Leaders Fund",
+            "risk": "Aggressive",
+            "sector": "Cloud Computing",
+            "investment_style": "Growth"
+        }
+    ],
+
+    "Cryptocurrency": [
+        {
+            "fund_id": "F026",
+            "fund_name": "Digital Assets Strategy Fund",
+            "risk": "Aggressive",
+            "sector": "Cryptocurrency",
+            "investment_style": "Growth"
+        },
+        {
+            "fund_id": "F027",
+            "fund_name": "Blockchain Innovation Fund",
+            "risk": "Aggressive",
+            "sector": "Cryptocurrency",
+            "investment_style": "Growth"
+        }
     ]
 
 }
@@ -376,14 +579,12 @@ Fund Candidates
 {candidate_funds}
 
 ========================
-PORTFOLIO OPPORTUNITIES
+POSITIVE DIVERSIFICATION OPPORTUNITIES
 ========================
 
-Positive Existing Sector Opportunities
-{owned_positive_sectors}
-
-Positive New Diversification Opportunities
-{unowned_positive_sectors}
+These sectors are NOT currently owned by the client.
+Recommend investments ONLY from these sectors.
+{positive_opportunity_sectors}
 
 ========================
 DECISION PROCESS
@@ -407,9 +608,8 @@ Evaluate remaining investments using:
 • News Sentiment
 
 Step 3 — Portfolio Enhancement
-Improve the portfolio by:
-• Strengthening high-conviction existing sectors
-• Adding attractive new sector exposure
+Improve the portfolio by introducing attractive new sector exposure.
+Every recommendation must come from the Positive Diversification Opportunities listed above.
 Maintain diversification.
 Avoid unnecessary concentration.
 Recommend multiple investments from one sector only when strongly justified.
@@ -432,6 +632,8 @@ You MUST strictly follow every rule below.
 MANDATORY RULES:
 • Recommend EXACTLY THREE BUY investments.
 • Use ONLY investments from the supplied candidate lists.
+• Recommend investments ONLY from the Positive Diversification Opportunities.
+• Never recommend investments from sectors already owned by the client.
 • Never invent, rename, abbreviate, or modify Investment IDs, Names, or Sectors.
 • Copy Investment ID, Name, and Sector exactly as provided.
 • Do not recommend duplicate investments.
@@ -461,6 +663,17 @@ Each recommendation MUST include:
 Every rationale MUST explain:
 1. Why the investment suits THIS client.
 2. Which market driver, investment theme, or sector opportunity supports the recommendation.
+• Do not describe a Healthcare fund as ESG unless its name or supplied attributes explicitly indicate ESG.
+• If the investment is not an ESG fund, explain it using its sector opportunity, diversification benefit and market outlook.
+Good examples:
+   ✓ Monetary policy easing strengthens financial sector prospects while complementing the client's long-term growth objectives.
+   ✓ Positive pharmaceutical innovation supports long-term healthcare growth while improving sector diversification.
+   ✓ Communication Services benefits from digital media and technology momentum, complementing the client's aggressive growth strategy.
+Bad examples:
+   ✗ Supports ESG preference...
+   ✗ Aligns with sustainability goals...
+   ✗ Green investing opportunity...
+   (Only valid if the selected fund is explicitly an ESG fund.)
 
 Avoid generic market commentary.
 Write naturally as a Senior Wealth Relationship Manager preparing recommendations for another experienced RM.
@@ -776,68 +989,23 @@ def _save_fund_recommendations(
 
     session.commit()
 
-
-def _get_client_owned_security_ids(session, client_id):
-    """
-    Returns all Security IDs currently owned by the client.
-    """
-
-    holdings = (
-        session.query(Holding)
-        .join(Portfolio)
-        .join(Account)
-        .filter(Account.client_id == client_id)
-        .all()
-    )
-
-    return {holding.security_id for holding in holdings}
-
-def _split_owned_and_unowned_sectors(
-    positive_signals,
-    owned_sector_names,
-):
-    """
-    Split positive sectors into:
-    1. Owned sectors
-    2. Unowned sectors
-    """
-
-    owned_positive = []
-    unowned_positive = []
-
-    for signal in positive_signals:
-
-        if signal["sector_name"] in owned_sector_names:
-            owned_positive.append(signal)
-        else:
-            unowned_positive.append(signal)
-
-    return owned_positive, unowned_positive
-
 def _get_candidate_securities(
     session,
-    buy_sectors,
-    owned_security_ids
+    signals,
 ):
 
     candidates = []
 
-    for sector_name in buy_sectors:
+    for signal in signals:
 
         securities = (
             session.query(Security)
             .join(SectorMaster)
-            .filter(
-                SectorMaster.name == sector_name
-            )
+            .filter( SectorMaster.name == signal["sector_name"])
             .all()
         )
 
-        for security in securities:
-
-            if security.id in owned_security_ids:
-                continue
-            candidates.append(security)
+        candidates.extend(securities)
 
     return candidates
 
@@ -855,24 +1023,27 @@ def _build_candidate_text(candidates):
 
         lines.append(
             f"""
-Ticker : {security.ticker}
-Name : {security.name}
-Sector : {security.sector.name if security.sector else "Unknown"}
-Security Type : {security.security_type}
-""".strip()
+            Ticker : {security.ticker}
+            Name : {security.name}
+            Sector : {security.sector.name if security.sector else "Unknown"}
+            Security Type : {security.security_type}
+            """.strip()
         )
 
     return "\n\n".join(lines)
 
-def _get_candidate_funds(buy_sectors):
+def _get_candidate_funds(signals):
     """
     Returns all candidate funds belonging to BUY sectors.
     """
 
     candidate_funds = []
 
-    for sector in buy_sectors:
-        funds = FUND_UNIVERSE.get(sector, [])
+    for signal in signals:
+        funds = FUND_UNIVERSE.get(
+            signal["sector_name"],
+            []
+        )
         candidate_funds.extend(funds)
 
     return candidate_funds
@@ -906,8 +1077,7 @@ def _generate_fund_recommendations(
     client,
     candidate_securities,
     candidate_funds,
-    owned_positive_sectors,
-    unowned_positive_sectors,
+    positive_opportunity_signals,
     drivers_text,
     themes_text,
     constraints
@@ -930,14 +1100,9 @@ def _generate_fund_recommendations(
         candidate_funds
     )
 
-    owned_sector_text = "\n".join(
-        f"- {s['sector_name']} (Existing Allocation)"
-        for s in owned_positive_sectors
-    ) or "None"
-
-    unowned_sector_text = "\n".join(
-        f"- {s['sector_name']} (New Diversification Opportunity)"
-        for s in unowned_positive_sectors
+    positive_sector_text = "\n".join(
+        f"- {s['sector_name']}"
+        for s in positive_opportunity_signals
     ) or "None"
 
     log.info(
@@ -959,8 +1124,7 @@ def _generate_fund_recommendations(
             "themes_text": themes_text,
             "candidate_securities": candidate_security_text,
             "candidate_funds": candidate_fund_text,
-            "owned_positive_sectors": owned_sector_text,
-            "unowned_positive_sectors": unowned_sector_text,
+            "positive_opportunity_sectors": positive_sector_text,
             "format_instructions":
                 FUND_RECOMMENDATION_PARSER.get_format_instructions()
         }
@@ -979,7 +1143,7 @@ def _generate_fund_recommendations(
 
 def run_recommendations(client_ids: list[int] | None = None) -> dict:
     """
-    Step 6: For each client, compute sector-level BUY/HOLD/SELL signals
+    Step 8: For each client, compute sector-level BUY/HOLD/SELL signals
     and generate 1-line descriptions via LLM.
     Returns {client_id: {sector: action}}.
     """
@@ -1015,7 +1179,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
             return {}
 
         for client in clients:
-            log.info(f"\n[Step 6] {client.client_code} – {client.name}")
+            log.info(f"\n[Step 8] {client.client_code} – {client.name}")
 
             # -- Collect sectors from holdings --
             sectors_held: dict[str, float] = {}   # sector_name → total value
@@ -1060,8 +1224,6 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                     f"score={sig['signal_score']:+.2f}"
                 )
 
-            owned_signals = signals.copy()
-
             # -- LLM: generate 1 description per sector (single call)
             personal     = client.personal_details
             constraints  = personal.client_constraints if personal else "None"
@@ -1102,11 +1264,9 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 owned_sector_names=set(sectors_held.keys()),
             )
 
-            all_sector_signals = owned_signals + unowned_signals
-
             positive_opportunity_signals = [
                 signal
-                for signal in all_sector_signals
+                for signal in unowned_signals
                 if signal["signal_score"] > BUY_THRESHOLD
             ]
 
@@ -1119,17 +1279,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 ) or "None",
             )
 
-            owned_positive_sectors, unowned_positive_sectors = (
-                _split_owned_and_unowned_sectors(positive_opportunity_signals, set(sectors_held.keys()))
-            )
-
-            opportunity_sectors = [
-                signal["sector_name"]
-                for signal in positive_opportunity_signals
-            ]
-
-            owned_security_ids = _get_client_owned_security_ids(session,client.id)
-            candidate_securities = _get_candidate_securities(session, opportunity_sectors, owned_security_ids )
+            candidate_securities = _get_candidate_securities(session, positive_opportunity_signals)
 
             log.info( "[PART 2] Candidate Securities:")
 
@@ -1141,7 +1291,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                     sec.sector.name,
                 )
 
-            candidate_funds = _get_candidate_funds(opportunity_sectors)
+            candidate_funds = _get_candidate_funds(positive_opportunity_signals)
 
             log.info(
                 "[PART 2] Candidate Funds:"
@@ -1175,8 +1325,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 client=client,
                 candidate_securities=candidate_securities,
                 candidate_funds=candidate_funds,
-                owned_positive_sectors=owned_positive_sectors,
-                unowned_positive_sectors=unowned_positive_sectors,
+                positive_opportunity_signals=positive_opportunity_signals,
                 drivers_text=drivers_text,
                 themes_text=themes_text,
                 constraints=constraints

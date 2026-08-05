@@ -174,56 +174,73 @@ Respond ONLY with valid JSON.
 
 
 PROMPT_PORTFOLIO_DISCUSSION = """
-Client Information
+Client Portfolio Information
 
 {portfolio_context}
 
-Generate ONLY TWO portfolio discussion points.
+Generate EXACTLY TWO portfolio discussion points.
 
-Discussion Point 1
-------------------
-Decide automatically.
+DISCUSSION POINT 1 – POSITIVE PORTFOLIO HIGHLIGHT
+-------------------------------------------------
 
-IF every asset allocation is within its recommended bandwidth:
-- Write a Positive Portfolio Highlight.
-- Mention portfolio performance or diversification.
-- Mention strong holdings only if supported by the data.
-- Do NOT recommend any portfolio changes.
+Always generate the first discussion point as a positive portfolio opening.
+Use the provided Portfolio Details and Performance Details.
+Discuss topics such as:
+• YTD growth
+• Portfolio performance
+• Performance graph
+• Strong asset allocation
 
-ELSE
-- Generate an Investment Allocation discussion.
-- Identify the asset class that is outside its bandwidth.
-- Explain whether it is overweight or underweight.
-- Suggest an appropriate Buy, Sell or Rebalance action.
-- Base the recommendation ONLY on the provided portfolio data.
+This point should start the portfolio discussion in a positive and professional way.
+Do NOT recommend any portfolio changes in this point.
 
-Discussion Point 2
-------------------
-Generate a Risk & Concerns discussion.
+--------------------------------------------------
+DISCUSSION POINT 2 – DECISION LOGIC
+--------------------------------------------------
 
-Use:
-- Risk Indicators
-- Theme Matches
-- Market Sentiment
+Before writing the second discussion point, inspect EVERY asset in the Asset Allocation table.
+For each asset class read ONLY the value of "InRange".
+Count how many assets have:
+InRange = NO
+Decision:
+IF count(NO) > 0
+Generate ONLY an Asset Allocation discussion.
+
+You MUST:
+- identify every asset whose InRange = NO
+- mention whether it is overweight or underweight by comparing Current Allocation with Recommended Bandwidth
+- recommend Buy / Sell / Rebalance accordingly
+- Do NOT generate anything apart from that
+
+Risk discussion is STRICTLY FORBIDDEN.
+-------------------------------------------------
+
+IF count(NO) == 0
+Generate ONLY a Risk & Concerns discussion.
+
+Use ONLY
 - Concentration Risk
-- Security/Sector exposure
+- Largest Asset
+- Theme Matches
+- Theme Sentiment
 
-If a sector or security has negative sentiment,
-mention it and explain why monitoring or reducing exposure may be appropriate.
+Do NOT discuss allocation.
 
-If no major risk exists,
-mention the primary risk indicator that should continue to be monitored.
-
-Rules
-
-- Return EXACTLY TWO discussion points.
-- Make them client specific.
-- Use ONLY the provided data.
-- Never invent holdings or sectors.
-- Professional Relationship Manager tone.
-- Each discussion should be 2-3 sentences.
-- No headings.
-- No bullet points.
+RULES:
+• Return EXACTLY TWO discussion points.
+• Point 1 MUST ALWAYS be a Positive Portfolio Highlight.
+• Point 2 MUST follow the priority:
+    1. Allocation Discussion (if any asset is outside range)
+    Otherwise
+    2. Risk & Concerns
+• Never generate both Allocation and Risk discussions together.
+• Use ONLY the provided data.
+• Never invent holdings, sectors or performance.
+• Professional Wealth Relationship Manager tone.
+• Keep responses concise and conversational.
+• Maximum 2 concise sentences.
+• Use short professional wealth-management language.
+• No headings and No bullet points.
 
 Return ONLY JSON.
 
