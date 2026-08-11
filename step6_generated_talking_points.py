@@ -100,6 +100,14 @@ Generate portfolio discussion points for the relationship manager.
 Return ONLY valid JSON.
 """.strip()
 
+SYSTEM_ANTICIPATED_OBJECTIONS = """
+You are an experienced Wealth Relationship Manager.
+
+Generate anticipated client objections and professional responses.
+
+Return ONLY valid JSON.
+""".strip()
+
 PROMPT_CONVERSATION_OPENERS = """
 Client Details and Last Meeting Summary:
 
@@ -253,6 +261,50 @@ Return ONLY JSON.
 }}
 """.strip()
 
+PROMPT_ANTICIPATED_OBJECTIONS = """
+Client Information
+
+{fund_block}
+
+Generate EXACTLY TWO anticipated objections.
+
+Each objection should begin with:
+
+"If the client..."
+
+and immediately explain how the Relationship Manager should respond.
+
+Use ONLY:
+- Client Constraints
+- Risk Profile
+- Recommended Fund Names
+- Fund Sectors
+- Recommendation Reason
+
+Rules
+
+- Return EXACTly TWO objections.
+- ALWAYS mention at least one recommended fund name in every objection whenever fund names are provided.
+- If multiple funds are recommended, refer to them by name rather than saying "the recommendations" or "the funds."
+- Never mention the absence of fund names if investment names exist in the input.
+- Base objections only on the provided recommended funds.
+- Mention sectors only if they are present in the input.
+- Do not invent information.
+- Make them client specific.
+- Professional Relationship Manager tone.
+- Keep each response concise.
+
+Return ONLY JSON.
+
+{{
+    "client_id":"client id",
+    "anticipatedObjections":[
+        "string",
+        "string"
+    ]
+}}
+""".strip()
+
 def generated_talking_points(client_ids: list[int] | None = None) -> dict:
     results = {}
     engine = init_db(DATABASE_URL)
@@ -301,11 +353,18 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 openai_client
             )
 
+            objection_result = populate_anticipated_objections(
+                session,
+                [(client_details, meeting)],
+                openai_client
+            )
+
             client_result = {
                 "client_id": (
                         conversation_result.get("client_id")
                         or portfolio_result.get("client_id")
                         or product_introduction_result.get("client_id")
+                        or objection_result.get("client_id")
                         or client_details.id
                 ),
                 "conversationOpeners": conversation_result.get(
@@ -320,6 +379,10 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                     "portfolioDiscussion",
                     []
                 ),
+                "anticipatedObjections": objection_result.get(
+                        "anticipatedObjections",
+                        []
+                )
             }
 
             row = get_or_create_client_talking_points(
@@ -394,6 +457,10 @@ def get_or_create_client_talking_points(session, client_result):
         "portfolioDiscussion",
         []
     )
+    anticipated_objections = client_result.get(
+        "anticipatedObjections",
+        []
+    )
     product_introduction = client_result.get("product_introduction", [])
 
     log.info(
@@ -417,6 +484,7 @@ def get_or_create_client_talking_points(session, client_result):
         existing_row.conversation_openers = openers
         existing_row.portfolio_discussion = portfolio_discussion
         existing_row.product_introduction = product_introduction
+        existing_row.anticipated_objections = anticipated_objections
         session.flush()
         return existing_row
 
@@ -425,6 +493,7 @@ def get_or_create_client_talking_points(session, client_result):
         conversation_openers=openers,
         portfolio_discussion=portfolio_discussion,
         product_introduction=product_introduction,
+        anticipated_objections=anticipated_objections,
     )
     session.add(row)
     session.flush()
@@ -640,6 +709,91 @@ def populate_portfolio_discussion(session, clients, openai_client):
         "portfolioDiscussion": [],
     }
 
+def populate_anticipated_objections(session, clients, openai_client):
+
+    if not clients:
+        return {
+            "client_id": None,
+            "anticipatedObjections": []
+        }
+
+    fund_lines = []
+
+    for client_details, meeting in clients:
+
+        client = (
+            session.query(Client)
+            .filter(Client.id == client_details.client_id)
+            .first()
+        )
+
+        recommendation = (
+            session.query(ClientFundRecommendation)
+            .filter(ClientFundRecommendation.client_id == client.id)
+            .first()
+        )
+
+        fund_text = []
+
+        if recommendation and recommendation.recommendations:
+
+            funds = json.loads(recommendation.recommendations)
+
+            for fund in funds:
+
+                fund_text.append(
+                    f"""
+                    Fund Name : {fund.get("investment_name")}
+                    Sector : {fund.get("sector")}
+                    Action : {fund.get("action")}
+                    Priority : {fund.get("priority")}
+                    Reason : {fund.get("rationale")}
+                    """
+                )
+
+        fund_lines.append(
+            f"""
+Client ID:
+{client.id}
+
+Risk Profile:
+{client.risk_profile}
+
+Client Constraints:
+{client_details.client_constraints}
+
+Recommended Funds:
+{''.join(fund_text)}
+"""
+        )
+
+    fund_block = "\n".join(fund_lines)
+
+    prompt = PROMPT_ANTICIPATED_OBJECTIONS.format(
+        fund_block=fund_block
+    )
+
+    result = openai_json(
+        openai_client,
+        prompt,
+        SYSTEM_ANTICIPATED_OBJECTIONS
+    )
+
+    if isinstance(result, dict):
+
+        return {
+            "client_id": result.get("client_id"),
+            "anticipatedObjections": result.get(
+                "anticipatedObjections",
+                []
+            ),
+        }
+
+    return {
+        "client_id": None,
+        "anticipatedObjections": [],
+    }
+
 def get_openai_client() -> OpenAI:
     api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
     if not api_key or api_key == "sk-your-openai-key-here":
@@ -693,6 +847,14 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
                         "client_id": parsed.get("client_id"),
                         "portfolioDiscussion": parsed.get(
                             "portfolioDiscussion",
+                            []
+                        ),
+                    }
+                if "anticipatedObjections" in parsed:
+                    return {
+                        "client_id": parsed.get("client_id"),
+                        "anticipatedObjections": parsed.get(
+                            "anticipatedObjections",
                             []
                         ),
                     }
