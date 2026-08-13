@@ -16,7 +16,7 @@ Architecture
   SIGNAL SCORING (pure Python — deterministic, no LLM)
     For each sector the client holds:
 
-      Signal 1 — Outlook driver status (weight 50%)
+      Signal 1 — Outlook driver status (weight 20%)
         Scan all drivers for keywords matching this sector
         Increase → +1,  Neutral → 0,  Decrease → -1
 
@@ -24,11 +24,11 @@ Architecture
         Scan themes matched to this client that cover this sector
         Positive → +1,  Mixed/Neutral → 0,  Negative → -1
 
-      Signal 3 — SectorTag sentiment from processed news (weight 20%)
+      Signal 3 — SectorTag sentiment from processed news (weight 50%)
         Scan SectorTag rows for this sector name
         Positive → +1,  Mixed/Neutral → 0,  Negative → -1
 
-      Weighted score = (s1 * 0.5) + (s2 * 0.3) + (s3 * 0.2)
+      Weighted score = (s1 * 0.2) + (s2 * 0.3) + (s3 * 0.5)
 
       score >  0.3  → BUY
       score < -0.3  → SELL
@@ -154,7 +154,7 @@ class InvestmentRecommendation(BaseModel):
     investment_id: str = Field(description="Ticker or Fund ID")
     investment_name: str = Field( description="Security name or Fund name")
     sector: str = Field( description="Sector")
-    action: str = Field(description="Always BUY")
+    action: str = Field(description="BUY for fund purchase or SELL for an existing portfolio security")
     priority: str = Field(description="High / Medium / Low")
     rationale: str = Field(
         description="One concise sentence explaining why this investment is recommended."
@@ -569,21 +569,19 @@ Matched Investment Themes
 {themes_text}
 
 ========================
-SHORTLISTED CANDIDATES
+OWNED BUY SECTOR OPPORTUNITIES
 ========================
 
-Security Candidates
-{candidate_securities}
+{owned_sector_candidates}
+
+========================
+NEW DIVERSIFICATION OPPORTUNITIES
+=======================
 
 Fund Candidates
 {candidate_funds}
 
-========================
-POSITIVE DIVERSIFICATION OPPORTUNITIES
-========================
-
-These sectors are NOT currently owned by the client.
-Recommend investments ONLY from these sectors.
+Positive BUY Sectors
 {positive_opportunity_sectors}
 
 ========================
@@ -601,78 +599,132 @@ Every recommendation must satisfy:
 Reject any investment that violates any requirement.
 
 Step 2 — Market Opportunity
-Evaluate remaining investments using:
-• Market Drivers
-• Investment Themes
-• Sector Momentum
-• News Sentiment
+Evaluate opportunities using market drivers, investment themes, sector momentum, and news sentiment.
 
 Step 3 — Portfolio Enhancement
-Improve the portfolio by introducing attractive new sector exposure.
-Every recommendation must come from the Positive Diversification Opportunities listed above.
-Maintain diversification.
-Avoid unnecessary concentration.
-Recommend multiple investments from one sector only when strongly justified.
+RANK 1 — EXISTING PORTFOLIO OPPORTUNITY
+Rank 1 MUST come from an existing sector already held by the client.
+For each existing sector, use the supplied sector signal:
+• BUY sector:
+  Recommend ONE fund from that same sector.
+• SELL sector:
+  Recommend ONE SECURITY that the client already owns in that sector and recommend SELL.
+• HOLD sector:
+  Do NOT use the sector for Rank 1.
+The LLM must compare all available existing-sector opportunities and choose exactly ONE for Rank 1.
+Therefore Rank 1 can be either:
+A. Existing BUY Sector → BUY Fund
+OR
+B. Existing SELL Sector → SELL Existing Security
+Choose whichever is more appropriate based on:
+1. Client suitability
+2. Signal strength
+3. Portfolio impact
+4. Market context
+Example:
+If an existing sector has:
+• Sector signal = BUY
+• Score = +0.40
+and another existing sector has:
+• Sector signal = SELL
+• Score = -0.80
+the SELL opportunity may be more important because the negative signal is significantly stronger.
+Do NOT automatically prefer BUY over SELL.
+Only ONE recommendation may come from existing sectors.
+RANK 2 AND RANK 3 — NEW OPPORTUNITIES
+Rank 2 and Rank 3 MUST come from positive BUY opportunities in sectors the client does NOT currently own.
+Both must be BUY fund recommendations.
+These recommendations should:
+• Introduce new sector exposure.
+• Improve portfolio diversification.
+• Be suitable for the client.
+• Use only supplied fund candidates.
+Do not recommend securities for Rank 2 or Rank 3.
 
 Step 4 — Final Ranking
 
-Rank recommendations using the following priority:
+Rank recommendations using this priority:
+
 1. Client Suitability
-2. Portfolio Improvement
-3. Market Opportunity
-4. Long-term Value Creation
+2. Portfolio Risk Management
+3. Portfolio Improvement
+4. Signal Strength
+5. Market Opportunity
+6. Long-term Value Creation
 
-Suitability ALWAYS has higher priority than market momentum.
+Suitability and portfolio risk management always take priority over market momentum.
 
+Rank 1:
+• Exactly ONE existing-sector recommendation.
+• Either BUY an available fund from an existing BUY sector
+  OR SELL a security already held in an existing SELL sector.
+
+Rank 2:
+• BUY fund from a positive new sector.
+
+Rank 3:
+• BUY fund from another positive new sector.
+
+Do not produce more than one recommendation from the existing portfolio.
+
+Do not recommend HOLD sectors.
+
+Do not invent investments.
+
+Do not recommend a security for a new sector.
+
+Do not recommend a fund for an existing SELL sector.
 ========================
 MANDATORY RULES
 ========================
 
-You MUST strictly follow every rule below.
-MANDATORY RULES:
-• Recommend EXACTLY THREE BUY investments.
-• Use ONLY investments from the supplied candidate lists.
-• Recommend investments ONLY from the Positive Diversification Opportunities.
-• Never recommend investments from sectors already owned by the client.
-• Never invent, rename, abbreviate, or modify Investment IDs, Names, or Sectors.
-• Copy Investment ID, Name, and Sector exactly as provided.
-• Do not recommend duplicate investments.
-• Every recommendation must satisfy the client's Risk Profile, Goals, Preference, Constraints, and Service Model.
-• Prefer different sectors whenever suitable.
-• Recommend multiple investments from one sector only when justified.
-• Every rationale must explain:
-   - why it suits THIS client
-   - which market driver, theme, or opportunity supports it.
+- Use only supplied investments.
+- Do not invent or modify IDs, names, or sectors.
+- Do not recommend duplicates.
+- Prefer sector diversification where suitable.
+- Multiple recommendations from the same sector require justification.
+
+Every rationale must:
+• Explain why the recommendation suits the client.
+• Reference one relevant market driver, theme, or sector opportunity.
+For Rank 1, state that the client already has exposure to this sector and the recommendation strengthens that allocation.
+• For Rank 2 & 3, state that it introduces new sector exposure to improve diversification and reference one market opportunity.
+Avoid generic rationale. Always explain recommendations using the provided market context.
 
 ========================
 OUTPUT
 ========================
 
-Return EXACTLY THREE BUY recommendations.
-Each recommendation MUST include:
+Return EXACTLY THREE recommendations.
+Rank 1:
+• Action may be BUY or SELL.
+• Recommendation must come from an existing client-owned sector.
+Rank 2:
+• Action must be BUY.
+• Recommendation must be a fund from a new positive sector.
+Rank 3:
+• Action must be BUY.
+• Recommendation must be a fund from a new positive sector.
+Action:
+• BUY when recommending a fund purchase.
+• SELL when recommending an existing security to reduce/remove.
 
+Each recommendation MUST include:
 • Rank
 • Recommendation Type (SECURITY or FUND)
 • Investment ID
 • Investment Name
 • Sector
-• Action = BUY
+• Action = BUY only when recommending fund purchase
 • Priority (High / Medium / Low)
 • One rationale (maximum 30 words)
 
-Every rationale MUST explain:
-1. Why the investment suits THIS client.
-2. Which market driver, investment theme, or sector opportunity supports the recommendation.
 • Do not describe a Healthcare fund as ESG unless its name or supplied attributes explicitly indicate ESG.
 • If the investment is not an ESG fund, explain it using its sector opportunity, diversification benefit and market outlook.
 Good examples:
-   ✓ Monetary policy easing strengthens financial sector prospects while complementing the client's long-term growth objectives.
-   ✓ Positive pharmaceutical innovation supports long-term healthcare growth while improving sector diversification.
-   ✓ Communication Services benefits from digital media and technology momentum, complementing the client's aggressive growth strategy.
+ ✓ Positive pharmaceutical innovation supports long-term healthcare growth while improving sector diversification.
 Bad examples:
    ✗ Supports ESG preference...
-   ✗ Aligns with sustainability goals...
-   ✗ Green investing opportunity...
    (Only valid if the selected fund is explicitly an ESG fund.)
 
 Avoid generic market commentary.
@@ -683,9 +735,7 @@ MiFID SUITABILITY
 ========================
 
 Provide ONE concise suitability statement(maximum 15 words).
-
 The statement must explain why the final recommendations are suitable for this client's:
-
 • Risk Profile
 • Investment Goals
 • Investment Preference
@@ -693,9 +743,7 @@ The statement must explain why the final recommendations are suitable for this c
 
 Do NOT mention individual investments.
 Examples:
-• Suitability validated for a Moderate Growth investor with long-term capital appreciation objectives.
 • Suitable for a Balanced investor seeking diversified long-term growth within stated constraints.
-• Recommendations align with the client's Moderate Offensive profile and long-term investment objectives.
 
 ========================
 PORTFOLIO RATIONALE
@@ -722,7 +770,7 @@ def _sector_keywords(sector_name: str) -> list[str]:
 
 def _score_from_drivers(sector_name: str, drivers: list[dict]) -> float:
     """
-    Signal 1 (weight 50%): scan outlook drivers for sector keywords.
+    Signal 1 (weight 20%): scan outlook drivers for sector keywords.
     Returns average status score across matching drivers.
     """
     keywords = _sector_keywords(sector_name)
@@ -761,7 +809,7 @@ def _score_from_themes(sector_name: str, matches: list, session: Session) -> flo
 
 def _score_from_sector_tags(sector_name: str, session: Session) -> float:
     """
-    Signal 3 (weight 20%): scan SectorTag table for this sector name.
+    Signal 3 (weight 50%): scan SectorTag table for this sector name.
     Returns confidence-weighted average sentiment.
     """
     keywords = _sector_keywords(sector_name)
@@ -989,26 +1037,6 @@ def _save_fund_recommendations(
 
     session.commit()
 
-def _get_candidate_securities(
-    session,
-    signals,
-):
-
-    candidates = []
-
-    for signal in signals:
-
-        securities = (
-            session.query(Security)
-            .join(SectorMaster)
-            .filter( SectorMaster.name == signal["sector_name"])
-            .all()
-        )
-
-        candidates.extend(securities)
-
-    return candidates
-
 def _build_candidate_text(candidates):
     """
     Converts candidate securities into prompt text.
@@ -1048,6 +1076,90 @@ def _get_candidate_funds(signals):
 
     return candidate_funds
 
+def _build_owned_sector_candidates(
+    signals: list[dict],
+    sectors_held: dict[str, float],
+    client: Client,
+):
+    """
+    Build candidates only from sectors already owned by the client.
+    BUY  -> funds available for that existing sector
+    SELL -> securities actually held by the client in that sector
+
+    """
+
+    # Collect securities actually owned
+    owned_securities_by_sector = {}
+
+    for account in client.accounts:
+        for portfolio in account.portfolios:
+            for holding in portfolio.holdings:
+                security = holding.security
+
+                if not security or not security.sector:
+                    continue
+
+                sector_name = security.sector.name
+                owned_securities_by_sector.setdefault(
+                    sector_name,
+                    []
+                ).append(security)
+
+    # Build candidates
+    candidates = []
+
+    for signal in signals:
+
+        sector_name = signal["sector_name"]
+        action = signal["action"]
+
+        # only consider sectors actually owned
+        if sector_name not in sectors_held:
+            continue
+
+        # Existing BUY sector
+        if action == "BUY":
+
+            funds = FUND_UNIVERSE.get(
+                sector_name,
+                []
+            )
+
+            if funds:
+                candidates.append(
+                    {
+                        "sector_name": sector_name,
+                        "signal_score": signal["signal_score"],
+                        "action": "BUY",
+                        "funds": funds,
+                        "securities": []
+                    }
+                )
+
+        # Existing SELL sector
+        elif action == "SELL":
+
+            securities = owned_securities_by_sector.get(
+                sector_name,
+                []
+            )
+
+            if securities:
+                candidates.append(
+                    {
+                        "sector_name": sector_name,
+                        "signal_score": signal["signal_score"],
+                        "action": "SELL",
+                        "funds": [],
+                        "securities": securities
+                    }
+                )
+
+        else:
+            continue
+
+    return candidates
+
 def _build_fund_text(candidate_funds):
     """
     Converts candidate funds into prompt text.
@@ -1071,11 +1183,66 @@ def _build_fund_text(candidate_funds):
         )
     return "\n\n".join(lines)
 
+def _build_owned_sector_text(owned_sector_candidates):
+
+    if not owned_sector_candidates:
+        return "No existing-sector opportunities available."
+
+    lines = []
+
+    for sector in owned_sector_candidates:
+
+        lines.append(
+            f"""
+Existing Sector : {sector['sector_name']}
+Signal Score    : {sector['signal_score']:+.2f}
+Recommended Action : {sector['action']}
+""".strip()
+        )
+
+        # BUY existing sector
+
+        if sector["action"] == "BUY":
+
+            lines.append("Available Funds:")
+
+            for fund in sector["funds"]:
+
+                lines.append(
+                    f"""
+Fund ID : {fund['fund_id']}
+Fund Name : {fund['fund_name']}
+Risk : {fund['risk']}
+Investment Style : {fund['investment_style']}
+""".strip()
+                )
+
+        # SELL existing sector
+
+        elif sector["action"] == "SELL":
+
+            lines.append(
+                "Client-Owned Securities Available for SELL:"
+            )
+
+            for security in sector["securities"]:
+
+                lines.append(
+                    f"""
+Ticker : {security.ticker}
+Name : {security.name}
+Security Type : {security.security_type}
+""".strip()
+                )
+
+        lines.append("--------------------------------")
+
+    return "\n".join(lines)
 
 def _generate_fund_recommendations(
     llm,
     client,
-    candidate_securities,
+    owned_sector_candidates,
     candidate_funds,
     positive_opportunity_signals,
     drivers_text,
@@ -1092,8 +1259,8 @@ def _generate_fund_recommendations(
         | FUND_RECOMMENDATION_PARSER
     )
 
-    candidate_security_text = _build_candidate_text(
-        candidate_securities
+    owned_sector_text = _build_owned_sector_text(
+        owned_sector_candidates
     )
 
     candidate_fund_text = _build_fund_text(
@@ -1106,10 +1273,9 @@ def _generate_fund_recommendations(
     ) or "None"
 
     log.info(
-        "[PART 2] Candidate Securities=%d | Candidate Funds=%d",
-        len(candidate_securities),
-        len(candidate_funds),
-    )
+            "[PART 2]  Candidate Funds=%d",
+            len(candidate_funds),
+        )
 
     result = chain.invoke(
         {
@@ -1122,7 +1288,7 @@ def _generate_fund_recommendations(
             "constraints": constraints,
             "drivers_text": drivers_text,
             "themes_text": themes_text,
-            "candidate_securities": candidate_security_text,
+            "owned_sector_candidates": owned_sector_text,
             "candidate_funds": candidate_fund_text,
             "positive_opportunity_sectors": positive_sector_text,
             "format_instructions":
@@ -1214,7 +1380,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 .all()
             )
 
-            # -- SIGNAL ENGINE: score each sector
+            # -- SIGNAL ENGINE: score each sector in which client invested
             signals = []
             for sector_name in sectors_held:
                 sig = compute_signal(sector_name, drivers, matches, session)
@@ -1279,18 +1445,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 ) or "None",
             )
 
-            candidate_securities = _get_candidate_securities(session, positive_opportunity_signals)
-
-            log.info( "[PART 2] Candidate Securities:")
-
-            for sec in candidate_securities:
-                log.info(
-                    "   %-8s %-35s %-20s",
-                    sec.ticker,
-                    sec.name,
-                    sec.sector.name,
-                )
-
+            owned_sector_candidates = _build_owned_sector_candidates( signals=signals, sectors_held=sectors_held, client=client)
             candidate_funds = _get_candidate_funds(positive_opportunity_signals)
 
             log.info(
@@ -1305,11 +1460,6 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                     fund["sector"],
                 )
 
-            if not candidate_securities and not candidate_funds:
-                log.info(
-                    f"  [{client.client_code}] No investment candidates found."
-                )
-                continue
 
             constraints = (
                 client.personal_details.client_constraints
@@ -1323,7 +1473,7 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
             fund_recommendations = _generate_fund_recommendations(
                 llm=llm,
                 client=client,
-                candidate_securities=candidate_securities,
+                owned_sector_candidates=owned_sector_candidates,
                 candidate_funds=candidate_funds,
                 positive_opportunity_signals=positive_opportunity_signals,
                 drivers_text=drivers_text,
