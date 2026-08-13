@@ -262,18 +262,3 @@ Step 5 is the final layer: it takes everything built in Steps 1–3 — a client
         ▼
    Mid-tier App
 ```
-STEP 1: MARKET NEWS COLLECTION
-<img width="1536" height="1024" alt="step1" src="https://github.com/user-attachments/assets/d453d0df-2962-4112-a704-3e59b715f19f" />
-
-
-STEP 6: AI GENERATED TALKING POINTS
-
-<img width="1536" height="1024" alt="step6_ai_talking_points updated" src="https://github.com/user-attachments/assets/36071939-dcff-4fa0-a6b7-68bd1782316f" />
-
-STEP 7: CLIENT MEETING SUMMARY 
-
-<img width="1536" height="1024" alt="step7_meeting_summary" src="https://github.com/user-attachments/assets/8319b91d-55db-49fd-9662-8b9c0bb8a2ba" />
-
-STEP 8: AI RECOMMENDATION
-
-<img width="940" height="627" alt="Step8" src="https://github.com/user-attachments/assets/12ed82b0-7c0d-4a05-9566-61cdea483b4e" />
