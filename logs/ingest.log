@@ -4602,3 +4602,638 @@ STEP 1 DONE -> 1 new articles ingested
 2026-07-21 12:45:18,574  INFO      Completed talking-point generation for 3 client(s)
 2026-07-21 12:45:18,574  INFO      --------------------------------------------------
 2026-07-21 12:45:18,574  INFO      [Step 7] Done.
+2026-08-13 13:18:25,933  INFO      Database tables created.
+2026-08-13 13:18:57,366  INFO      Loaded 6 themes covering 12 distinct sectors.
+2026-08-13 13:18:57,389  INFO      Processing 3 client(s)...
+2026-08-13 13:18:57,476  INFO        [AB345678] Arjun Mehta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-08-13 13:18:57,586  INFO        [CD901234] Priya Sharma -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-08-13 13:18:57,637  INFO        [EF567890] Rahul Gupta -> 2 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization']
+2026-08-13 13:19:01,598  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:19:01,978  INFO        [AB345678] outlook generated (2 drivers).
+2026-08-13 13:19:04,819  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:19:04,891  INFO        [CD901234] outlook generated (3 drivers).
+2026-08-13 13:19:07,037  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:19:07,094  INFO        [EF567890] outlook generated (2 drivers).
+2026-08-13 13:20:08,159  INFO      
++==========================================================+
+2026-08-13 13:20:08,162  INFO      |  FINANCE PIPELINE RUN  -  2026-08-13 07:50:08 UTC  |
+2026-08-13 13:20:08,164  INFO      +==========================================================+
+
+2026-08-13 13:20:08,223  INFO      ============================================================
+2026-08-13 13:20:08,234  INFO      STEP 1 - INGESTION  START
+2026-08-13 13:20:08,308  INFO      ============================================================
+2026-08-13 13:20:08,566  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-08-13 13:20:22,015  INFO        Raw XML saved -> yahoo_finance_20260813_075008.xml  (26029 bytes)
+2026-08-13 13:20:22,214  INFO        Parsed 45 entries
+2026-08-13 13:20:22,231  INFO        Processing 10 / 45 entries from Yahoo Finance
+2026-08-13 13:20:23,942  INFO        >> saved  bank_of_america_sends_blunt_message_to_nvidia_stock_investors__a0881bd1.json
+2026-08-13 13:20:26,678  INFO        >> DB insert  id=45  title='Bank of America sends blunt message to Nvidia stock inv...'
+2026-08-13 13:20:28,659  INFO        >> saved  what_is_compound_interest_and_how_is_it_calculated__a672e31c.json
+2026-08-13 13:20:28,673  INFO        >> DB insert  id=46  title='What is compound interest, and how is it calculated?...'
+2026-08-13 13:20:30,802  INFO        >> saved  uber_freight_says_its_investigating_cyber_incident_following_hacker_claims__946f1117.json
+2026-08-13 13:20:30,813  INFO        >> DB insert  id=47  title='Uber Freight says its investigating cyber incident foll...'
+2026-08-13 13:20:32,070  INFO        >> saved  can_teradynes_ter_ai_boom_keep_outrunning_wall_street__52522641.json
+2026-08-13 13:20:32,079  INFO        >> DB insert  id=48  title='Can Teradyne’s (TER) AI Boom Keep Outrunning Wall Stree...'
+2026-08-13 13:20:33,230  INFO        >> saved  elon_musk_could_get_his_near_1_trillion_payday_a_lot_sooner_if_spacex_buys_tesla__0033912f.json
+2026-08-13 13:20:33,238  INFO        >> DB insert  id=49  title='Elon Musk could get his near-$1 trillion payday a lot s...'
+2026-08-13 13:20:34,588  INFO        >> saved  aarp_issues_urgent_call_on_medicare_drug_costs__f9e02ff4.json
+2026-08-13 13:20:34,597  INFO        >> DB insert  id=50  title='AARP issues urgent call on Medicare drug costs...'
+2026-08-13 13:20:35,771  INFO        >> saved  the_boeing_company_ba_vs_southwest_airlines_co_luv_a_long_delayed_plane_finally___4994a206.json
+2026-08-13 13:20:35,779  INFO        >> DB insert  id=51  title='The Boeing Company (BA) vs. Southwest Airlines Co. (LUV...'
+2026-08-13 13:20:37,334  INFO        >> saved  dear_target_stock_fans_mark_your_calendars_for_august_19__2f0c3df4.json
+2026-08-13 13:20:37,343  INFO        >> DB insert  id=52  title='Dear Target Stock Fans, Mark Your Calendars for August ...'
+2026-08-13 13:20:38,723  INFO        >> saved  if_cloud_computing_stocks_get_a_second_wind_this_etf_is_primed_to_float_higher__b378faa3.json
+2026-08-13 13:20:38,732  INFO        >> DB insert  id=53  title='If Cloud Computing Stocks Get a Second Wind, This ETF I...'
+2026-08-13 13:20:40,291  INFO        >> saved  israeli_defense_contractor_beats_earnings_estimates_stock_sinks_over_iran_war_re__a9942e6e.json
+2026-08-13 13:20:40,303  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-08-13 13:20:42,213  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-08-13 13:20:42,224  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-08-13 13:20:43,386  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-08-13 13:20:44,500  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-08-13 13:20:45,546  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-08-13 13:20:46,982  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-08-13 13:20:48,127  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-08-13 13:20:49,474  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-08-13 13:20:50,362  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-08-13 13:20:51,274  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-08-13 13:20:52,191  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-08-13 13:20:53,737  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-08-13 13:20:53,755  INFO      
+STEP 1 DONE -> 9 new articles ingested
+2026-08-13 13:20:53,756  INFO      ============================================================
+2026-08-13 13:20:53,762  INFO      STEP 2 - AI PROCESSING  START
+2026-08-13 13:20:53,764  INFO      ============================================================
+2026-08-13 13:20:53,883  INFO      Processing 9 articles ...
+2026-08-13 13:20:53,885  INFO      
+  Article [45]: Bank of America sends blunt message to Nvidia stock investor...
+2026-08-13 13:20:55,552  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:20:55,661  INFO        -> 0 market events found
+2026-08-13 13:20:55,662  INFO      
+  Article [46]: What is compound interest, and how is it calculated?...
+2026-08-13 13:20:56,371  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:20:56,399  INFO        -> 0 market events found
+2026-08-13 13:20:56,444  INFO      
+  Article [47]: Uber Freight says its investigating cyber incident following...
+2026-08-13 13:20:58,177  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:20:58,185  INFO        -> 0 market events found
+2026-08-13 13:20:58,209  INFO      
+  Article [48]: Can Teradyne’s (TER) AI Boom Keep Outrunning Wall Street?...
+2026-08-13 13:20:59,155  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:20:59,160  INFO        -> 1 market events found
+2026-08-13 13:20:59,181  INFO      
+  Article [49]: Elon Musk could get his near-$1 trillion payday a lot sooner...
+2026-08-13 13:21:00,180  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:00,192  INFO        -> 0 market events found
+2026-08-13 13:21:00,194  INFO      
+  Article [50]: AARP issues urgent call on Medicare drug costs...
+2026-08-13 13:21:00,875  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:00,890  INFO        -> 0 market events found
+2026-08-13 13:21:00,892  INFO      
+  Article [51]: The Boeing Company (BA) vs. Southwest Airlines Co. (LUV): A ...
+2026-08-13 13:21:01,598  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:01,610  INFO        -> 0 market events found
+2026-08-13 13:21:01,612  INFO      
+  Article [52]: Dear Target Stock Fans, Mark Your Calendars for August 19...
+2026-08-13 13:21:03,131  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:03,141  INFO        -> 0 market events found
+2026-08-13 13:21:03,146  INFO      
+  Article [53]: If Cloud Computing Stocks Get a Second Wind, This ETF Is Pri...
+2026-08-13 13:21:03,806  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:03,812  INFO        -> 0 market events found
+2026-08-13 13:21:03,818  INFO      
+  Clustering 1 events into trends ...
+2026-08-13 13:21:05,496  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:05,520  INFO        -> 1 trends identified
+2026-08-13 13:21:05,580  INFO      
+  Distilling 1 trends into investment themes ...
+2026-08-13 13:21:07,523  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:07,536  INFO        -> 1 themes identified
+2026-08-13 13:21:07,601  INFO      
+============================================================
+2026-08-13 13:21:07,602  INFO        THEMES STORED: 7
+2026-08-13 13:21:07,611  INFO      
+  > THEME: Tech Market Volatility
+2026-08-13 13:21:07,611  INFO          Recent fluctuations in the technology sector indicate increased volatility, affecting major indices 
+2026-08-13 13:21:07,617  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.80
+2026-08-13 13:21:07,622  INFO      
+  > THEME: Geopolitical Oil Dynamics
+2026-08-13 13:21:07,623  INFO          The volatility in oil prices due to geopolitical tensions, notably with countries like Iran, reshape
+2026-08-13 13:21:07,625  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-13 13:21:07,626  INFO          - Sector: Industrials                     Sentiment: Negative    Confidence: 0.70
+2026-08-13 13:21:07,627  INFO          - Sector: Consumer Staples                Sentiment: Negative    Confidence: 0.60
+2026-08-13 13:21:07,628  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-13 13:21:07,630  INFO          - Sector: Transportation                  Sentiment: Negative    Confidence: 0.80
+2026-08-13 13:21:07,631  INFO          - Sector: Commodities                     Sentiment: Mixed       Confidence: 0.70
+2026-08-13 13:21:07,633  INFO          - Sector: Utilities                       Sentiment: Neutral     Confidence: 0.60
+2026-08-13 13:21:07,639  INFO      
+  > THEME: Energy Market Dynamics
+2026-08-13 13:21:07,640  INFO          Geopolitical tensions and shifts in global supply dynamics are creating volatility and opportunities
+2026-08-13 13:21:07,642  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.85
+2026-08-13 13:21:07,643  INFO          - Sector: Shipping                        Sentiment: Positive    Confidence: 0.75
+2026-08-13 13:21:07,648  INFO      
+  > THEME: Retail and Logistics Transformation
+2026-08-13 13:21:07,649  INFO          The retail and logistics sectors are realigning due to operational downsizing and strategic shifts. 
+2026-08-13 13:21:07,653  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.90
+2026-08-13 13:21:07,654  INFO          - Sector: Logistics                       Sentiment: Negative    Confidence: 0.85
+2026-08-13 13:21:07,656  INFO          - Sector: Automotive                      Sentiment: Negative    Confidence: 0.80
+2026-08-13 13:21:07,660  INFO      
+  > THEME: Energy Market Volatility
+2026-08-13 13:21:07,661  INFO          Geopolitical tensions are causing significant fluctuations in energy prices, with natural gas experi
+2026-08-13 13:21:07,662  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-13 13:21:07,668  INFO      
+  > THEME: Digital Content Monetization
+2026-08-13 13:21:07,669  INFO          The shift toward new monetization strategies on social media platforms demonstrates a pivot in media
+2026-08-13 13:21:07,673  INFO          - Sector: Media                           Sentiment: Positive    Confidence: 0.85
+2026-08-13 13:21:07,676  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.80
+2026-08-13 13:21:07,685  INFO      
+  > THEME: AI Technology Expansion
+2026-08-13 13:21:07,688  INFO          The proliferation of artificial intelligence technologies is spurring demand for AI testing equipmen
+2026-08-13 13:21:07,691  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.90
+2026-08-13 13:21:07,693  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.80
+2026-08-13 13:21:07,695  INFO      ============================================================
+2026-08-13 13:21:07,706  INFO      
+STEP 2 DONE
+2026-08-13 13:21:07,709  INFO      [Step 3] Matching client holdings to themes...
+2026-08-13 13:21:07,829  INFO      Loaded 7 themes covering 13 distinct sectors.
+2026-08-13 13:21:07,874  INFO      Processing 3 client(s)...
+2026-08-13 13:21:09,735  INFO        [AB345678] Arjun Mehta -> 3 theme(s) matched: ['AI Technology Expansion', 'Tech Market Volatility', 'Digital Content Monetization']
+2026-08-13 13:21:09,868  INFO        [CD901234] Priya Sharma -> 3 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion']
+2026-08-13 13:21:09,943  INFO        [EF567890] Rahul Gupta -> 3 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion']
+2026-08-13 13:21:09,950  INFO      [Step 3] Done. 3 client(s), 9 theme match(es).
+2026-08-13 13:21:09,957  INFO      [Step 5] Generating client market outlooks...
+2026-08-13 13:21:13,006  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:13,178  INFO        [AB345678] outlook generated (3 drivers).
+2026-08-13 13:21:15,947  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:16,067  INFO        [CD901234] outlook generated (3 drivers).
+2026-08-13 13:21:17,984  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:18,127  INFO        [EF567890] outlook generated (3 drivers).
+2026-08-13 13:21:18,129  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-08-13 13:21:18,129  INFO      [Step 6] AI Meeting Summary...
+2026-08-13 13:21:27,614  INFO      HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-08-13 13:21:30,007  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:30,138  INFO      [Step 7] AI Generated Talking Points...
+2026-08-13 13:21:30,177  INFO      Starting talking-point generation for 3 client(s)
+2026-08-13 13:21:30,178  INFO      Processing client 1: client_id=1, dob=1975-04-10, marital_status=Married, kids=2 children, hobbies=Golf, Travel, other=Prefers face-to-face meetings, meeting_summary=['Arjun Mehta has accumulated €800,000 in cash from dividends and business income and wants to invest it.', "The client's portfolio is valued at approximately €7.48 million and ...
+2026-08-13 13:21:30,180  INFO      Preparing prompt with 1 client entry/entries
+2026-08-13 13:21:31,875  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:31,889  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-13 13:21:31,890  INFO      OpenAI returned 2 opener(s) for client_id=1
+2026-08-13 13:21:31,900  INFO      Updating existing talking points for client_id=1 with 2 opener(s)
+2026-08-13 13:21:31,913  INFO      Processing client 2: client_id=2, dob=1985-07-15, marital_status=Single, kids=None, hobbies=Reading, other=Interested in AI sector, meeting_summary=
+2026-08-13 13:21:31,914  INFO      Preparing prompt with 1 client entry/entries
+2026-08-13 13:21:33,164  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:33,199  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-13 13:21:33,209  INFO      OpenAI returned 2 opener(s) for client_id=2
+2026-08-13 13:21:33,216  INFO      Updating existing talking points for client_id=2 with 2 opener(s)
+2026-08-13 13:21:33,223  INFO      Processing client 3: client_id=3, dob=1965-09-08, marital_status=Married, kids=1 child, hobbies=Tennis, other=Interested in AI, meeting_summary=
+2026-08-13 13:21:33,226  INFO      Preparing prompt with 1 client entry/entries
+2026-08-13 13:21:34,767  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:34,790  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-13 13:21:34,791  INFO      OpenAI returned 2 opener(s) for client_id=3
+2026-08-13 13:21:34,793  INFO      Updating existing talking points for client_id=3 with 2 opener(s)
+2026-08-13 13:21:34,803  INFO      Completed talking-point generation for 3 client(s)
+2026-08-13 13:21:34,804  INFO      --------------------------------------------------
+2026-08-13 13:21:34,805  INFO      [Step 7] Done.
+2026-08-13 13:21:34,806  INFO      [Step 8] Generating sector recommendations...
+2026-08-13 13:21:34,873  INFO      
+[Step 6] AB345678 – Arjun Mehta
+2026-08-13 13:21:34,874  INFO        Sectors held: ['Semiconductors', 'Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-13 13:21:37,284  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:37,381  INFO        [AB345678] 5 sector recommendation(s) saved.
+2026-08-13 13:21:37,387  INFO      
+[Step 6] CD901234 – Priya Sharma
+2026-08-13 13:21:37,388  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-13 13:21:39,176  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:39,262  INFO        [CD901234] 4 sector recommendation(s) saved.
+2026-08-13 13:21:39,269  INFO      
+[Step 6] EF567890 – Rahul Gupta
+2026-08-13 13:21:39,270  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-13 13:21:41,131  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-13 13:21:41,214  INFO        [EF567890] 4 sector recommendation(s) saved.
+2026-08-13 13:21:41,216  INFO      [Step 8] Done. 3 client(s), 13 sector recommendation(s).
+2026-08-13 13:21:41,217  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-08-14 19:05:35,846  INFO      
++==========================================================+
+2026-08-14 19:05:35,848  INFO      |  FINANCE PIPELINE RUN  -  2026-08-14 13:35:35 UTC  |
+2026-08-14 19:05:35,849  INFO      +==========================================================+
+
+2026-08-14 19:05:35,850  INFO      ============================================================
+2026-08-14 19:05:35,850  INFO      STEP 1 - INGESTION  START
+2026-08-14 19:05:35,850  INFO      ============================================================
+2026-08-14 19:05:35,895  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-08-14 19:05:37,175  INFO        Raw XML saved -> yahoo_finance_20260814_133535.xml  (30197 bytes)
+2026-08-14 19:05:37,346  INFO        Parsed 48 entries
+2026-08-14 19:05:37,357  INFO        Processing 10 / 48 entries from Yahoo Finance
+2026-08-14 19:05:38,344  INFO        >> saved  resort_destination_mall_and_hotel_file_chapter_11_bankruptcy__b462f4dc.json
+2026-08-14 19:05:38,607  INFO        >> DB insert  id=54  title='Resort destination mall and hotel file Chapter 11 bankr...'
+2026-08-14 19:05:39,652  INFO        >> saved  kura_oncology_inc_q2_2026_earnings_call_summary__b8361797.json
+2026-08-14 19:05:39,669  INFO        >> DB insert  id=55  title='Kura Oncology, Inc. Q2 2026 Earnings Call Summary...'
+2026-08-14 19:05:40,637  INFO        >> saved  here_is_why_chevron_cvx_is_a_favorite_among_hedge_funds__1a6469f5.json
+2026-08-14 19:05:40,642  INFO        >> DB insert  id=56  title='Here is Why Chevron (CVX) is a Favorite Among Hedge Fun...'
+2026-08-14 19:05:41,494  INFO        >> saved  erock_eroc_soars_23_as_anthropic_deal_brightens_outlook__d29234a9.json
+2026-08-14 19:05:41,498  INFO        >> DB insert  id=57  title='Erock (EROC) Soars 23% as Anthropic Deal Brightens Outl...'
+2026-08-14 19:05:42,450  INFO        >> saved  marex_group_plc_ordinary_shares_q2_2026_earnings_call_summary__1a22abd8.json
+2026-08-14 19:05:42,460  INFO        >> DB insert  id=58  title='Marex Group plc Ordinary Shares Q2 2026 Earnings Call S...'
+2026-08-14 19:05:43,236  INFO        >> saved  mcdonalds_serving_up_new_kind_of_energy_boost_on_menus_nationwide__149609b3.json
+2026-08-14 19:05:43,241  INFO        >> DB insert  id=59  title='McDonald's serving up new kind of energy boost on menus...'
+2026-08-14 19:05:43,946  INFO        >> saved  maxcyte_inc_q2_2026_earnings_call_summary__74307af9.json
+2026-08-14 19:05:43,950  INFO        >> DB insert  id=60  title='MaxCyte, Inc. Q2 2026 Earnings Call Summary...'
+2026-08-14 19:05:44,856  INFO        >> saved  powerball_jackpot_climbs_to_1_billion_what_youd_pocket_after_taxes_and_what_to_d__0c0a20e5.json
+2026-08-14 19:05:44,862  INFO        >> DB insert  id=61  title='Powerball jackpot climbs to $1 billion. What you'd pock...'
+2026-08-14 19:05:46,017  INFO        >> saved  omeros_corporation_q2_2026_earnings_call_summary__96541521.json
+2026-08-14 19:05:46,021  INFO        >> DB insert  id=62  title='Omeros Corporation Q2 2026 Earnings Call Summary...'
+2026-08-14 19:05:46,884  INFO        >> saved  origin_energy_profit_rises_despite_weaker_lng_earnings__bf487665.json
+2026-08-14 19:05:46,891  INFO        >> DB insert  id=63  title='Origin Energy Profit Rises Despite Weaker LNG Earnings...'
+2026-08-14 19:05:46,895  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-08-14 19:05:48,441  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-08-14 19:05:48,451  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-08-14 19:05:49,279  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-08-14 19:05:50,079  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-08-14 19:05:50,940  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-08-14 19:05:51,846  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-08-14 19:05:52,912  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-08-14 19:05:53,697  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-08-14 19:05:54,488  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-08-14 19:05:55,278  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-08-14 19:05:57,406  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-08-14 19:05:59,179  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-08-14 19:05:59,196  INFO      
+STEP 1 DONE -> 10 new articles ingested
+2026-08-14 19:05:59,198  INFO      ============================================================
+2026-08-14 19:05:59,199  INFO      STEP 2 - AI PROCESSING  START
+2026-08-14 19:05:59,200  INFO      ============================================================
+2026-08-14 19:05:59,278  INFO      Processing 10 articles ...
+2026-08-14 19:05:59,280  INFO      
+  Article [54]: Resort destination mall and hotel file Chapter 11 bankruptcy...
+2026-08-14 19:06:02,559  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:02,661  INFO        -> 1 market events found
+2026-08-14 19:06:02,687  INFO      
+  Article [55]: Kura Oncology, Inc. Q2 2026 Earnings Call Summary...
+2026-08-14 19:06:04,191  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:04,198  INFO        -> 1 market events found
+2026-08-14 19:06:04,220  INFO      
+  Article [56]: Here is Why Chevron (CVX) is a Favorite Among Hedge Funds...
+2026-08-14 19:06:05,424  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:05,427  INFO        -> 0 market events found
+2026-08-14 19:06:05,429  INFO      
+  Article [57]: Erock (EROC) Soars 23% as Anthropic Deal Brightens Outlook...
+2026-08-14 19:06:06,545  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:06,549  INFO        -> 1 market events found
+2026-08-14 19:06:06,554  INFO      
+  Article [58]: Marex Group plc Ordinary Shares Q2 2026 Earnings Call Summar...
+2026-08-14 19:06:07,491  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:07,502  INFO        -> 1 market events found
+2026-08-14 19:06:07,509  INFO      
+  Article [59]: McDonald's serving up new kind of energy boost on menus nati...
+2026-08-14 19:06:08,324  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:08,334  INFO        -> 0 market events found
+2026-08-14 19:06:08,338  INFO      
+  Article [60]: MaxCyte, Inc. Q2 2026 Earnings Call Summary...
+2026-08-14 19:06:09,034  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:09,047  INFO        -> 0 market events found
+2026-08-14 19:06:09,050  INFO      
+  Article [61]: Powerball jackpot climbs to $1 billion. What you'd pocket af...
+2026-08-14 19:06:09,822  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:09,826  INFO        -> 0 market events found
+2026-08-14 19:06:09,828  INFO      
+  Article [62]: Omeros Corporation Q2 2026 Earnings Call Summary...
+2026-08-14 19:06:10,640  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:10,645  INFO        -> 0 market events found
+2026-08-14 19:06:10,648  INFO      
+  Article [63]: Origin Energy Profit Rises Despite Weaker LNG Earnings...
+2026-08-14 19:06:12,183  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:12,187  INFO        -> 1 market events found
+2026-08-14 19:06:12,195  INFO      
+  Clustering 5 events into trends ...
+2026-08-14 19:06:15,040  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:15,041  INFO        -> 3 trends identified
+2026-08-14 19:06:15,067  INFO      
+  Distilling 3 trends into investment themes ...
+2026-08-14 19:06:20,985  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:20,998  INFO        -> 2 themes identified
+2026-08-14 19:06:21,089  INFO      
+============================================================
+2026-08-14 19:06:21,090  INFO        THEMES STORED: 9
+2026-08-14 19:06:21,097  INFO      
+  > THEME: Tech Market Volatility
+2026-08-14 19:06:21,098  INFO          Recent fluctuations in the technology sector indicate increased volatility, affecting major indices 
+2026-08-14 19:06:21,099  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.80
+2026-08-14 19:06:21,104  INFO      
+  > THEME: Geopolitical Oil Dynamics
+2026-08-14 19:06:21,106  INFO          The volatility in oil prices due to geopolitical tensions, notably with countries like Iran, reshape
+2026-08-14 19:06:21,108  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 19:06:21,111  INFO          - Sector: Industrials                     Sentiment: Negative    Confidence: 0.70
+2026-08-14 19:06:21,112  INFO          - Sector: Consumer Staples                Sentiment: Negative    Confidence: 0.60
+2026-08-14 19:06:21,113  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 19:06:21,118  INFO          - Sector: Transportation                  Sentiment: Negative    Confidence: 0.80
+2026-08-14 19:06:21,119  INFO          - Sector: Commodities                     Sentiment: Mixed       Confidence: 0.70
+2026-08-14 19:06:21,121  INFO          - Sector: Utilities                       Sentiment: Neutral     Confidence: 0.60
+2026-08-14 19:06:21,124  INFO      
+  > THEME: Energy Market Dynamics
+2026-08-14 19:06:21,128  INFO          Geopolitical tensions and shifts in global supply dynamics are creating volatility and opportunities
+2026-08-14 19:06:21,129  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.85
+2026-08-14 19:06:21,132  INFO          - Sector: Shipping                        Sentiment: Positive    Confidence: 0.75
+2026-08-14 19:06:21,144  INFO      
+  > THEME: Retail and Logistics Transformation
+2026-08-14 19:06:21,150  INFO          The retail and logistics sectors are realigning due to operational downsizing and strategic shifts. 
+2026-08-14 19:06:21,152  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.90
+2026-08-14 19:06:21,153  INFO          - Sector: Logistics                       Sentiment: Negative    Confidence: 0.85
+2026-08-14 19:06:21,154  INFO          - Sector: Automotive                      Sentiment: Negative    Confidence: 0.80
+2026-08-14 19:06:21,159  INFO      
+  > THEME: Energy Market Volatility
+2026-08-14 19:06:21,160  INFO          Geopolitical tensions are causing significant fluctuations in energy prices, with natural gas experi
+2026-08-14 19:06:21,161  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 19:06:21,164  INFO      
+  > THEME: Digital Content Monetization
+2026-08-14 19:06:21,165  INFO          The shift toward new monetization strategies on social media platforms demonstrates a pivot in media
+2026-08-14 19:06:21,167  INFO          - Sector: Media                           Sentiment: Positive    Confidence: 0.85
+2026-08-14 19:06:21,168  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.80
+2026-08-14 19:06:21,178  INFO      
+  > THEME: AI Technology Expansion
+2026-08-14 19:06:21,181  INFO          The proliferation of artificial intelligence technologies is spurring demand for AI testing equipmen
+2026-08-14 19:06:21,183  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.90
+2026-08-14 19:06:21,184  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.80
+2026-08-14 19:06:21,186  INFO      
+  > THEME: Corporate Strategy & Transformation
+2026-08-14 19:06:21,191  INFO          With a wave of corporate deals and partnerships, companies are positioning themselves for strategic 
+2026-08-14 19:06:21,192  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-08-14 19:06:21,193  INFO          - Sector: Healthcare                      Sentiment: Positive    Confidence: 0.80
+2026-08-14 19:06:21,200  INFO      
+  > THEME: Market Stability & Financial Health
+2026-08-14 19:06:21,201  INFO          Earnings seasons and bankruptcy news provide insights into the financial health and stability of sec
+2026-08-14 19:06:21,205  INFO          - Sector: Financials                      Sentiment: Mixed       Confidence: 0.75
+2026-08-14 19:06:21,207  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.70
+2026-08-14 19:06:21,207  INFO          - Sector: Industrials                     Sentiment: Neutral     Confidence: 0.65
+2026-08-14 19:06:21,208  INFO      ============================================================
+2026-08-14 19:06:21,210  INFO      
+STEP 2 DONE
+2026-08-14 19:06:21,211  INFO      [Step 3] Matching client holdings to themes...
+2026-08-14 19:06:21,323  INFO      Loaded 9 themes covering 15 distinct sectors.
+2026-08-14 19:06:21,376  INFO      Processing 3 client(s)...
+2026-08-14 19:06:21,968  INFO        [AB345678] Arjun Mehta -> 5 theme(s) matched: ['AI Technology Expansion', 'Tech Market Volatility', 'Digital Content Monetization', 'Corporate Strategy & Transformation', 'Market Stability & Financial Health']
+2026-08-14 19:06:22,146  INFO        [CD901234] Priya Sharma -> 5 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion', 'Corporate Strategy & Transformation', 'Market Stability & Financial Health']
+2026-08-14 19:06:22,249  INFO        [EF567890] Rahul Gupta -> 5 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion', 'Corporate Strategy & Transformation', 'Market Stability & Financial Health']
+2026-08-14 19:06:22,252  INFO      [Step 3] Done. 3 client(s), 15 theme match(es).
+2026-08-14 19:06:22,254  INFO      [Step 5] Generating client market outlooks...
+2026-08-14 19:06:25,281  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:25,402  INFO        [AB345678] outlook generated (3 drivers).
+2026-08-14 19:06:30,829  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:30,895  INFO        [CD901234] outlook generated (2 drivers).
+2026-08-14 19:06:33,068  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:33,143  INFO        [EF567890] outlook generated (2 drivers).
+2026-08-14 19:06:33,144  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-08-14 19:06:33,144  INFO      [Step 6] AI Meeting Summary...
+2026-08-14 19:06:43,308  INFO      HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-08-14 19:06:46,793  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:46,899  INFO      [Step 7] AI Generated Talking Points...
+2026-08-14 19:06:46,952  INFO      Starting talking-point generation for 3 client(s)
+2026-08-14 19:06:46,955  INFO      Processing client 1: client_id=1, dob=1975-04-10, marital_status=Married, kids=2 children, hobbies=Golf, Travel, other=Prefers face-to-face meetings, meeting_summary=['Arjun Mehta has accumulated €800,000 in cash from dividends and business income and wants to discuss investment options.', 'His portfolio is valued at approximately €7.48 mill...
+2026-08-14 19:06:46,957  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 19:06:48,478  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:48,498  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 19:06:48,500  INFO      OpenAI returned 2 opener(s) for client_id=1
+2026-08-14 19:06:48,512  INFO      Updating existing talking points for client_id=1 with 2 opener(s)
+2026-08-14 19:06:48,537  INFO      Processing client 2: client_id=2, dob=1985-07-15, marital_status=Single, kids=None, hobbies=Reading, other=Interested in AI sector, meeting_summary=
+2026-08-14 19:06:48,550  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 19:06:50,288  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:50,293  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 19:06:50,294  INFO      OpenAI returned 2 opener(s) for client_id=2
+2026-08-14 19:06:50,298  INFO      Updating existing talking points for client_id=2 with 2 opener(s)
+2026-08-14 19:06:50,302  INFO      Processing client 3: client_id=3, dob=1965-09-08, marital_status=Married, kids=1 child, hobbies=Tennis, other=Interested in AI, meeting_summary=
+2026-08-14 19:06:50,304  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 19:06:51,816  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:51,820  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 19:06:51,822  INFO      OpenAI returned 2 opener(s) for client_id=3
+2026-08-14 19:06:51,826  INFO      Updating existing talking points for client_id=3 with 2 opener(s)
+2026-08-14 19:06:51,848  INFO      Completed talking-point generation for 3 client(s)
+2026-08-14 19:06:51,849  INFO      --------------------------------------------------
+2026-08-14 19:06:51,851  INFO      [Step 7] Done.
+2026-08-14 19:06:51,852  INFO      [Step 8] Generating sector recommendations...
+2026-08-14 19:06:51,994  INFO      
+[Step 6] AB345678 – Arjun Mehta
+2026-08-14 19:06:52,001  INFO        Sectors held: ['Semiconductors', 'Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 19:06:54,997  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:55,147  INFO        [AB345678] 5 sector recommendation(s) saved.
+2026-08-14 19:06:55,155  INFO      
+[Step 6] CD901234 – Priya Sharma
+2026-08-14 19:06:55,156  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 19:06:57,652  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:57,771  INFO        [CD901234] 4 sector recommendation(s) saved.
+2026-08-14 19:06:57,778  INFO      
+[Step 6] EF567890 – Rahul Gupta
+2026-08-14 19:06:57,791  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 19:06:59,803  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 19:06:59,894  INFO        [EF567890] 4 sector recommendation(s) saved.
+2026-08-14 19:06:59,898  INFO      [Step 8] Done. 3 client(s), 13 sector recommendation(s).
+2026-08-14 19:06:59,900  INFO      
+[OK]  Pipeline run completed successfully.
+
+2026-08-14 21:00:13,483  INFO      
++==========================================================+
+2026-08-14 21:00:13,485  INFO      |  FINANCE PIPELINE RUN  -  2026-08-14 15:30:13 UTC  |
+2026-08-14 21:00:13,485  INFO      +==========================================================+
+
+2026-08-14 21:00:13,485  INFO      ============================================================
+2026-08-14 21:00:13,486  INFO      STEP 1 - INGESTION  START
+2026-08-14 21:00:13,486  INFO      ============================================================
+2026-08-14 21:00:13,496  INFO      Fetching RSS -> Yahoo Finance  (https://finance.yahoo.com/news/rssindex)
+2026-08-14 21:00:15,717  INFO        Raw XML saved -> yahoo_finance_20260814_153013.xml  (31856 bytes)
+2026-08-14 21:00:15,816  INFO        Parsed 50 entries
+2026-08-14 21:00:15,825  INFO        Processing 10 / 50 entries from Yahoo Finance
+2026-08-14 21:00:16,791  INFO        >> saved  resort_destination_mall_and_hotel_file_chapter_11_bankruptcy__b462f4dc.json
+2026-08-14 21:00:17,605  INFO        >> saved  wall_streets_riskiest_trades_are_suddenly_back_on_top_chart_of_the_day__b25a3030.json
+2026-08-14 21:00:17,618  INFO        >> DB insert  id=64  title='Wall Street's riskiest trades are suddenly back on top:...'
+2026-08-14 21:00:19,033  INFO        >> saved  rocket_lab_rklb_set_a_revenue_record_is_neutron_slipping_into_2027__4a773986.json
+2026-08-14 21:00:19,046  INFO        >> DB insert  id=65  title='Rocket Lab (RKLB) Set a Revenue Record. Is Neutron Slip...'
+2026-08-14 21:00:20,867  INFO        >> saved  stock_market_today_dow_sp_500_nasdaq_slip_after_stocks_hit_record_high_consumer___3848df3a.json
+2026-08-14 21:00:20,873  INFO        >> DB insert  id=66  title='Stock market today: Dow, S&P 500, Nasdaq slip after sto...'
+2026-08-14 21:00:22,274  INFO        >> saved  us_consumers_sour_on_economy_as_inflation_concerns_remain_in_focus_umich_survey___70d20d9a.json
+2026-08-14 21:00:22,281  INFO        >> DB insert  id=67  title='US consumers sour on economy as inflation concerns rema...'
+2026-08-14 21:00:22,859  INFO        >> saved  resmed_rmd_q4_2026_earnings_call_transcript__aff9cabf.json
+2026-08-14 21:00:22,863  INFO        >> DB insert  id=68  title='ResMed (RMD) Q4 2026 Earnings Call Transcript...'
+2026-08-14 21:00:23,557  INFO        >> saved  us_business_inventories_unchanged_in_june__3d0c14b0.json
+2026-08-14 21:00:23,562  INFO        >> DB insert  id=69  title='US business inventories unchanged in June...'
+2026-08-14 21:00:24,507  INFO        >> saved  why_top_3_biotech_stock_eton_just_catapulted_to_a_record_high__a9942e6e.json
+2026-08-14 21:00:25,133  INFO        >> saved  ai_shopping_is_sending_better_leads_to_ulta_and_etsy_can_they_keep_the_customer__95ab028d.json
+2026-08-14 21:00:25,142  INFO        >> DB insert  id=70  title='AI Shopping is Sending Better Leads to Ulta and Etsy. C...'
+2026-08-14 21:00:26,013  INFO        >> saved  fed_rate_hike_odds_fall_as_amazon_prime_day_effect_hits_retail_sales__a9942e6e.json
+2026-08-14 21:00:26,016  INFO      Fetching RSS -> Yahoo Finance Markets  (https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US)
+2026-08-14 21:00:27,064  WARNING     Live fetch failed: 400 Client Error: Bad Request for url: https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US – using mock data for dev/demo
+2026-08-14 21:00:27,069  INFO        Processing 10 / 10 entries from Yahoo Finance Markets
+2026-08-14 21:00:27,634  INFO        >> saved  nvidia_surpasses_3_trillion_market_cap_on_ai_chip_demand_surge__0c5468b8.json
+2026-08-14 21:00:28,199  INFO        >> saved  federal_reserve_holds_rates_steady_hints_at_september_cut__c961e414.json
+2026-08-14 21:00:28,957  INFO        >> saved  apple_unveils_ai_powered_iphone_17_lineup_at_wwdc_2026__e976ec59.json
+2026-08-14 21:00:29,970  INFO        >> saved  oil_prices_drop_4_as_opec_agrees_to_increase_output_quotas__550d0c26.json
+2026-08-14 21:00:30,720  INFO        >> saved  microsoft_azure_cloud_revenue_up_35_yoy_beating_estimates__d5537521.json
+2026-08-14 21:00:31,865  INFO        >> saved  tesla_q1_deliveries_miss_expectations_amid_pricing_pressure__7db47317.json
+2026-08-14 21:00:32,511  INFO        >> saved  semiconductor_shortage_eases_as_tsmc_expands_arizona_fab_capacity__e0150449.json
+2026-08-14 21:00:33,134  INFO        >> saved  jpmorgan_warns_of_recession_risk_as_yield_curve_inverts_further__0ac20b68.json
+2026-08-14 21:00:33,773  INFO        >> saved  amazon_acquires_ai_startup_adept_for_12_billion__6fbdaa0c.json
+2026-08-14 21:00:34,903  INFO        >> saved  renewable_energy_stocks_rally_on_new_ira_extension_proposals__80d98a0c.json
+2026-08-14 21:00:34,915  INFO      
+STEP 1 DONE -> 7 new articles ingested
+2026-08-14 21:00:34,916  INFO      ============================================================
+2026-08-14 21:00:34,916  INFO      STEP 2 - AI PROCESSING  START
+2026-08-14 21:00:34,917  INFO      ============================================================
+2026-08-14 21:00:34,960  INFO      Processing 7 articles ...
+2026-08-14 21:00:34,961  INFO      
+  Article [64]: Wall Street's riskiest trades are suddenly back on top: Char...
+2026-08-14 21:00:36,907  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:36,972  INFO        -> 0 market events found
+2026-08-14 21:00:36,973  INFO      
+  Article [65]: Rocket Lab (RKLB) Set a Revenue Record. Is Neutron Slipping ...
+2026-08-14 21:00:38,439  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:38,441  INFO        -> 2 market events found
+2026-08-14 21:00:38,456  INFO      
+  Article [66]: Stock market today: Dow, S&P 500, Nasdaq slip after stocks h...
+2026-08-14 21:00:39,192  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:39,204  INFO        -> 0 market events found
+2026-08-14 21:00:39,206  INFO      
+  Article [67]: US consumers sour on economy as inflation concerns remain in...
+2026-08-14 21:00:39,929  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:39,952  INFO        -> 0 market events found
+2026-08-14 21:00:39,953  INFO      
+  Article [68]: ResMed (RMD) Q4 2026 Earnings Call Transcript...
+2026-08-14 21:00:40,824  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:40,833  INFO        -> 0 market events found
+2026-08-14 21:00:40,835  INFO      
+  Article [69]: US business inventories unchanged in June...
+2026-08-14 21:00:41,550  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:41,567  INFO        -> 0 market events found
+2026-08-14 21:00:41,569  INFO      
+  Article [70]: AI Shopping is Sending Better Leads to Ulta and Etsy. Can Th...
+2026-08-14 21:00:42,326  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:42,341  INFO        -> 0 market events found
+2026-08-14 21:00:42,346  INFO      
+  Clustering 2 events into trends ...
+2026-08-14 21:00:45,776  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:45,778  INFO        -> 1 trends identified
+2026-08-14 21:00:45,789  INFO      
+  Distilling 1 trends into investment themes ...
+2026-08-14 21:00:48,698  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:48,711  INFO        -> 1 themes identified
+2026-08-14 21:00:48,758  INFO      
+============================================================
+2026-08-14 21:00:48,764  INFO        THEMES STORED: 10
+2026-08-14 21:00:48,768  INFO      
+  > THEME: Tech Market Volatility
+2026-08-14 21:00:48,769  INFO          Recent fluctuations in the technology sector indicate increased volatility, affecting major indices 
+2026-08-14 21:00:48,772  INFO          - Sector: Technology                      Sentiment: Negative    Confidence: 0.80
+2026-08-14 21:00:48,775  INFO      
+  > THEME: Geopolitical Oil Dynamics
+2026-08-14 21:00:48,776  INFO          The volatility in oil prices due to geopolitical tensions, notably with countries like Iran, reshape
+2026-08-14 21:00:48,777  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 21:00:48,777  INFO          - Sector: Industrials                     Sentiment: Negative    Confidence: 0.70
+2026-08-14 21:00:48,778  INFO          - Sector: Consumer Staples                Sentiment: Negative    Confidence: 0.60
+2026-08-14 21:00:48,780  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 21:00:48,780  INFO          - Sector: Transportation                  Sentiment: Negative    Confidence: 0.80
+2026-08-14 21:00:48,781  INFO          - Sector: Commodities                     Sentiment: Mixed       Confidence: 0.70
+2026-08-14 21:00:48,782  INFO          - Sector: Utilities                       Sentiment: Neutral     Confidence: 0.60
+2026-08-14 21:00:48,784  INFO      
+  > THEME: Energy Market Dynamics
+2026-08-14 21:00:48,797  INFO          Geopolitical tensions and shifts in global supply dynamics are creating volatility and opportunities
+2026-08-14 21:00:48,817  INFO          - Sector: Energy                          Sentiment: Mixed       Confidence: 0.85
+2026-08-14 21:00:48,818  INFO          - Sector: Shipping                        Sentiment: Positive    Confidence: 0.75
+2026-08-14 21:00:48,821  INFO      
+  > THEME: Retail and Logistics Transformation
+2026-08-14 21:00:48,827  INFO          The retail and logistics sectors are realigning due to operational downsizing and strategic shifts. 
+2026-08-14 21:00:48,842  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.90
+2026-08-14 21:00:48,845  INFO          - Sector: Logistics                       Sentiment: Negative    Confidence: 0.85
+2026-08-14 21:00:48,847  INFO          - Sector: Automotive                      Sentiment: Negative    Confidence: 0.80
+2026-08-14 21:00:48,850  INFO      
+  > THEME: Energy Market Volatility
+2026-08-14 21:00:48,861  INFO          Geopolitical tensions are causing significant fluctuations in energy prices, with natural gas experi
+2026-08-14 21:00:48,864  INFO          - Sector: Energy                          Sentiment: Positive    Confidence: 0.90
+2026-08-14 21:00:48,868  INFO      
+  > THEME: Digital Content Monetization
+2026-08-14 21:00:48,871  INFO          The shift toward new monetization strategies on social media platforms demonstrates a pivot in media
+2026-08-14 21:00:48,876  INFO          - Sector: Media                           Sentiment: Positive    Confidence: 0.85
+2026-08-14 21:00:48,880  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.80
+2026-08-14 21:00:48,884  INFO      
+  > THEME: AI Technology Expansion
+2026-08-14 21:00:48,890  INFO          The proliferation of artificial intelligence technologies is spurring demand for AI testing equipmen
+2026-08-14 21:00:48,893  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.90
+2026-08-14 21:00:48,897  INFO          - Sector: Semiconductors                  Sentiment: Positive    Confidence: 0.80
+2026-08-14 21:00:48,900  INFO      
+  > THEME: Corporate Strategy & Transformation
+2026-08-14 21:00:48,902  INFO          With a wave of corporate deals and partnerships, companies are positioning themselves for strategic 
+2026-08-14 21:00:48,903  INFO          - Sector: Technology                      Sentiment: Positive    Confidence: 0.85
+2026-08-14 21:00:48,908  INFO          - Sector: Healthcare                      Sentiment: Positive    Confidence: 0.80
+2026-08-14 21:00:48,921  INFO      
+  > THEME: Market Stability & Financial Health
+2026-08-14 21:00:48,925  INFO          Earnings seasons and bankruptcy news provide insights into the financial health and stability of sec
+2026-08-14 21:00:48,935  INFO          - Sector: Financials                      Sentiment: Mixed       Confidence: 0.75
+2026-08-14 21:00:48,944  INFO          - Sector: Retail                          Sentiment: Negative    Confidence: 0.70
+2026-08-14 21:00:48,945  INFO          - Sector: Industrials                     Sentiment: Neutral     Confidence: 0.65
+2026-08-14 21:00:48,952  INFO      
+  > THEME: Space Industry Evolution
+2026-08-14 21:00:48,962  INFO          The space industry is witnessing significant developments as companies like Rocket Lab achieve recor
+2026-08-14 21:00:48,966  INFO          - Sector: Aerospace & Defense             Sentiment: Mixed       Confidence: 0.80
+2026-08-14 21:00:48,969  INFO          - Sector: Technology                      Sentiment: Neutral     Confidence: 0.70
+2026-08-14 21:00:48,975  INFO      ============================================================
+2026-08-14 21:00:48,978  INFO      
+STEP 2 DONE
+2026-08-14 21:00:48,993  INFO      [Step 3] Matching client holdings to themes...
+2026-08-14 21:00:49,145  INFO      Loaded 10 themes covering 16 distinct sectors.
+2026-08-14 21:00:49,248  INFO      Processing 3 client(s)...
+2026-08-14 21:00:49,713  INFO        [AB345678] Arjun Mehta -> 6 theme(s) matched: ['AI Technology Expansion', 'Tech Market Volatility', 'Digital Content Monetization', 'Corporate Strategy & Transformation', 'Space Industry Evolution', 'Market Stability & Financial Health']
+2026-08-14 21:00:49,844  INFO        [CD901234] Priya Sharma -> 6 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion', 'Corporate Strategy & Transformation', 'Space Industry Evolution', 'Market Stability & Financial Health']
+2026-08-14 21:00:49,939  INFO        [EF567890] Rahul Gupta -> 6 theme(s) matched: ['Tech Market Volatility', 'Digital Content Monetization', 'AI Technology Expansion', 'Corporate Strategy & Transformation', 'Space Industry Evolution', 'Market Stability & Financial Health']
+2026-08-14 21:00:49,942  INFO      [Step 3] Done. 3 client(s), 18 theme match(es).
+2026-08-14 21:00:49,945  INFO      [Step 5] Generating client market outlooks...
+2026-08-14 21:00:53,197  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:53,286  INFO        [AB345678] outlook generated (3 drivers).
+2026-08-14 21:00:57,671  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:00:57,730  INFO        [CD901234] outlook generated (3 drivers).
+2026-08-14 21:01:00,638  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:00,679  INFO        [EF567890] outlook generated (3 drivers).
+2026-08-14 21:01:00,680  INFO      [Step 5] Done. 3 outlook(s) generated.
+2026-08-14 21:01:00,680  INFO      [Step 6] AI Meeting Summary...
+2026-08-14 21:01:11,904  INFO      HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2026-08-14 21:01:15,107  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:15,169  INFO      [Step 7] AI Generated Talking Points...
+2026-08-14 21:01:15,188  INFO      Starting talking-point generation for 3 client(s)
+2026-08-14 21:01:15,189  INFO      Processing client 1: client_id=1, dob=1975-04-10, marital_status=Married, kids=2 children, hobbies=Golf, Travel, other=Prefers face-to-face meetings, meeting_summary=['Arjun Mehta has accumulated €800,000 in cash from dividends and business income and wants to invest it.', "Arjun's portfolio is valued at approximately €7.48 million and remai...
+2026-08-14 21:01:15,190  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 21:01:18,568  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:18,611  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 21:01:18,627  INFO      OpenAI returned 2 opener(s) for client_id=1
+2026-08-14 21:01:18,688  INFO      Updating existing talking points for client_id=1 with 2 opener(s)
+2026-08-14 21:01:18,774  INFO      Processing client 2: client_id=2, dob=1985-07-15, marital_status=Single, kids=None, hobbies=Reading, other=Interested in AI sector, meeting_summary=
+2026-08-14 21:01:18,815  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 21:01:20,087  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:20,103  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 21:01:20,111  INFO      OpenAI returned 2 opener(s) for client_id=2
+2026-08-14 21:01:20,157  INFO      Updating existing talking points for client_id=2 with 2 opener(s)
+2026-08-14 21:01:20,164  INFO      Processing client 3: client_id=3, dob=1965-09-08, marital_status=Married, kids=1 child, hobbies=Tennis, other=Interested in AI, meeting_summary=
+2026-08-14 21:01:20,171  INFO      Preparing prompt with 1 client entry/entries
+2026-08-14 21:01:22,207  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:22,221  INFO      OpenAI returned structured JSON with 2 opener(s)
+2026-08-14 21:01:22,222  INFO      OpenAI returned 2 opener(s) for client_id=3
+2026-08-14 21:01:22,224  INFO      Updating existing talking points for client_id=3 with 2 opener(s)
+2026-08-14 21:01:22,237  INFO      Completed talking-point generation for 3 client(s)
+2026-08-14 21:01:22,240  INFO      --------------------------------------------------
+2026-08-14 21:01:22,243  INFO      [Step 7] Done.
+2026-08-14 21:01:22,246  INFO      [Step 8] Generating sector recommendations...
+2026-08-14 21:01:22,383  INFO      
+[Step 6] AB345678 – Arjun Mehta
+2026-08-14 21:01:22,392  INFO        Sectors held: ['Semiconductors', 'Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 21:01:24,994  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:25,079  INFO        [AB345678] 5 sector recommendation(s) saved.
+2026-08-14 21:01:25,083  INFO      
+[Step 6] CD901234 – Priya Sharma
+2026-08-14 21:01:25,085  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 21:01:31,451  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:31,496  INFO        [CD901234] 4 sector recommendation(s) saved.
+2026-08-14 21:01:31,501  INFO      
+[Step 6] EF567890 – Rahul Gupta
+2026-08-14 21:01:31,502  INFO        Sectors held: ['Technology', 'Financials', 'Real Estate', 'Renewable Energy']
+2026-08-14 21:01:42,179  INFO      Retrying request to /chat/completions in 0.458044 seconds
+2026-08-14 21:01:45,904  INFO      HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-14 21:01:46,576  INFO        [EF567890] 4 sector recommendation(s) saved.
+2026-08-14 21:01:46,821  INFO      [Step 8] Done. 3 client(s), 13 sector recommendation(s).
+2026-08-14 21:01:47,330  INFO      
+[OK]  Pipeline run completed successfully.
+

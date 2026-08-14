@@ -302,6 +302,12 @@ class Client(Base):
         cascade="all, delete-orphan"
     )
 
+    sector_recommendations = relationship(
+            "ClientSectorRecommendation",
+            back_populates="client",
+            cascade="all, delete-orphan"
+        )
+        
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
 
@@ -655,7 +661,31 @@ class ClientFundRecommendation(Base):
     def __repr__(self):
         return f"<ClientFundRecommendation client_id={self.client_id}>"
  
- 
+class ClientSectorRecommendation(Base):
+    """
+    Step 8 output: AI-scored sector-level signal per client.
+
+    One row per (client, sector) — upserted as new signals are generated.
+    """
+    __tablename__ = "client_sector_recommendations"
+
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    client_id     = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    sector_name   = Column(String(128), nullable=False)
+    action        = Column(String(16))       # e.g. BUY / HOLD / SELL / REDUCE
+    signal_score  = Column(Float)
+    description   = Column(Text)
+    generated_at  = Column(DateTime, default=datetime.utcnow)
+
+    client = relationship("Client", back_populates="sector_recommendations")
+
+    __table_args__ = (
+        UniqueConstraint("client_id", "sector_name", name="uq_client_sector"),
+    )
+
+    def __repr__(self):
+        return f"<ClientSectorRecommendation client_id={self.client_id} sector='{self.sector_name}' action={self.action}>"
+
 # ═══════════════════════════════════════════════
 #  DB FACTORY
 # ═══════════════════════════════════════════════
