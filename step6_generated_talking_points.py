@@ -238,15 +238,28 @@ RULES:
 • Return EXACTLY TWO discussion points.
 • Point 1 MUST ALWAYS be a Positive Portfolio Highlight.
 • Point 2 MUST follow the priority:
-    1. Allocation Discussion (if any asset is outside range)
-    Otherwise
-    2. Risk & Concerns
+  1. Allocation Discussion (if any asset is outside range)
+  Otherwise
+  2. Risk & Concerns
 • Never generate both Allocation and Risk discussions together.
+
+• Previous Meeting Summary is additional context only.
+• Use it ONLY when it contains important information directly relevant
+  to the required portfolio discussion point.
+• It MUST NOT change the Point 1 or Point 2 decision logic.
+• It MUST NOT create an additional discussion topic.
+• For Point 1, use only relevant meeting information that supports
+  discussion of YTD growth, portfolio performance, performance graph,
+  or asset allocation.
+• For Point 2, use only relevant meeting information that supports
+  the already selected Allocation Discussion or Risk & Concerns discussion.
+• Ignore the Previous Meeting Summary if it is unrelated or not useful.
+
 • Use ONLY the provided data.
 • Never invent holdings, sectors or performance.
 • Professional Wealth Relationship Manager tone.
 • Keep responses concise and conversational.
-• Maximum 2 concise sentences.
+• Maximum 2 concise sentences per discussion point.
 • Use short professional wealth-management language.
 • No headings and No bullet points.
 
@@ -274,12 +287,25 @@ Each objection should begin with:
 
 and immediately explain how the Relationship Manager should respond.
 
-Use ONLY:
+Use primarily:
 - Client Constraints
 - Risk Profile
 - Recommended Fund Names
 - Fund Sectors
 - Recommendation Reason
+
+Previous Meeting Discussion and Previous Client Questions are additional
+context only.
+
+Use them ONLY if they contain important information directly relevant to:
+- concerns about investments
+- risk concerns
+- performance concerns
+- questions about recommended funds
+- client preferences or constraints related to investments
+
+Ignore unrelated meeting information.
+Do not invent information.
 
 Rules
 
@@ -606,6 +632,12 @@ def populate_portfolio_discussion(session, clients, openai_client):
 
     for i, (client_details, meeting) in enumerate(clients):
 
+        meeting_text = (
+            meeting.main_discussion_points
+            if meeting and meeting.main_discussion_points
+            else "No relevant previous meeting discussion available"
+        )
+
         client = (
             session.query(Client)
             .filter(Client.id == client_details.client_id)
@@ -669,6 +701,9 @@ def populate_portfolio_discussion(session, clients, openai_client):
     f"""
     Client ID:{client.id}
 
+    Previous Meeting Summary:
+    {meeting_text}
+
     Risk Profile:
     {client.risk_profile}
 
@@ -721,6 +756,18 @@ def populate_anticipated_objections(session, clients, openai_client):
 
     for client_details, meeting in clients:
 
+        meeting_discussion = (
+            meeting.main_discussion_points
+            if meeting and meeting.main_discussion_points
+            else "No relevant previous meeting discussion"
+        )
+
+        client_questions = (
+            meeting.client_questions
+            if meeting and meeting.client_questions
+            else "No previous client questions"
+        )
+
         client = (
             session.query(Client)
             .filter(Client.id == client_details.client_id)
@@ -761,6 +808,12 @@ Risk Profile:
 
 Client Constraints:
 {client_details.client_constraints}
+
+Previous Meeting Discussion:
+{meeting_discussion}
+
+Previous Client Questions:
+{client_questions}
 
 Recommended Funds:
 {''.join(fund_text)}
