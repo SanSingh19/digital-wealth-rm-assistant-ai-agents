@@ -28,13 +28,13 @@
 ### Step 6 – AI Generated Talking points
 
 <p align="center">
- <img src="images/step_6_ai_generated_talking_points_original_quality.png" width="700">
+ <img src="images/step6_updated.png" width="700">
 </p>
 
 ### Step 7 – Client Meeting Summary Generation
 
 <p align="center">
- <img src="images/step_7_client_meeting_summary_original.png" width="790">
+ <img src="images/step7_updated.png" width="790">
 </p>
 
 ### Step 8 – AI Recommendation

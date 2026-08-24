@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 from openai import OpenAI
+from datetime import datetime
 
 from models import (
-    Meeting,
     Client,
     ClientMeetingSummary,
     init_db,
@@ -64,7 +64,8 @@ Instructions:
 5. Extract important questions specifically asked by the client.
 6. Consolidate duplicate or similar client questions.
 7. Do not invent information that is not present in the transcript.
-8. Keep the complete summary concise and within 100 words.
+8. Keep the complete summary concise and within 80 words.
+9. Keep the client questions to 30 words.
 
 Meeting Transcript
 
@@ -87,10 +88,13 @@ chain = PROMPT | llm | PARSER
 
 
 # ---------------- LOAD AUDIO ----------------
+def load_meeting(client_code, meeting_date):
 
-def load_meeting(client_code):
-
-    path = Path("meetings") / f"{client_code}.mp4"
+    path = (
+        Path("meetings")
+        / client_code
+        / f"{meeting_date.strftime('%Y-%m-%d')}.mp4"
+    )
 
     if not path.exists():
         return None
@@ -103,12 +107,35 @@ def load_meeting(client_code):
 
     return transcript.text
 
+def get_meeting_dates_from_folder(client_code: str):
+
+    client_folder = Path("meetings") / client_code
+
+    if not client_folder.exists():
+        print(f"No meeting folder found for {client_code}: {client_folder}")
+        return []
+
+    meeting_dates = []
+
+    for meeting_file in client_folder.glob("*.mp4"):
+        try:
+            meeting_date = datetime.strptime(
+                meeting_file.stem,
+                "%Y-%m-%d"
+            ).date()
+
+            meeting_dates.append(meeting_date)
+
+        except ValueError:
+            print(f"Skipping invalid file: {meeting_file.name}")
+
+    return sorted(meeting_dates, reverse=True)
 
 # ---------------- GENERATE SUMMARY ----------------
 
-def generate_meeting_summary(client_code: str, meeting_date: str):
+def generate_meeting_summary(client_code: str, meeting_date):
 
-    meeting_text = load_meeting(client_code)
+    meeting_text = load_meeting(client_code, meeting_date)
 
     if meeting_text is None:
         return {
@@ -149,65 +176,41 @@ def generate_client_meeting_summary(client_ids=None):
 
             print(f"\nGenerating summary for {db_client.client_code}")
 
-            meeting = (
-                session.query(Meeting)
-                .filter(Meeting.client_id == db_client.id)
-                .first()
-            )
+            meeting_dates = get_meeting_dates_from_folder(db_client.client_code)
 
-            if meeting and meeting.date and meeting.time:
-                meeting_date = (
-                    f"{meeting.date.strftime('%Y-%m-%d')} "
-                    f"{meeting.time.strftime('%H:%M:%S')}"
-                )
-            elif meeting and meeting.date:
-                meeting_date = meeting.date.strftime("%Y-%m-%d")
-            else:
-                meeting_date = "No meeting date"
+            for meeting_date in meeting_dates:
 
-            summary = generate_meeting_summary(
-                db_client.client_code,
-                meeting_date
-            )
-
-            existing_summary = (
-                session.query(ClientMeetingSummary)
-                .filter(ClientMeetingSummary.client_id == db_client.id)
-                .first()
-            )
-
-            if existing_summary:
-
-                existing_summary.rm_id = (
-                    meeting.rm_id if meeting else db_client.rm_id
+                existing_summary = (
+                    session.query(ClientMeetingSummary)
+                    .filter(
+                        ClientMeetingSummary.client_id == db_client.id,
+                        ClientMeetingSummary.last_meeting_date == meeting_date
+                    )
+                    .first()
                 )
 
-                existing_summary.last_meeting_date = (
-                    meeting.date if meeting else None
-                )
+                if existing_summary:
+                    # Summary already exists, so do not create another one
+                    row = existing_summary
 
-                existing_summary.main_discussion_points = summary["main_discussion_points"]
-                existing_summary.client_questions = summary["client_questions"]
+                else:
+                    # Summary does not exist, so generate and save it
+                    summary = generate_meeting_summary(
+                        db_client.client_code,
+                        meeting_date
+                    )
 
-                row = existing_summary
+                    row = ClientMeetingSummary(
+                        rm_id=db_client.rm_id,
+                        client_id=db_client.id,
+                        last_meeting_date=summary["last_meeting_date"],
+                        main_discussion_points=summary["main_discussion_points"],
+                        client_questions=summary["client_questions"]
+                    )
 
-            else:
+                    session.add(row)
 
-                row = ClientMeetingSummary(
-
-                    rm_id=meeting.rm_id if meeting else db_client.rm_id,
-
-                    client_id=db_client.id,
-
-                    last_meeting_date=meeting.date if meeting else None,
-
-                    main_discussion_points=summary["main_discussion_points"],
-                    client_questions=summary["client_questions"]
-                )
-
-                session.add(row)
-
-            results[db_client.id] = row
+                results[db_client.id] = row
 
         session.commit()
 
