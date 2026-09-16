@@ -67,19 +67,19 @@ class ClientOutlookResult(BaseModel):
 PARSER = PydanticOutputParser(pydantic_object=ClientOutlookResult)
 
 PROMPT = ChatPromptTemplate.from_template(
-    """You are a financial news analyst. Based on the client's sector exposures and 
+    """You are a financial news analyst. Based on the client's sector exposures and
 the recent news provided below, write a concise sector-focused news summary.
 
-For the headline_outlook: summarise what is actually happening in the markets 
-across the sectors this client is most heavily invested in. Write it like a 
-briefing note — cover key events, moves, and sentiment shifts. Do NOT frame 
+For the headline_outlook: summarise what is actually happening in the markets
+across the sectors this client is most heavily invested in. Write it like a
+briefing note — cover key events, moves, and sentiment shifts. Do NOT frame
 it as advice or portfolio impact. Stick strictly to what the news says.
 
-For the drivers: pick 2-3 specific events from the news that are most relevant 
+For the drivers: pick 2-3 specific events from the news that are most relevant
 to this client's sector exposure, with one sentence on what happened.
 
-For each driver status field: set "Increase" if the event positively impacts 
-the client's holdings in that sector, "Decrease" if it negatively impacts them. Base this strictly on the holdings 
+For each driver status field: set "Increase" if the event positively impacts
+the client's holdings in that sector, "Decrease" if it negatively impacts them. Base this strictly on the holdings
 and sector exposure provided — not general market opinion.
 
 CLIENT SECTOR EXPOSURE
@@ -210,20 +210,13 @@ def _build_citation(
 
     citations = {
         "themes": [
-            {
-                "id": m.theme.id,
-                "name": m.theme.name,
-            }
+            m.theme.name
             for m in matches
         ],
         "trends": [],
         "market_events": [],
         "news_articles": [
-            {
-                "id": article.id,
-                "title": article.title,
-                "url": article.url,
-            }
+            article.url
             for article in news
         ],
     }
@@ -269,23 +262,16 @@ def _build_citation(
     for row in rows:
 
         if row.trend_id not in seen_trends:
-            citations["trends"].append({
-                "id": row.trend_id,
-                "name": row.trend_name,
-                "direction": (
-                    row.trend_direction.value
-                    if row.trend_direction is not None
-                    else None
-                ),
-            })
+            citations["trends"].append(
+                row.trend_name
+            )
 
             seen_trends.add(row.trend_id)
 
         if row.event_id not in seen_events:
-            citations["market_events"].append({
-                "id": row.event_id,
-                "event_text": row.event_text,
-            })
+            citations["market_events"].append(
+                row.event_text
+            )
 
             seen_events.add(row.event_id)
 

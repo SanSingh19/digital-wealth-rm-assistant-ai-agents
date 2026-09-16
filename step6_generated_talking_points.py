@@ -159,12 +159,24 @@ Rules:
 - Always generate exactly 2 product_introduction items.
 - Professional, client-friendly, and relationship-focused.
 - Keep responses concise and conversational.
-- Prioritize products, funds, or investment themes relevant to the client context.
+- Prioritize products/funds from the AI recommendations that are relevant to the client context.
 - If the client question mentions a specific product or fund:
-  - The first product introduction should directly address that product or fund Only if AI recommendation action is BUY.
-  - The second product introduction should be based on the available AI recommendation about products or funds, refer funds in input if available.
+  - First check whether that exact product/fund exists in the AI recommendations.
+  - If it exists and its Action is BUY, use that exact product/fund as the first product introduction.
+  - If it does not exist, or its Action is SELL or HOLD, do not use it.
+  - In that case, select a product/fund with Action = BUY from the AI recommendations.
+  - The second product introduction must also use a different product/fund with Action = BUY from the AI recommendations.
 - If the client question does not mention a specific product or fund:
   - Generate both product introductions based on the available AI recommendations.
+- Product introductions must be generated ONLY from products/funds whose AI recommendation Action is BUY.
+- Treat the AI recommendation fund list as a CLOSED LIST of allowed products.
+- Use only the exact investment_name values present in the AI recommendations.
+- Do not create, rename, infer, or substitute any fund/product name from the client question, market outlook, sector, theme, or rationale.
+- Before generating each product introduction, match the product/fund against the AI recommendation list and verify that its Action is exactly BUY.
+- If a product/fund is not present in the AI recommendation list, it must not appear in the product introduction.
+- When there are exactly two or more BUY recommendations, select the BUY recommendations from that list only and mention their exact investment_name.
+- Do not suggest, explore, consider, add, invest in, or recommend any product/fund whose AI recommendation Action is SELL or HOLD.
+- For BUY recommendations, mention the exact investment_name from the AI recommendation and present that product/fund as an opportunity to explore or consider based on the provided rationale.
 - When using market outlook information, connect it naturally to the suggested product or fund.
 - Do not make guarantees, predictions, or personalized investment advice.
 - Do not introduce products that are not present in the provided inputs.
@@ -848,8 +860,17 @@ def populate_portfolio_discussion(session, clients, openai_client):
             "client_id": client.id,
             "previous_meeting_summary": meeting_text,
             "risk_profile": client.risk_profile,
-            "portfolio_details": portfolio_data,
-            "performance_details": performance_data,
+
+            "portfolio_details": {
+                "portfolioMarketValue": portfolio_data.get("portfolioMarketValue"),
+                "assetAllocation": portfolio_data.get("assetAllocation", []),
+            },
+
+            "performance_details": {
+                "period": performance_data.get("period"),
+                "ytdReturn": performance_data.get("ytdReturn"),
+            },
+
             "risk_overview": {
                 "concentration": (
                     risk.concentration_pct
@@ -872,6 +893,7 @@ def populate_portfolio_discussion(session, clients, openai_client):
                     if risk else None
                 ),
             },
+
             "theme_matches": [
                 {
                     "theme": theme.theme.name,
