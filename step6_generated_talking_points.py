@@ -77,11 +77,22 @@ def _summarize_client_product_introductions(
     meeting_summary: Any,
     recommendation: Any
 ) -> str:
+
+    recommendations = []
+
+    if recommendation and recommendation.recommendations:
+        try:
+            recommendations = json.loads(
+                recommendation.recommendations
+            )
+        except (json.JSONDecodeError, TypeError):
+            recommendations = []
+
     return (
         f"client_id={outlook.client_id if outlook else recommendation.client_id if recommendation else 'Unknown'}, "
         f"client_question={_truncate(meeting_summary.client_questions) if meeting_summary else 'No Client Questions'}, "
         f"market_outlook={_truncate(outlook.headline_outlook) if outlook else 'No Market Outlook'}, "
-        f"funds={_truncate(recommendation.recommendations) if recommendation else 'No Funds'} "
+        f"funds={json.dumps(recommendations, indent=2)}"
     )
 
 
@@ -153,45 +164,136 @@ Client Questions, Market Outlook, Funds and AI Recommendations:
 
 {client_block}
 
-Generate the top 2 personalized product introductions.
+Generate product introductions strictly from the AI Recommendations provided
+in the input.
 
-Rules:
-- Always generate exactly 2 product_introduction items.
-- Professional, client-friendly, and relationship-focused.
-- Keep responses concise and conversational.
-- Prioritize products/funds from the AI recommendations that are relevant to the client context.
-- If the client question mentions a specific product or fund:
-  - First check whether that exact product/fund exists in the AI recommendations.
-  - If it exists and its Action is BUY, use that exact product/fund as the first product introduction.
-  - If it does not exist, or its Action is SELL or HOLD, do not use it.
-  - In that case, select a product/fund with Action = BUY from the AI recommendations.
-  - The second product introduction must also use a different product/fund with Action = BUY from the AI recommendations.
-- If the client question does not mention a specific product or fund:
-  - Generate both product introductions based on the available AI recommendations.
-- Product introductions must be generated ONLY from products/funds whose AI recommendation Action is BUY.
-- Treat the AI recommendation fund list as a CLOSED LIST of allowed products.
-- Use only the exact investment_name values present in the AI recommendations.
-- Do not create, rename, infer, or substitute any fund/product name from the client question, market outlook, sector, theme, or rationale.
-- Before generating each product introduction, match the product/fund against the AI recommendation list and verify that its Action is exactly BUY.
-- If a product/fund is not present in the AI recommendation list, it must not appear in the product introduction.
-- When there are exactly two or more BUY recommendations, select the BUY recommendations from that list only and mention their exact investment_name.
-- Do not suggest, explore, consider, add, invest in, or recommend any product/fund whose AI recommendation Action is SELL or HOLD.
-- For BUY recommendations, mention the exact investment_name from the AI recommendation and present that product/fund as an opportunity to explore or consider based on the provided rationale.
-- When using market outlook information, connect it naturally to the suggested product or fund.
-- Do not make guarantees, predictions, or personalized investment advice.
-- Do not introduce products that are not present in the provided inputs.
-- Avoid repeating the same product, fund, or recommendation in both introductions.
-- Ensure each product introduction has a distinct style and focus.
-- No assumptions beyond the provided information.
+IMPORTANT:
+The AI Recommendations are the ONLY source of allowed products/funds.
+PRODUCT SELECTION RULES
+-----------------------
+1. Read every recommendation object in the AI Recommendations list.
+2. A product/fund is eligible ONLY when:
+   Action = "BUY"
+3. Products/funds with:
+   Action = "SELL"
+   OR
+   Action = "HOLD"
+   are NOT eligible.
+4. NEVER use a product/fund with Action = SELL.
+5. NEVER use a product/fund with Action = HOLD.
+6. NEVER use a product/fund only because it is mentioned in the Client Question.
+7. NEVER use a product/fund only because it appears in the Market Outlook.
+8. NEVER use a product/fund from your own knowledge.
+9. NEVER invent a product/fund.
+10. NEVER rename or modify an investment_name.
+11. The product/fund name in the introduction MUST exactly match the
+    investment_name from an AI Recommendation whose Action is BUY.
 
-Respond ONLY with valid JSON.
+CLIENT QUESTION LOGIC
+---------------------
+If the Client Question mentions a specific product/fund:
+- Find that product/fund in the AI Recommendations.
+- Check its Action.
+- If Action = BUY, use that exact investment_name for the first introduction.
+- If Action = SELL, DO NOT use it.
+- If Action = HOLD, DO NOT use it.
+- If the mentioned product/fund does not exist in the AI Recommendations,
+  DO NOT use it.
+If the mentioned product/fund is SELL, HOLD, or does not exist:
+- Ignore that product/fund completely.
+- Select another product/fund ONLY from the AI Recommendations where
+  Action = BUY.
+
+BUY LIST IS A CLOSED LIST
+-------------------------
+
+Only the following products are allowed:
+- Products whose Action is exactly BUY in the AI Recommendations.
+Everything else is forbidden.
+Do not select a product from:
+- Client Question
+- Market Outlook
+- Sector
+- Theme
+- Rationale
+- General financial knowledge
+unless the exact investment_name also exists in the AI Recommendations
+with Action = BUY.
+
+INTRODUCTION RULES
+------------------
+If there are two or more BUY recommendations:
+- Generate exactly 2 product introductions.
+- Each introduction must use a different BUY recommendation.
+- Both investment_name values must come directly from the BUY recommendations.
+- Use the exact investment_name without changing it.
+If there is exactly one BUY recommendation:
+- Generate exactly 1 product introduction.
+- Use that exact BUY investment_name.
+- Do NOT invent a second product just to produce two introductions.
+If there are no BUY recommendations:
+- Return an empty product_introduction array.
+- Do NOT invent or suggest any product.
+
+STRICT SELL/HOLD RULE
+---------------------
+
+If a fund has Action = SELL:
+NEVER say:
+- explore the fund
+- consider the fund
+- invest in the fund
+- add the fund
+- opportunity in the fund
+- discuss the fund as an investment
+- recommend the fund
+
+If a fund has Action = HOLD:
+NEVER say:
+- explore the fund
+- consider the fund
+- invest in the fund
+- add the fund
+- opportunity in the fund
+- recommend the fund
+
+A SELL or HOLD fund must not appear as a suggested product introduction.
+
+FINAL CHECK BEFORE RETURNING
+-----------------------------
+
+Before returning each product introduction:
+1. Identify the investment_name mentioned in the introduction.
+2. Find the exact investment_name in the AI Recommendations.
+3. Confirm that its Action is exactly BUY.
+4. Confirm that the investment_name is unchanged.
+5. Confirm that it is not SELL or HOLD.
+6. Confirm that it has not already been used in another introduction.
+
+If any check fails, do not use that product and select another BUY
+recommendation.
+Do not output the validation steps. Only output the final JSON.
+
+STYLE
+-----
+- Professional.
+- Client-friendly.
+- Concise.
+- Conversational.
+- Relationship-focused.
+- Use the recommendation rationale when relevant.
+- Do not make guarantees.
+- Do not provide personalized investment advice.
+- Do not introduce any product outside the BUY recommendations.
+Return ONLY valid JSON.
 
 {{
   "client_id": "<use the current client's id from the client block>",
-  "product_introduction": ["string", "string"]
+  "product_introduction": [
+    "string"
+  ]
 }}
 """.strip()
-
 
 PROMPT_PORTFOLIO_DISCUSSION = """
 Client Portfolio Information
@@ -620,7 +722,6 @@ def populate_conversation_openers(session, clients, openai_client):
 
     for client_details, meeting in clients:
         citation.append({
-            "client_id": client_details.id,
             "date_of_Birth": client_details.date_of_Birth,
             "marital_status": client_details.marital_status,
             "kids_details": client_details.kids_details,
@@ -684,32 +785,41 @@ def populate_product_introductions(clients, openai_client):
     log.debug("Prompt length: %s characters", len(prompt))
 
     # Store the same input data used by _summarize_client_product_introductions().
+    # Store the source/input data used by the LLM prompt.
     citation = []
 
     for outlook, meeting_summary, recommendation in clients:
+
+        recommended_funds_citation = []
+
+        if recommendation and recommendation.recommendations:
+            try:
+                funds = json.loads(recommendation.recommendations)
+
+                for fund in funds:
+                    recommended_funds_citation.append({
+                        "investment_name": fund.get("investment_name"),
+                        "sector": fund.get("sector"),
+                        "action": fund.get("action"),
+                        "priority": fund.get("priority"),
+                        "rationale": fund.get("rationale")
+                    })
+
+            except (json.JSONDecodeError, TypeError):
+                recommended_funds_citation = []
+
         citation.append({
-            "client_id": (
-                outlook.client_id
-                if outlook
-                else recommendation.client_id
-                if recommendation
-                else "Unknown"
-            ),
             "client_question": (
                 _truncate(meeting_summary.client_questions)
                 if meeting_summary
                 else "No Client Questions"
             ),
             "market_outlook": (
-                _truncate(outlook.headline_outlook)
+                outlook.headline_outlook
                 if outlook
                 else "No Market Outlook"
             ),
-            "funds": (
-                _truncate(recommendation.recommendations)
-                if recommendation
-                else "No Funds"
-            )
+            "funds": recommended_funds_citation
         })
 
 
@@ -857,7 +967,6 @@ def populate_portfolio_discussion(session, clients, openai_client):
 
          # Citation contains the source/input data used for the LLM prompt.
         citation.append({
-            "client_id": client.id,
             "previous_meeting_summary": meeting_text,
             "risk_profile": client.risk_profile,
 
@@ -1022,7 +1131,6 @@ Recommended Funds:
 
         # Citation contains the source/input data used for the LLM prompt.
         citation.append({
-            "client_id": client.id,
             "risk_profile": client.risk_profile,
             "client_constraints": client_details.client_constraints,
             "previous_meeting_discussion": meeting_discussion,
