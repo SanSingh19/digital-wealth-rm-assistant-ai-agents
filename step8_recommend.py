@@ -62,6 +62,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import joinedload, Session
+from typing import Literal
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config.settings import DATABASE_URL, OPENAI_API_KEY
@@ -156,12 +157,39 @@ class InvestmentRecommendation(BaseModel):
     sector: str = Field( description="Sector")
     action: str = Field(description="BUY for fund purchase or SELL for an existing portfolio security")
     priority: str = Field(description="High / Medium / Low")
+    confidence: int = Field( ge=1,le=5,
+           description=(
+                 "AI-assessed confidence on a 1-5 scale: "
+                 "1=Not confident, 2=Low confidence, "
+                 "3=Neutral, 4=Confident, 5=Very confident."
+           )
+       )
     rationale: str = Field(
-        description="One concise sentence explaining why this investment is recommended."
+        description=(
+                       "One concise sentence explaining why this investment is recommended, "
+                       "using supplied evidence and explaining portfolio impact."
+                   )
     )
 
-
 class InvestmentRecommendationResult(BaseModel):
+
+    status: Literal[
+        "RECOMMENDATIONS",
+        "NO_RECOMMENDATIONS",
+        "NOT_ENOUGH_INFORMATION"
+    ] = Field(
+        description=(
+            "RECOMMENDATIONS when suitable investments exist, "
+            "NO_RECOMMENDATIONS when data is sufficient but no suitable "
+            "investment exists, or NOT_ENOUGH_INFORMATION when critical "
+            "information is missing."
+        )
+    )
+
+    information_gaps: list[str] = Field(
+        default_factory=list,
+        description="Missing information preventing a suitable recommendation."
+    )
 
     mifid_suitability: str = Field(
         description="One concise MiFID suitability statement (maximum 15 words)."
@@ -171,9 +199,9 @@ class InvestmentRecommendationResult(BaseModel):
         description="Overall summary of why these recommendations fit the client."
     )
 
-
-    recommendations: list[InvestmentRecommendation]
-
+    recommendations: list[InvestmentRecommendation] = Field(
+        default_factory=list
+    )
 
 PARSER = PydanticOutputParser(pydantic_object=SectorRecommendationsResult)
 FUND_RECOMMENDATION_PARSER = PydanticOutputParser(pydantic_object=InvestmentRecommendationResult)
@@ -684,9 +712,58 @@ MANDATORY RULES
 - Prefer sector diversification where suitable.
 - Multiple recommendations from the same sector require justification.
 
-Every rationale must:
-• Explain why the recommendation suits the client.
-• Reference one relevant market driver, theme, or sector opportunity.
+CONFIDENCE
+- Confidence is AI-assessed on a 1–5 scale:
+  1 = Not confident
+  2 = Low confidence
+  3 = Neutral
+  4 = Confident
+  5 = Very confident
+- Confidence must be assigned by the AI based on the complete recommendation.
+- Do not calculate or mechanically derive confidence from signal_score.
+- Confidence 2 is Low confidence and MUST NOT be returned as a recommendation.
+- Only confidence 3,4 or 5 may be returned.
+- If a recommendation cannot be supported with sufficient confidence, do not recommend it.
+
+MISSING INFORMATION
+
+If critical information required for suitability is missing:
+
+- status = "NOT_ENOUGH_INFORMATION"
+- recommendations = []
+- information_gaps must list the missing information.
+- portfolio_rationale must contain "Not enough information".
+- Do not guess or infer missing client information.
+
+Examples of critical information:
+- Missing risk profile,investment goals,etc.
+- Missing investment preference when required for suitability
+- Missing required portfolio information
+
+NO SUITABLE RECOMMENDATION
+
+If sufficient client and investment information is available, but no investment
+meets the suitability, portfolio, market, and confidence requirements:
+
+- status = "NO_RECOMMENDATIONS"
+- recommendations = []
+- information_gaps = []
+- portfolio_rationale must contain "No recommendations".
+- Never force a recommendation simply to fill Rank 1, Rank 2, or Rank 3.
+
+RATIONALE
+Every recommendation must have one concise rationale.
+
+The rationale must:
+• Explain why the investment suits this specific client.
+• Reference specific supplied evidence such as a market driver, matched theme,
+  sector signal, or existing portfolio exposure.
+• Explain the portfolio impact.
+• Use only information supplied in the prompt.
+• Never invent market facts, fund characteristics, performance, or client information.
+• Never use generic wording such as "good investment", "strong opportunity",
+  or "suitable for diversification" without explaining why.
+
 For Rank 1, state that the client already has exposure to this sector and the recommendation strengthens that allocation.
 • For Rank 2 & 3, state that it introduces new sector exposure to improve diversification and reference one market opportunity.
 Avoid generic rationale. Always explain recommendations using the provided market context.
@@ -695,7 +772,9 @@ Avoid generic rationale. Always explain recommendations using the provided marke
 OUTPUT
 ========================
 
-Return EXACTLY THREE recommendations.
+Return ZERO TO THREE recommendations.
+Never force three recommendations.
+
 Rank 1:
 • Action may be BUY or SELL.
 • Recommendation must come from an existing client-owned sector.
@@ -750,7 +829,7 @@ PORTFOLIO RATIONALE
 ========================
 
 Finally provide one concise portfolio rationale (maximum 60 words) explaining:
-• Why these three recommendations were selected
+• Why these recommendations were selected
 • How they improve diversification
 • How they align with the client's goals
 • How they respect the client's risk profile
@@ -978,10 +1057,69 @@ def _save_sector_recommendations(
             ))
     session.commit()
 
+def _build_fund_recommendation_citation(
+    client,
+    drivers,
+    matches,
+    owned_sector_candidates,
+    positive_opportunity_signals,
+    constraints,
+):
+    """
+    Build the main input/context information used for AI fund recommendations.
+    This is stored in ClientFundRecommendation.citation for frontend display.
+    """
+
+    return {
+        "client_profile": {
+            "risk_profile": client.risk_profile or "N/A",
+            "investment_goals": client.investment_goals or "N/A",
+            "profession": client.profession or "N/A",
+            "service_model": client.service_model or "N/A",
+            "preference": client.preference or "N/A",
+            "constraints": constraints or "None",
+        },
+
+        "market_context": {
+            "Market outlook drivers": drivers,
+            "Client match themes": [
+                {
+                    "theme": match.theme.name if match.theme else "N/A",
+                    "sentiment": (
+                        match.sentiment.value
+                        if match.sentiment
+                        else "N/A"
+                    ),
+                    "matched_sectors": match.matched_sectors,
+                }
+                for match in matches
+            ],
+        },
+
+        "portfolio_context": {
+            "owned_sector": [
+                {
+                    "sector_name": candidate["sector_name"],
+                    "signal_score": candidate["signal_score"],
+                }
+                for candidate in owned_sector_candidates
+            ],
+
+            "positive_opportunity_sectors": [
+                {
+                    "sector_name": signal["sector_name"],
+                    "signal_score": signal["signal_score"],
+                }
+                for signal in positive_opportunity_signals
+            ],
+        },
+    }
+
 def _save_fund_recommendations(
     session: Session,
     client_id: int,
     recommendation_result: InvestmentRecommendationResult,
+    citation_json: str,
 ):
     """
     Save AI generated fund recommendations.
@@ -1006,6 +1144,7 @@ def _save_fund_recommendations(
                 "sector": rec.sector,
                 "action": rec.action,
                 "priority": rec.priority,
+                "confidence": rec.confidence,
                 "rationale": rec.rationale
             }
         )
@@ -1019,6 +1158,7 @@ def _save_fund_recommendations(
             recommendation_json,
             indent=2
         )
+        existing.citation = citation_json
 
     else:
 
@@ -1031,7 +1171,8 @@ def _save_fund_recommendations(
                 recommendations=json.dumps(
                     recommendation_json,
                     indent=2
-                )
+                ),
+                citation=citation_json
             )
         )
 
@@ -1238,6 +1379,212 @@ Security Type : {security.security_type}
         lines.append("--------------------------------")
 
     return "\n".join(lines)
+
+def _get_missing_suitability_information(
+    client: Client,
+    constraints: str | None,
+    owned_sector_candidates: list[dict],
+) -> list[str]:
+
+    missing = []
+
+    if not client.risk_profile or not client.risk_profile.strip():
+        missing.append("risk_profile")
+
+    if not client.investment_goals or not client.investment_goals.strip():
+        missing.append("investment_goals")
+
+    if not client.preference or not client.preference.strip():
+        missing.append("investment_preference")
+
+    if not constraints or not str(constraints).strip():
+        missing.append("client_constraints")
+
+    return missing
+
+def _validate_fund_recommendations(
+    recommendation_result: InvestmentRecommendationResult,
+    owned_sector_candidates: list[dict],
+    candidate_funds: list[dict],
+) -> InvestmentRecommendationResult:
+    """
+    Validate that every AI recommendation refers to a genuine investment
+    explicitly supplied to the LLM.
+
+    Hallucinated or inconsistent investments are removed.
+    """
+
+    # --------------------------------------------------
+    # Authoritative fund lookup
+    # --------------------------------------------------
+
+    valid_funds = {
+        fund["fund_id"]: fund
+        for fund in candidate_funds
+    }
+
+    for candidate in owned_sector_candidates:
+        for fund in candidate.get("funds", []):
+            valid_funds[fund["fund_id"]] = fund
+
+    # --------------------------------------------------
+    # Authoritative client-owned security lookup
+    # --------------------------------------------------
+
+    valid_securities = {}
+
+    for candidate in owned_sector_candidates:
+        sector_name = candidate["sector_name"]
+
+        for security in candidate.get("securities", []):
+
+            if not security:
+                continue
+
+            valid_securities[security.ticker] = {
+                "investment_id": security.ticker,
+                "investment_name": security.name,
+                "sector": sector_name,
+            }
+
+    # --------------------------------------------------
+    # Validate recommendations
+    # --------------------------------------------------
+
+    validated = []
+    seen_investments = set()
+
+    for rec in recommendation_result.recommendations:
+
+        rec_type = rec.recommendation_type.upper()
+        action = rec.action.upper()
+
+        # Confidence validation
+        if rec.confidence not in {3, 4, 5}:
+            log.warning(
+                "Removing recommendation %s: invalid confidence=%s",
+                rec.investment_id,
+                rec.confidence,
+            )
+            continue
+
+        # Duplicate validation
+        if rec.investment_id in seen_investments:
+            log.warning(
+                "Removing duplicate recommendation: %s",
+                rec.investment_id,
+            )
+            continue
+
+        # --------------------------------------------------
+        # FUND
+        # --------------------------------------------------
+
+        if rec_type == "FUND":
+
+            fund = valid_funds.get(rec.investment_id)
+
+            if not fund:
+                log.warning(
+                    "Removing hallucinated fund: %s / %s",
+                    rec.investment_id,
+                    rec.investment_name,
+                )
+                continue
+
+            if rec.investment_name != fund["fund_name"]:
+                log.warning(
+                    "Removing fund with invalid name: %s",
+                    rec.investment_id,
+                )
+                continue
+
+            if rec.sector != fund["sector"]:
+                log.warning(
+                    "Removing fund with invalid sector: %s",
+                    rec.investment_id,
+                )
+                continue
+
+            # Fund purchase must always be BUY
+            if action != "BUY":
+                log.warning(
+                    "Removing fund with invalid action: %s -> %s",
+                    rec.investment_id,
+                    rec.action,
+                )
+                continue
+
+            seen_investments.add(rec.investment_id)
+            validated.append(rec)
+
+        # --------------------------------------------------
+        # SECURITY
+        # --------------------------------------------------
+
+        elif rec_type == "SECURITY":
+
+            security = valid_securities.get(rec.investment_id)
+
+            if not security:
+                log.warning(
+                    "Removing hallucinated/unowned security: %s",
+                    rec.investment_id,
+                )
+                continue
+
+            if rec.investment_name != security["investment_name"]:
+                log.warning(
+                    "Removing security with invalid name: %s",
+                    rec.investment_id,
+                )
+                continue
+
+            if rec.sector != security["sector"]:
+                log.warning(
+                    "Removing security with invalid sector: %s",
+                    rec.investment_id,
+                )
+                continue
+
+            # Existing security recommendation must be SELL
+            if action != "SELL":
+                log.warning(
+                    "Removing security with invalid action: %s -> %s",
+                    rec.investment_id,
+                    rec.action,
+                )
+                continue
+
+            seen_investments.add(rec.investment_id)
+            validated.append(rec)
+
+        else:
+            log.warning(
+                "Removing recommendation with invalid type: %s",
+                rec.recommendation_type,
+            )
+
+    # --------------------------------------------------
+    # No valid recommendations remain
+    # --------------------------------------------------
+
+    if not validated:
+
+        return InvestmentRecommendationResult(
+            status="NO_RECOMMENDATIONS",
+            information_gaps=[],
+            mifid_suitability=recommendation_result.mifid_suitability,
+            portfolio_rationale="No recommendations.",
+            recommendations=[],
+        )
+
+    # Keep valid recommendations
+    recommendation_result.status = "RECOMMENDATIONS"
+    recommendation_result.information_gaps = []
+    recommendation_result.recommendations = validated
+
+    return recommendation_result
 
 def _generate_fund_recommendations(
     llm,
@@ -1470,21 +1817,64 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
             drivers_text = _build_drivers_text(drivers)
             themes_text = _build_themes_text(matches)
 
-            fund_recommendations = _generate_fund_recommendations(
-                llm=llm,
+            citation_data = _build_fund_recommendation_citation(
                 client=client,
+                drivers=drivers,
+                matches=matches,
                 owned_sector_candidates=owned_sector_candidates,
-                candidate_funds=candidate_funds,
                 positive_opportunity_signals=positive_opportunity_signals,
-                drivers_text=drivers_text,
-                themes_text=themes_text,
-                constraints=constraints
+                constraints=constraints,
             )
+
+            citation_json = json.dumps(
+                citation_data,
+                indent=2
+            )
+
+            missing_information = _get_missing_suitability_information(
+                client=client,
+                constraints=constraints,
+                owned_sector_candidates=owned_sector_candidates,
+            )
+
+            if missing_information:
+                log.warning(
+                    "[PART 2] [%s] Missing critical suitability information: %s",
+                    client.client_code,
+                    ", ".join(missing_information),
+                )
+
+                validated_recommendations = InvestmentRecommendationResult(
+                    status="NOT_ENOUGH_INFORMATION",
+                    information_gaps=missing_information,
+                    mifid_suitability="Not enough information to determine suitability.",
+                    portfolio_rationale="Not enough information.",
+                    recommendations=[],
+                )
+
+            else:
+                fund_recommendations = _generate_fund_recommendations(
+                    llm=llm,
+                    client=client,
+                    owned_sector_candidates=owned_sector_candidates,
+                    candidate_funds=candidate_funds,
+                    positive_opportunity_signals=positive_opportunity_signals,
+                    drivers_text=drivers_text,
+                    themes_text=themes_text,
+                    constraints=constraints
+                )
+
+                validated_recommendations = _validate_fund_recommendations(
+                    recommendation_result=fund_recommendations,
+                    owned_sector_candidates=owned_sector_candidates,
+                    candidate_funds=candidate_funds,
+                )
 
             _save_fund_recommendations(
                 session=session,
                 client_id=client.id,
-                recommendation_result=fund_recommendations
+                recommendation_result=validated_recommendations,
+                citation_json=citation_json
             )
 
             results[client.id] = {s["sector_name"]: s["action"] for s in signals}

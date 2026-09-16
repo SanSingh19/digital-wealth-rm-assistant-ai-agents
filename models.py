@@ -609,6 +609,7 @@ class ClientOutlook(Base):
     generated_at        = Column(DateTime, default=datetime.utcnow)
     headline_outlook    = Column(Text, nullable=False) # The narrative paragraph
     drivers             = Column(Text) # JSON list of {title, commentary}
+    citation            = Column(Text)
 
     client = relationship("Client", back_populates = "outlook")
 
@@ -619,9 +620,13 @@ class ClientAITalkingPoints(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     client_id = Column(Integer,ForeignKey("clients.id"), nullable=False,unique=True)
     conversation_openers = Column(JSON)
+    conversation_openers_citation = Column(JSON)
     portfolio_discussion = Column(JSON)
+    portfolio_discussion_citation = Column(JSON)
     product_introduction = Column(JSON)
+    product_introduction_citation = Column(JSON)
     anticipated_objections = Column(JSON)
+    anticipated_objections_citation = Column(JSON)
 
     client = relationship("Client",back_populates="ai_talking_points")
 
@@ -705,6 +710,7 @@ class ClientFundRecommendation(Base):
     mifid_suitability   = Column(String(256))   # e.g. "All Pass – Suitability validated against Aggressive (RP5)"
     portfolio_rationale = Column(Text)
     recommendations     = Column(Text)          # JSON list
+    citation            = Column(Text)
 
     client = relationship("Client", back_populates="fund_recommendations")
 

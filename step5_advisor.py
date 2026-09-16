@@ -187,6 +187,110 @@ def _relevant_news_for_client(
     return articles
 
 
+def _build_citation(
+    session,
+    matches: list[ClientThemeMatch],
+    news: list[NewsArticle],
+) -> str:
+    """
+    Build deterministic provenance for the market outlook.
+
+    Themes:
+        The same ClientThemeMatch rows passed to the LLM.
+
+    News:
+        The same NewsArticle rows passed to the LLM.
+
+    Trends / Market Events:
+        Linked provenance between those themes and selected news articles.
+    """
+
+    theme_ids = [m.theme_id for m in matches]
+    news_ids = [article.id for article in news]
+
+    citations = {
+        "themes": [
+            {
+                "id": m.theme.id,
+                "name": m.theme.name,
+            }
+            for m in matches
+        ],
+        "trends": [],
+        "market_events": [],
+        "news_articles": [
+            {
+                "id": article.id,
+                "title": article.title,
+                "url": article.url,
+            }
+            for article in news
+        ],
+    }
+
+    if not theme_ids or not news_ids:
+        return json.dumps(citations)
+
+    rows = (
+        session.query(
+            Theme.id.label("theme_id"),
+            Trend.id.label("trend_id"),
+            Trend.name.label("trend_name"),
+            Trend.direction.label("trend_direction"),
+            MarketEvent.id.label("event_id"),
+            MarketEvent.event_text.label("event_text"),
+        )
+        .join(
+            TrendTheme,
+            TrendTheme.theme_id == Theme.id
+        )
+        .join(
+            Trend,
+            Trend.id == TrendTheme.trend_id
+        )
+        .join(
+            MarketEventTrend,
+            MarketEventTrend.trend_id == Trend.id
+        )
+        .join(
+            MarketEvent,
+            MarketEvent.id == MarketEventTrend.market_event_id
+        )
+        .filter(
+            Theme.id.in_(theme_ids),
+            MarketEvent.article_id.in_(news_ids),
+        )
+        .all()
+    )
+
+    seen_trends = set()
+    seen_events = set()
+
+    for row in rows:
+
+        if row.trend_id not in seen_trends:
+            citations["trends"].append({
+                "id": row.trend_id,
+                "name": row.trend_name,
+                "direction": (
+                    row.trend_direction.value
+                    if row.trend_direction is not None
+                    else None
+                ),
+            })
+
+            seen_trends.add(row.trend_id)
+
+        if row.event_id not in seen_events:
+            citations["market_events"].append({
+                "id": row.event_id,
+                "event_text": row.event_text,
+            })
+
+            seen_events.add(row.event_id)
+
+    return json.dumps(citations)
+
 def run_advisor(client_ids: list[int] | None = None) -> dict:
     """Generate and save market outlooks for all (or specified) clients."""
     engine = init_db(DATABASE_URL)
@@ -230,6 +334,7 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
             news = _relevant_news_for_client(session, matches)
 
             context = _build_context(client, matches, news)
+            citation_json = _build_citation(session, matches, news)
 
             try:
                 result: ClientOutlookResult = chain.invoke(context)
@@ -243,12 +348,14 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
             if existing:
                 existing.headline_outlook = result.headline_outlook
                 existing.drivers = drivers_json
+                existing.citation = citation_json
                 existing.generated_at = datetime.utcnow()
             else:
                 session.add(ClientOutlook(
                     client_id=client.id,
                     headline_outlook=result.headline_outlook,
                     drivers=drivers_json,
+                    citation=citation_json,
                 ))
 
             session.commit()

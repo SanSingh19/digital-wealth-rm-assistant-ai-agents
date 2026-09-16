@@ -752,19 +752,19 @@ CLIENTS = [
             "platform": "In-person"
         },
 
-        "meeting_summary": {
-            "discussion_points": [
-                  "Client's business performed well in H2 2025 with strong revenue growth.",
-                  "Client accumulated €800K cash from dividends and business income and wanted to deploy it.",
-                  "Preference to increase sustainable European equity exposure, especially technology and green energy.",
-                  "Discussed impact of ECB rate trajectory on bond allocation.",
-                  "Agreed that RM would prepare specific ESG small-cap options for the next meeting."
-            ],
-            "questions": [
-                        "What is the outlook for European sustainable tech?",
-                        "Should I reduce my bond allocation given the rate environment?"
-            ]
-        },
+#         "meeting_summary": {
+#             "discussion_points": [
+#                   "Client's business performed well in H2 2025 with strong revenue growth.",
+#                   "Client accumulated €800K cash from dividends and business income and wanted to deploy it.",
+#                   "Preference to increase sustainable European equity exposure, especially technology and green energy.",
+#                   "Discussed impact of ECB rate trajectory on bond allocation.",
+#                   "Agreed that RM would prepare specific ESG small-cap options for the next meeting."
+#             ],
+#             "questions": [
+#                         "What is the outlook for European sustainable tech?",
+#                         "Should I reduce my bond allocation given the rate environment?"
+#             ]
+#         },
 
         "holdings": [
 
@@ -823,15 +823,15 @@ CLIENTS = [
             "platform":"Video Call"
         },
 
-        "meeting_summary":{
-            "discussion_points":["Client focused on stable income investments.",
-                                 "Discussed dividend-paying healthcare and banking stocks.",
-                                 "Reviewed current bond allocation strategy.",
-                                 "Explored tax-efficient portfolio options."],
-            "questions":[
-                         "Should I add healthcare exposure?",
-                         "What is the expected dividend outlook next year?"]
-        },
+#         "meeting_summary":{
+#             "discussion_points":["Client focused on stable income investments.",
+#                                  "Discussed dividend-paying healthcare and banking stocks.",
+#                                  "Reviewed current bond allocation strategy.",
+#                                  "Explored tax-efficient portfolio options."],
+#             "questions":[
+#                          "Should I add healthcare exposure?",
+#                          "What is the expected dividend outlook next year?"]
+#         },
 
         "holdings":[
 
@@ -888,15 +888,15 @@ CLIENTS = [
             "platform":"In person"
         },
 
-        "meeting_summary":{
-            "discussion_points":[ "Reviewed retirement income sustainability.",
-                                   "Discussed balancing equity exposure with fixed income holdings.",
-                                   "Evaluated dividend strategies for stable cash flow.",
-                                   "Reviewed succession and estate planning considerations.",
-                                   "RM to provide tax-efficient income strategies."],
-            "questions":["Can I improve portfolio income without increasing risk?",
-                         "Should I increase fixed income exposure?"]
-        },
+#         "meeting_summary":{
+#             "discussion_points":[ "Reviewed retirement income sustainability.",
+#                                    "Discussed balancing equity exposure with fixed income holdings.",
+#                                    "Evaluated dividend strategies for stable cash flow.",
+#                                    "Reviewed succession and estate planning considerations.",
+#                                    "RM to provide tax-efficient income strategies."],
+#             "questions":["Can I improve portfolio income without increasing risk?",
+#                          "Should I increase fixed income exposure?"]
+#         },
 
         "holdings":[
                 ("MSFT",1200,390,430),
@@ -1206,17 +1206,17 @@ def seed_all_clients():
 
             # Meeting Summary
 
-            summary = data["meeting_summary"]
-
-            session.add(
-                ClientMeetingSummary(
-                    rm_id=data["rm_id"],
-                    client_id=client.id,
-                    main_discussion_points=summary["discussion_points"],
-                    client_questions=summary["questions"],
-                    last_meeting_date=date.today()
-                )
-            )
+#             summary = data["meeting_summary"]
+#
+#             session.add(
+#                 ClientMeetingSummary(
+#                     rm_id=data["rm_id"],
+#                     client_id=client.id,
+#                     main_discussion_points=summary["discussion_points"],
+#                     client_questions=summary["questions"],
+#                     last_meeting_date=date.today()
+#                 )
+#             )
 
             # Account
 

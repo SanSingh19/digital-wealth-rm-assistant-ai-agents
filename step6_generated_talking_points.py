@@ -161,7 +161,7 @@ Rules:
 - Keep responses concise and conversational.
 - Prioritize products, funds, or investment themes relevant to the client context.
 - If the client question mentions a specific product or fund:
-  - The first product introduction should directly address that product or fund.
+  - The first product introduction should directly address that product or fund Only if AI recommendation action is BUY.
   - The second product introduction should be based on the available AI recommendation about products or funds, refer funds in input if available.
 - If the client question does not mention a specific product or fund:
   - Generate both product introductions based on the available AI recommendations.
@@ -408,6 +408,22 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 "anticipatedObjections": objection_result.get(
                         "anticipatedObjections",
                         []
+                ),
+                "conversation_openers_citation": conversation_result.get(
+                    "citation",
+                    {}
+                ),
+                "portfolio_discussion_citation": portfolio_result.get(
+                    "citation",
+                    {}
+                ),
+                "product_introduction_citation": product_introduction_result.get(
+                    "citation",
+                    {}
+                ),
+                "anticipated_objections_citation": objection_result.get(
+                    "citation",
+                    {}
                 )
             }
 
@@ -489,6 +505,27 @@ def get_or_create_client_talking_points(session, client_result):
     )
     product_introduction = client_result.get("product_introduction", [])
 
+    conversation_openers_citation = client_result.get(
+        "conversation_openers_citation",
+        {}
+    )
+
+    portfolio_discussion_citation = client_result.get(
+        "portfolio_discussion_citation",
+        {}
+    )
+
+    product_introduction_citation = client_result.get(
+        "product_introduction_citation",
+        {}
+    )
+
+    anticipated_objections_citation = client_result.get(
+        "anticipated_objections_citation",
+        {}
+    )
+
+
     log.info(
         "openersFromAI=%s, introductionsFromAI=%s, portfolioDiscussionFromAI=%s",
         openers,
@@ -511,6 +548,19 @@ def get_or_create_client_talking_points(session, client_result):
         existing_row.portfolio_discussion = portfolio_discussion
         existing_row.product_introduction = product_introduction
         existing_row.anticipated_objections = anticipated_objections
+        # Update citations
+        existing_row.conversation_openers_citation = (
+            conversation_openers_citation
+        )
+        existing_row.portfolio_discussion_citation = (
+            portfolio_discussion_citation
+        )
+        existing_row.product_introduction_citation = (
+            product_introduction_citation
+        )
+        existing_row.anticipated_objections_citation = (
+            anticipated_objections_citation
+        )
         session.flush()
         return existing_row
 
@@ -520,6 +570,12 @@ def get_or_create_client_talking_points(session, client_result):
         portfolio_discussion=portfolio_discussion,
         product_introduction=product_introduction,
         anticipated_objections=anticipated_objections,
+        # Citations
+        conversation_openers_citation=conversation_openers_citation,
+        portfolio_discussion_citation=portfolio_discussion_citation,
+        product_introduction_citation=product_introduction_citation,
+        anticipated_objections_citation=anticipated_objections_citation,
+
     )
     session.add(row)
     session.flush()
@@ -529,7 +585,7 @@ def get_or_create_client_talking_points(session, client_result):
 
 def populate_conversation_openers(session, clients, openai_client):
     if not clients:
-        return {"client_id": None, "conversationOpeners": []}
+        return {"client_id": None, "conversationOpeners": [], "citation": {}}
 
     client_lines = [
         (
@@ -547,6 +603,27 @@ def populate_conversation_openers(session, clients, openai_client):
     prompt = PROMPT_CONVERSATION_OPENERS.format(client_block=trends_block)
     log.debug("Prompt length: %s characters", len(prompt))
 
+    # Store exactly the source/input data used to build the LLM input.
+    citation = []
+
+    for client_details, meeting in clients:
+        citation.append({
+            "client_id": client_details.id,
+            "date_of_Birth": client_details.date_of_Birth,
+            "marital_status": client_details.marital_status,
+            "kids_details": client_details.kids_details,
+            "hobbies": client_details.hobbies,
+            "other": client_details.other,
+            "client_constraints": client_details.client_constraints,
+            "main_discussion_points": (
+                meeting.main_discussion_points
+                if meeting
+                else "No Meeting Summary"
+            )
+        })
+
+
+
     result = openai_json(openai_client, prompt, SYSTEM_CONVERSATION_OPENERS)
     if isinstance(result, dict):
         opener_count = len(result.get("conversationOpeners", []))
@@ -554,14 +631,21 @@ def populate_conversation_openers(session, clients, openai_client):
         log.info("OpenAI returned %s opener(s) for client_id=%s", opener_count, client_id)
         if opener_count == 0:
             log.warning("No conversation openers were returned for client_id=%s", client_id)
-        return result
+        return {
+                    "client_id": client_id,
+                    "conversationOpeners": result.get(
+                        "conversationOpeners",
+                        []
+                    ),
+                    "citation": citation
+                }
 
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
-    return {"client_id": None, "conversationOpeners": result}
+    return {"client_id": None, "conversationOpeners": result, "citation": citation}
 
 def populate_product_introductions(clients, openai_client):
     if not clients:
-        return {"client_id": None, "product_introduction": []}
+        return {"client_id": None, "product_introduction": [],"citation": {}}
 
     client_lines = [
         _summarize_client_product_introductions(
@@ -587,6 +671,37 @@ def populate_product_introductions(clients, openai_client):
 
     log.debug("Prompt length: %s characters", len(prompt))
 
+    # Store the same input data used by _summarize_client_product_introductions().
+    citation = []
+
+    for outlook, meeting_summary, recommendation in clients:
+        citation.append({
+            "client_id": (
+                outlook.client_id
+                if outlook
+                else recommendation.client_id
+                if recommendation
+                else "Unknown"
+            ),
+            "client_question": (
+                _truncate(meeting_summary.client_questions)
+                if meeting_summary
+                else "No Client Questions"
+            ),
+            "market_outlook": (
+                _truncate(outlook.headline_outlook)
+                if outlook
+                else "No Market Outlook"
+            ),
+            "funds": (
+                _truncate(recommendation.recommendations)
+                if recommendation
+                else "No Funds"
+            )
+        })
+
+
+
     result = openai_json(
         openai_client,
         prompt,
@@ -611,7 +726,14 @@ def populate_product_introductions(clients, openai_client):
                 client_id
             )
 
-        return result
+        return {
+                   "client_id": client_id,
+                   "product_introduction": result.get(
+                       "product_introduction",
+                       []
+                   ),
+                   "citation": citation
+               }
 
     log.warning(
         "Unexpected response shape from OpenAI: %s",
@@ -620,15 +742,18 @@ def populate_product_introductions(clients, openai_client):
 
     return {
         "client_id": None,
-        "product_introduction": result
+        "product_introduction": result,
+        "citation": citation
     }
 
 def populate_portfolio_discussion(session, clients, openai_client):
 
     if not clients:
-        return {"client_id": None, "portfolioDiscussion": []}
+        return {"client_id": None, "portfolioDiscussion": [],"citation": {}}
 
     portfolio_sections = []
+    citation = []
+
 
     for i, (client_details, meeting) in enumerate(clients):
 
@@ -697,8 +822,8 @@ def populate_portfolio_discussion(session, clients, openai_client):
     """
             )
 
-    portfolio_sections.append(
-    f"""
+        portfolio_sections.append(
+        f"""
     Client ID:{client.id}
 
     Previous Meeting Summary:
@@ -717,6 +842,46 @@ def populate_portfolio_discussion(session, clients, openai_client):
     {''.join(theme_text)}
     """
         )
+
+         # Citation contains the source/input data used for the LLM prompt.
+        citation.append({
+            "client_id": client.id,
+            "previous_meeting_summary": meeting_text,
+            "risk_profile": client.risk_profile,
+            "portfolio_details": portfolio_data,
+            "performance_details": performance_data,
+            "risk_overview": {
+                "concentration": (
+                    risk.concentration_pct
+                    if risk else None
+                ),
+                "largest_asset": (
+                    risk.concentration_asset
+                    if risk else None
+                ),
+                "sharpe_ratio": (
+                    risk.sharpe_ratio
+                    if risk else None
+                ),
+                "value_at_risk": (
+                    risk.value_at_risk
+                    if risk else None
+                ),
+                "max_drawdown": (
+                    risk.max_drawdown
+                    if risk else None
+                ),
+            },
+            "theme_matches": [
+                {
+                    "theme": theme.theme.name,
+                    "exposure": theme.exposure_pct,
+                    "sentiment": theme.sentiment,
+                    "confidence": theme.confidence,
+                }
+                for theme in theme_matches
+            ],
+        })
 
     portfolio_context = "\n".join(portfolio_sections)
 
@@ -737,11 +902,13 @@ def populate_portfolio_discussion(session, clients, openai_client):
                 "portfolioDiscussion",
                 []
             ),
+            "citation": citation
         }
 
     return {
         "client_id": None,
         "portfolioDiscussion": [],
+        "citation": citation
     }
 
 def populate_anticipated_objections(session, clients, openai_client):
@@ -749,10 +916,12 @@ def populate_anticipated_objections(session, clients, openai_client):
     if not clients:
         return {
             "client_id": None,
-            "anticipatedObjections": []
+            "anticipatedObjections": [],
+            "citation": {}
         }
 
     fund_lines = []
+    citation = []
 
     for client_details, meeting in clients:
 
@@ -781,6 +950,7 @@ def populate_anticipated_objections(session, clients, openai_client):
         )
 
         fund_text = []
+        recommended_funds_citation = []
 
         if recommendation and recommendation.recommendations:
 
@@ -797,6 +967,14 @@ def populate_anticipated_objections(session, clients, openai_client):
                     Reason : {fund.get("rationale")}
                     """
                 )
+
+                recommended_funds_citation.append({
+                    "investment_name": fund.get("investment_name"),
+                    "sector": fund.get("sector"),
+                    "action": fund.get("action"),
+                    "priority": fund.get("priority"),
+                    "rationale": fund.get("rationale")
+                })
 
         fund_lines.append(
             f"""
@@ -820,6 +998,16 @@ Recommended Funds:
 """
         )
 
+        # Citation contains the source/input data used for the LLM prompt.
+        citation.append({
+            "client_id": client.id,
+            "risk_profile": client.risk_profile,
+            "client_constraints": client_details.client_constraints,
+            "previous_meeting_discussion": meeting_discussion,
+            "previous_client_questions": client_questions,
+            "recommended_funds": recommended_funds_citation
+        })
+
     fund_block = "\n".join(fund_lines)
 
     prompt = PROMPT_ANTICIPATED_OBJECTIONS.format(
@@ -840,11 +1028,13 @@ Recommended Funds:
                 "anticipatedObjections",
                 []
             ),
+            "citation": citation
         }
 
     return {
         "client_id": None,
         "anticipatedObjections": [],
+        "citation": citation
     }
 
 def get_openai_client() -> OpenAI:
