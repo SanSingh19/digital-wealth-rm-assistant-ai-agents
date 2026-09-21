@@ -1,0 +1,111 @@
+{
+  "taxonomy_name": "Market Intelligence Investment Theme Taxonomy",
+  "taxonomy_version": "1.0",
+  "themes": [
+    {
+      "theme_code": "THM_001",
+      "theme_name": "Artificial Intelligence, Automation & Advanced Computing",
+      "category": "Technology & Innovation",
+      "description": "Structural adoption and commercialization of artificial intelligence, machine learning, intelligent software, robotics, automation, semiconductors and advanced computing technologies across industries.",
+      "classification_guidance": "Use when the primary investment narrative concerns AI adoption, generative AI, machine learning, AI agents, robotics, automation, autonomous systems, semiconductors, GPUs, AI accelerators or advanced computing."
+    },
+    {
+      "theme_code": "THM_002",
+      "theme_name": "Digital Infrastructure & Cloud",
+      "category": "Technology & Innovation",
+      "description": "Expansion of infrastructure supporting the digital economy, including cloud computing, data centers, networking, connectivity, telecom infrastructure and large-scale computing capacity.",
+      "classification_guidance": "Use when the primary investment narrative concerns data centers, cloud infrastructure, hyperscaler capital expenditure, networking, telecom infrastructure, fiber connectivity, 5G or expansion of digital computing infrastructure."
+    },
+    {
+      "theme_code": "THM_003",
+      "theme_name": "Cybersecurity & Digital Trust",
+      "category": "Technology & Innovation",
+      "description": "Growing demand for cybersecurity, identity protection, privacy, data protection and resilient digital infrastructure as economic activity becomes increasingly digital.",
+      "classification_guidance": "Use when the primary investment narrative concerns cybersecurity spending, cyber threats, data protection, cloud security, network security, identity management, digital trust or protection of critical digital infrastructure."
+    },
+    {
+      "theme_code": "THM_004",
+      "theme_name": "Digital Finance & Financial Innovation",
+      "category": "Technology & Innovation",
+      "description": "Transformation of financial services through digital payments, fintech, blockchain, tokenization, digital assets, embedded finance and next-generation financial infrastructure.",
+      "classification_guidance": "Use when the primary investment narrative concerns technology-driven transformation of payments, banking, financial platforms, blockchain, digital assets, tokenization or other financial technology."
+    },
+    {
+      "theme_code": "THM_005",
+      "theme_name": "Energy Transition, Electrification & Power Infrastructure",
+      "category": "Energy, Resources & Environment",
+      "description": "Structural transformation of energy systems through renewable generation, electrification, energy storage, electric mobility and expansion or modernization of electricity and power infrastructure.",
+      "classification_guidance": "Use when the primary investment narrative concerns renewable energy, electrification, batteries, electric vehicles, energy storage, power generation, grids, transmission infrastructure, utilities or rising electricity demand including demand related to AI and data centers."
+    },
+    {
+      "theme_code": "THM_006",
+      "theme_name": "Critical Resources & Natural Capital",
+      "category": "Energy, Resources & Environment",
+      "description": "Strategic demand and supply dynamics affecting critical minerals, metals, water, food systems and other natural resources essential to economic, technological and environmental development.",
+      "classification_guidance": "Use when the primary investment narrative concerns critical minerals, strategic commodities, mining capacity, resource scarcity, water availability, agriculture, food security or sustainable management of natural resources."
+    },
+    {
+      "theme_code": "THM_007",
+      "theme_name": "Healthcare Innovation & Longevity",
+      "category": "Healthcare & Demographics",
+      "description": "Structural transformation of healthcare through biotechnology, innovative medicines, medical technology, diagnostics, digital health and increasing healthcare demand associated with ageing populations and longer lifespans.",
+      "classification_guidance": "Use when the primary investment narrative concerns biotechnology, pharmaceutical innovation, next-generation treatments, medical devices, diagnostics, digital health, ageing populations, longevity or increasing age-related healthcare demand."
+    },
+    {
+      "theme_code": "THM_008",
+      "theme_name": "Demographic & Consumer Transformation",
+      "category": "Demographics & Society",
+      "description": "Structural changes in population, household behavior, workforce composition and consumption patterns driven by demographic evolution, income growth, digital lifestyles and changing consumer preferences.",
+      "classification_guidance": "Use when the primary investment narrative concerns demographic change, changing consumer behavior, emerging-market consumption, digital commerce, lifestyle transformation, workforce demographics or structural changes in household spending."
+    },
+    {
+      "theme_code": "THM_009",
+      "theme_name": "Geopolitical Fragmentation, Defense & Security",
+      "category": "Geopolitics & Security",
+      "description": "Investment implications of increasing geopolitical competition, economic fragmentation, trade restrictions, defense spending and national-security priorities in a more multipolar global economy.",
+      "classification_guidance": "Use when the primary investment narrative concerns geopolitical competition, trade wars, tariffs, sanctions, export controls, defense spending, military modernization, aerospace security or strategic national-security priorities."
+    },
+    {
+      "theme_code": "THM_010",
+      "theme_name": "Supply Chain Resilience & Reshoring",
+      "category": "Geopolitics & Industrial Transformation",
+      "description": "Restructuring of global supply chains toward greater resilience, diversification, localization, reshoring, nearshoring and reduced dependence on strategically vulnerable suppliers and regions.",
+      "classification_guidance": "Use when the primary investment narrative concerns manufacturing relocation, reshoring, nearshoring, friend-shoring, supplier diversification, localization of production or strategic restructuring of global supply chains."
+    },
+    {
+      "theme_code": "THM_011",
+      "theme_name": "Industrial Modernization & Infrastructure",
+      "category": "Industrial Transformation",
+      "description": "Long-term investment in manufacturing capacity, industrial modernization, physical infrastructure, transportation systems and productivity-enhancing industrial technologies.",
+      "classification_guidance": "Use when the primary investment narrative concerns reindustrialization, manufacturing investment, factory construction, industrial capital expenditure, transportation infrastructure, industrial equipment or modernization of physical production systems."
+    },
+    {
+      "theme_code": "THM_012",
+      "theme_name": "Monetary Policy & Interest Rate Cycle",
+      "category": "Macro & Capital Markets",
+      "description": "Market implications of central-bank policy, interest-rate cycles, liquidity, financial conditions and transitions between monetary tightening, easing and normalization regimes.",
+      "classification_guidance": "Use when the primary investment narrative concerns central-bank decisions, interest-rate increases or cuts, monetary tightening or easing, yield-curve changes, liquidity conditions or monetary-policy divergence."
+    },
+    {
+      "theme_code": "THM_013",
+      "theme_name": "Inflation & Cost Pressures",
+      "category": "Macro & Capital Markets",
+      "description": "Investment implications of persistent, accelerating or declining inflation across wages, commodities, energy, goods, services and corporate input costs.",
+      "classification_guidance": "Use when the primary investment narrative concerns inflation, disinflation, wage pressures, commodity-driven inflation, energy prices, input costs, pricing pressure or corporate pricing power."
+    },
+    {
+      "theme_code": "THM_014",
+      "theme_name": "Fiscal Policy & Government Investment",
+      "category": "Macro & Capital Markets",
+      "description": "Market effects of government spending, fiscal stimulus, taxation, deficits, sovereign debt, subsidies, infrastructure programs and strategic industrial policy.",
+      "classification_guidance": "Use when the primary investment narrative concerns fiscal policy, public spending, sovereign borrowing, taxation, government subsidies, fiscal stimulus, infrastructure programs or government-led strategic investment."
+    },
+    {
+      "theme_code": "THM_015",
+      "theme_name": "Capital Markets, M&A & Corporate Restructuring",
+      "category": "Macro & Capital Markets",
+      "description": "Market developments resulting from mergers, acquisitions, IPOs, private capital activity, corporate consolidation, restructuring, spin-offs and changing corporate capital-allocation activity.",
+      "classification_guidance": "Use when the primary investment narrative concerns mergers and acquisitions, corporate consolidation, IPO activity, private equity transactions, spin-offs, restructuring, takeovers or major strategic asset transactions."
+    }
+  ]
+}

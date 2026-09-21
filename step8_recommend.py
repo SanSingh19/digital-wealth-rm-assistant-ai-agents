@@ -89,14 +89,14 @@ SECTOR_KEYWORDS: dict[str, list[str]] = {
     "Technology":           ["tech", "technology", "software", "cloud", "ai", "microsoft", "apple", "msft", "aapl"],
     "Semiconductors":       ["semiconductor", "chip", "nvidia", "asml", "amd", "nvda"],
     "Financials":           ["bank", "financ", "rate", "bond", "ecb", "fed", "interest", "credit"],
-    "Energy":               ["energy", "oil", "gas", "opec", "crude"],
+    "Energy":               ["oil", "crude oil", "natural gas", "gas prices", "petroleum","fossil fuel","coal","opec","oil prices","energy prices"],
     "Renewable Energy":     ["renewable", "solar", "wind", "green", "esg", "climate", "nordea", "alt"],
     "Real Estate":          ["real estate", "reit", "property", "housing", "flats", "house"],
     "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon", "flipkart"],
     "Healthcare":           ["health", "pharma", "biotech", "drug", "medical"],
     "Utilities":            ["utility", "utilities", "power", "electric"],
     "Industrials":          ["industrial", "manufacturing", "factory", "automation", "robotics", "infrastructure", "construction", "engineering", "machinery", "capital goods", "caterpillar", "siemens"],
-    "Communication Services": ["communication","AI","Interest Rates","Fed","NVIDIA","Semiconductor", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
+    "Communication Services": ["communication","AI","Interest Rates","Fed", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
     "Materials":             ["materials", "mining", "metals", "steel", "aluminium", "aluminum", "copper", "commodity", "commodities", "gold", "silver", "lithium", "iron ore", "rio tinto", "bhp"],
     "Utilities":             ["utilities","electric", "utility", "electricity", "power", "power grid", "grid", "renewable grid", "water", "gas distribution", "electric utility", "energy distribution", "next era", "nextera", "enel"],
     "E-Commerce":            ["e-commerce", "ecommerce", "online retail", "digital commerce", "online shopping", "marketplace", "consumer internet", "retail", "amazon", "shopify", "flipkart", "ebay", "etsy"],
@@ -630,79 +630,143 @@ Reject any investment that violates any requirement.
 Step 2 — Market Opportunity
 Evaluate opportunities using market drivers, investment themes, sector momentum, and news sentiment.
 
-Step 3 — Portfolio Enhancement
-RANK 1 — EXISTING PORTFOLIO OPPORTUNITY
-Rank 1 MUST come from an existing sector already held by the client.
-For each existing sector, use the supplied sector signal:
-• BUY sector:
-  Recommend ONE fund from that same sector.
-• SELL sector:
-  Recommend ONE SECURITY that the client already owns in that sector and recommend SELL.
-• HOLD sector:
-  Do NOT use the sector for Rank 1.
-The LLM must compare all available existing-sector opportunities and choose exactly ONE for Rank 1.
-Therefore Rank 1 can be either:
-A. Existing BUY Sector → BUY Fund
-OR
-B. Existing SELL Sector → SELL Existing Security
-Choose whichever is more appropriate based on:
-1. Client suitability
-2. Signal strength
-3. Portfolio impact
-4. Market context
-Example:
-If an existing sector has:
-• Sector signal = BUY
-• Score = +0.40
-and another existing sector has:
-• Sector signal = SELL
-• Score = -0.80
-the SELL opportunity may be more important because the negative signal is significantly stronger.
-Do NOT automatically prefer BUY over SELL.
-Only ONE recommendation may come from existing sectors.
-RANK 2 AND RANK 3 — NEW OPPORTUNITIES
-Rank 2 and Rank 3 MUST come from positive BUY opportunities in sectors the client does NOT currently own.
-Both must be BUY fund recommendations.
-These recommendations should:
-• Introduce new sector exposure.
-• Improve portfolio diversification.
-• Be suitable for the client.
-• Use only supplied fund candidates.
-Do not recommend securities for Rank 2 or Rank 3.
+Step 3 — Portfolio Action Priority
+===================================
 
-Step 4 — Final Ranking
+The recommendation strategy MUST follow this exact priority order.
 
-Rank recommendations using this priority:
+FIRST PRIORITY — EXISTING SELL OPPORTUNITY
+-------------------------------------------
 
-1. Client Suitability
-2. Portfolio Risk Management
-3. Portfolio Improvement
-4. Signal Strength
-5. Market Opportunity
-6. Long-term Value Creation
+Check all EXISTING client-owned sectors first.
 
-Suitability and portfolio risk management always take priority over market momentum.
+If ANY existing sector has:
 
-Rank 1:
-• Exactly ONE existing-sector recommendation.
-• Either BUY an available fund from an existing BUY sector
-  OR SELL a security already held in an existing SELL sector.
+• action = SELL
+• signal_score < SELL_THRESHOLD
+• at least one client-owned security available for that sector
 
-Rank 2:
-• BUY fund from a positive new sector.
+then Rank 1 MUST be a SELL recommendation.
 
-Rank 3:
-• BUY fund from another positive new sector.
+In this situation:
 
-Do not produce more than one recommendation from the existing portfolio.
+• Rank 1 MUST be:
+  - recommendation_type = SECURITY
+  - action = SELL
+  - investment = an actual security already owned by the client
+  - sector = the existing SELL sector
 
-Do not recommend HOLD sectors.
+• DO NOT select an existing BUY sector as Rank 1 while a valid existing SELL opportunity exists.
 
-Do not invent investments.
+• DO NOT recommend a fund from an existing BUY sector as Rank 1 when an existing SELL opportunity is available.
 
-Do not recommend a security for a new sector.
+• The SELL recommendation must be based on the supplied sector signal and portfolio exposure.
 
-Do not recommend a fund for an existing SELL sector.
+If multiple existing sectors have SELL signals:
+• Select the existing SELL sector with the strongest negative signal_score.
+• More negative signal_score = higher priority for Rank 1.
+• If signal scores are equal, prefer the sector with greater portfolio exposure if exposure information is supplied.
+
+SECOND PRIORITY — EXISTING BUY OPPORTUNITY
+--------------------------------------------
+
+Only when there is NO valid existing SELL opportunity:
+
+Check existing sectors with:
+
+• action = BUY
+• signal_score > BUY_THRESHOLD
+• available fund candidate for that sector
+
+If such an existing BUY opportunity exists:
+
+• Rank 1 MUST be a BUY recommendation.
+• recommendation_type = FUND
+• action = BUY
+• The fund MUST belong to the existing client-owned sector.
+
+If multiple existing BUY sectors exist:
+• Select the strongest suitable BUY opportunity based on:
+  1. Client suitability
+  2. Portfolio impact
+  3. Signal strength
+  4. Market context
+
+THIRD PRIORITY — NEW SECTOR OPPORTUNITIES
+------------------------------------------
+
+Rank 2 and Rank 3 may ONLY come from sectors the client does NOT currently own.
+
+They MUST:
+
+• Be present in Positive BUY Sectors.
+• Have signal_score > BUY_THRESHOLD.
+• Have a supplied fund candidate.
+• Be recommendation_type = FUND.
+• Have action = BUY.
+• Introduce a genuinely new sector exposure.
+
+Do NOT use an existing client-owned sector for Rank 2 or Rank 3.
+
+Do NOT recommend a SECURITY for Rank 2 or Rank 3.
+
+Do NOT recommend a SELL for Rank 2 or Rank 3.
+
+FINAL RANKING RULES
+===================
+
+The final recommendation order MUST be:
+
+1. Rank 1:
+   - SELL existing security if a valid existing SELL opportunity exists.
+   - Otherwise BUY FUND from the strongest suitable existing BUY sector if one exists.
+   - If no existing SELL or BUY opportunity exists, BUY FUND from the strongest suitable new/unowned positive sector.
+   - HOLD is never a recommendation.
+
+2. Rank 2 = New positive BUY sector
+   - BUY FUND only.
+
+3. Rank 3 = New positive BUY sector
+   - BUY FUND only.
+
+Therefore:
+
+IF existing SELL exists:
+    Rank 1 = SELL existing security
+    Rank 2 = BUY new-sector fund
+    Rank 3 = BUY new-sector fund
+
+IF no existing SELL exists but existing BUY exists:
+    Rank 1 = BUY existing-sector fund
+    Rank 2 = BUY new-sector fund
+    Rank 3 = BUY new-sector fund
+
+IF no existing SELL and no existing BUY exists:
+    Rank 1 may be a BUY FUND from the strongest suitable new/unowned positive sector.
+    Rank 2 and Rank 3 may also be BUY FUNDs from new/unowned positive sectors.
+    Use only genuinely supported opportunities.
+    Do not invent a recommendation.
+
+IMPORTANT:
+Do NOT choose BUY simply because more BUY funds are available.
+
+An existing SELL opportunity is a required portfolio-risk action and MUST take precedence over an existing BUY opportunity.
+
+Do NOT recommend BUY for a sector with a negative SELL signal.
+
+Do NOT recommend SELL for a sector with a positive BUY signal unless there is an explicit client-specific suitability or portfolio constraint requiring the reduction.
+
+Do NOT recommend HOLD as an investment recommendation.
+
+Do not force three recommendations.
+
+Maximum recommendations = 3.
+
+Rank numbers must be unique and sequential starting from 1.
+
+Only use investments explicitly supplied in the prompt.
+
+Do not invent investment IDs, names, sectors, fund characteristics, performance, or client information.
 ========================
 MANDATORY RULES
 ========================
@@ -769,25 +833,68 @@ For Rank 1, state that the client already has exposure to this sector and the re
 • For Rank 2 & 3, state that it introduces new sector exposure to improve diversification and reference one market opportunity.
 Avoid generic rationale. Always explain recommendations using the provided market context.
 
-========================
 OUTPUT
-========================
+======
 
 Return ZERO TO THREE recommendations.
-Never force three recommendations.
 
-Rank 1:
-• Action may be BUY or SELL.
-• Recommendation must come from an existing client-owned sector.
-Rank 2:
-• Action must be BUY.
-• Recommendation must be a fund from a new positive sector.
-Rank 3:
-• Action must be BUY.
-• Recommendation must be a fund from a new positive sector.
-Action:
-• BUY when recommending a fund purchase.
-• SELL when recommending an existing security to reduce/remove.
+The following rules are mandatory:
+
+RANK 1
+------
+Rank 1 represents the most important action for the existing portfolio.
+
+If a valid existing SELL opportunity exists:
+• Rank 1 MUST be SELL.
+• Recommendation Type = SECURITY.
+• Investment MUST be an existing client-owned security.
+• Sector MUST be an existing client-owned sector.
+• The sector MUST have a negative SELL signal.
+
+If no valid existing SELL opportunity exists:
+• Rank 1 may be BUY from an existing client-owned sector.
+• Recommendation Type = FUND.
+• Action = BUY.
+• The fund MUST belong to that existing sector.
+• The sector MUST have a positive BUY signal.
+
+RANK 2
+------
+• MUST be BUY.
+• MUST be FUND.
+• MUST belong to a sector the client does NOT currently own.
+• Sector MUST have a positive BUY opportunity signal.
+
+RANK 3
+------
+• MUST be BUY.
+• MUST be FUND.
+• MUST belong to a sector the client does NOT currently own.
+• Sector MUST have a positive BUY opportunity signal.
+
+Do not use existing sectors for Rank 2 or Rank 3.
+
+Do not use SELL for Rank 2 or Rank 3.
+
+Do not use SECURITY for Rank 2 or Rank 3.
+
+Do not recommend a fund from an existing SELL sector.
+
+Do not recommend a fund from an existing BUY sector as Rank 1 when a valid existing SELL opportunity exists.
+
+Do not recommend HOLD.
+
+Do not force all three ranks.
+
+If only one recommendation is genuinely supported, return one recommendation.
+
+If no recommendation is genuinely supported:
+status = "NO_RECOMMENDATIONS"
+recommendations = []
+
+Rank numbers must be:
+1, 2, 3
+with no gaps and no duplicates.
 
 Each recommendation MUST include:
 • Rank

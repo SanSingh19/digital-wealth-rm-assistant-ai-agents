@@ -29,6 +29,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from pathlib import Path
+import json
 
 from openai import OpenAI
 from sqlalchemy.orm import Session
@@ -46,6 +48,23 @@ from models import (
     Theme, TrendTheme, SectorTag, SentimentEnum, TrendDirectionEnum,
     init_db, get_session_factory,
 )
+
+# ==============================================
+#  PREDEFINED INVESTMENT THEMES
+# ==============================================
+
+THEMES_FILE = (
+    Path(__file__).resolve().parent
+    / "config"
+    / "predefined_themes.json"
+)
+
+
+def load_predefined_themes():
+    with open(THEMES_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return data.get("themes", [])
 
 # -- logging ------------------------------------
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -223,31 +242,232 @@ def cluster_into_trends(client, events_with_ids):
 
 SYSTEM_THEMES = """
 You are a senior portfolio strategist AI.
-Your job is to synthesise market trends into high-level investment themes
-and tag each theme with affected sectors and their sentiment.
-Respond ONLY with valid JSON – no preamble, no markdown fences.
+
+Your job is to classify market trends into investment themes.
+
+For EVERY trend, follow this decision process in this exact order:
+
+STEP 1 — CHECK PREDEFINED THEMES
+--------------------------------
+Compare the trend against ALL predefined investment themes.
+
+Evaluate the underlying investment meaning using:
+- trend_name
+- trend_description
+- direction
+- theme_name
+- category
+- description
+- classification_guidance
+
+The comparison must be semantic and based on investment context.
+
+Do NOT use simple keyword matching.
+
+Do NOT require exact wording.
+
+A trend can match a predefined theme even when the wording is
+different, as long as the underlying investment narrative is
+genuinely the same.
+
+STEP 2 — USE PREDEFINED THEME WHEN THERE IS A GENUINE MATCH
+-------------------------------------------------------------
+If ANY predefined theme genuinely represents the primary investment
+narrative of the trend:
+
+- MUST use that predefined theme.
+- MUST NOT create a new theme.
+- theme_source MUST be "PREDEFINED".
+- theme_code MUST be the exact predefined theme_code.
+- theme_name MUST exactly match the predefined theme_name.
+- theme_description MUST use the predefined theme description.
+
+STEP 3 — GENERATE A NEW THEME ONLY WHEN NO PREDEFINED THEME FITS
+-----------------------------------------------------------------
+If NONE of the predefined themes genuinely represents the underlying
+investment narrative:
+
+- Create a new theme.
+- theme_source MUST be "GENERATED".
+- theme_code MUST be null.
+- The generated theme must be a meaningful, reusable investment theme.
+- It must describe a broader investment narrative.
+- It must NOT be a company name.
+- It must NOT be a news headline.
+- It must NOT be a temporary event.
+- It must NOT simply reword an existing predefined theme.
+
+IMPORTANT MATCHING RULES
+------------------------
+1. Match based on investment meaning, not word overlap.
+
+2. Do not map a trend to a theme only because one word appears in
+   both.
+
+3. When multiple predefined themes are related, select the theme
+   representing the PRIMARY investment narrative.
+
+4. Multiple trends may map to the same theme.
+
+5. A trend may map to multiple themes only when it genuinely contains
+   multiple distinct investment narratives.
+
+6. Do not force a trend into an unrelated predefined theme just to
+   avoid generating a theme.
+
+7. Generated themes are allowed, but ONLY after all predefined themes
+   have been considered and none is a genuine match.
+
+SECTOR TAGGING
+--------------
+For every resulting theme, identify the affected equity sectors and
+assign sentiment.
+
+Do not invent sectors simply to create a client match.
+
+Return ONLY valid JSON.
 """.strip()
 
 PROMPT_THEMES = """
-Here are the current market trends:
+CURRENT MARKET TRENDS
+=====================
 
 {trends_block}
 
-Step 1 – Group these trends into broad INVESTMENT THEMES
-         (e.g. "AI Revolution", "Energy Transition", "Rate Normalisation").
 
-Step 2 – For each theme, list the equity SECTORS most impacted and assign sentiment.
+PREDEFINED INVESTMENT THEMES
+============================
 
-Return a JSON object with a single key "themes" containing an array:
+{themes_block}
+
+
+TASK
+====
+
+For EACH market trend, perform the following steps IN ORDER:
+
+STEP 1:
+Compare the trend against ALL predefined investment themes.
+
+STEP 2:
+If a predefined theme is a genuine semantic match for the trend's
+primary investment narrative, use that predefined theme.
+
+STEP 3:
+Only if NO predefined theme is a genuine match, create a new
+GENERATED investment theme.
+
+NEVER generate a new theme when an existing predefined theme is a
+genuine match.
+
+NEVER force a trend into an unrelated predefined theme merely to avoid
+generating a new theme.
+
+
+MATCHING REQUIREMENT
+====================
+
+You MUST evaluate the predefined themes FIRST.
+
+The matching must be SEMANTIC.
+
+Compare the underlying investment meaning of the trend with:
+
+- theme_name
+- category
+- description
+- classification_guidance
+
+Do NOT use simple keyword matching.
+
+An exact word or phrase match is NOT required.
+
+A trend can match a predefined theme even when the wording is
+different, if the underlying investment concept is genuinely the same.
+
+A trend must NOT match a predefined theme only because a word
+happens to appear in both the trend and the theme.
+
+When multiple themes are related, identify the PRIMARY investment
+narrative of the trend and select the predefined theme that best
+represents that narrative.
+
+Only generate a new theme when NONE of the predefined themes
+genuinely represent the trend's underlying investment concept.
+
+
+IMPORTANT EXAMPLES
+==================
+
+Example 1:
+Trend:
+"GPU demand is accelerating as AI server deployments increase."
+Evaluate the trend based on its underlying investment narrative.
+If the primary narrative is semiconductor / GPU / AI accelerator /
+advanced-computing demand, it should map to:
+"Artificial Intelligence, Automation & Advanced Computing"
+Do not select a theme merely because of the word "AI".
+
+
+Example 2:
+Trend:
+"Hyperscalers are increasing capital expenditure on data-center
+capacity and cloud infrastructure."
+This should be evaluated primarily as a digital infrastructure /
+cloud investment narrative and should map to:
+"Digital Infrastructure & Cloud"
+
+
+Example 3:
+Trend: "Central banks are maintaining restrictive monetary policy."
+This should be evaluated as a monetary-policy / interest-rate
+investment narrative and should map to:
+"Monetary Policy & Interest Rate Cycle"
+
+
+Example 4:
+Trend:
+"Manufacturers are moving production closer to domestic markets
+to reduce dependence on overseas suppliers."
+This should be evaluated as a supply-chain restructuring /
+reshoring narrative and should map to:
+"Supply Chain Resilience & Reshoring"
+
+Example 5:
+If a trend does not genuinely fit ANY predefined theme, create a
+new theme rather than forcing the trend into an unrelated
+predefined theme.
+
+Example 6:
+Trend:
+"Commercial space infrastructure investment is accelerating through
+launch capacity, satellite infrastructure and private-space
+deployment."
+
+If none of the predefined themes genuinely represents this
+investment narrative, generate:
+theme_name:"Commercial Space Infrastructure"
+theme_source: "GENERATED"
+theme_code: null
+
+
+OUTPUT FORMAT
+=============
+
+Return a JSON object with exactly one key: "themes".
+
 {{
   "themes": [
     {{
-      "theme_name":        "<concise theme name>",
-      "theme_description": "<2-3 sentence investor-facing narrative>",
-      "trend_indices":     [<0-based indices of trends in this theme>],
+      "theme_name": "<exact predefined theme name OR generated theme name>",
+      "theme_source": "<PREDEFINED | GENERATED>",
+      "theme_code": "<exact predefined theme_code when PREDEFINED, otherwise null>",
+      "theme_description": "<theme description>",
+      "trend_indices": [<0-based trend indices>],
+      "match_reason": "<short explanation of why the trend meaning matches this theme>",
       "sector_tags": [
         {{
-          "sector": "<sector name, e.g. Semiconductors, Financials, Energy>",
+          "sector": "<sector name>",
           "sentiment": "<Positive | Negative | Neutral | Mixed>",
           "confidence": <0.0-1.0>,
           "rationale": "<one sentence why>"
@@ -256,20 +476,119 @@ Return a JSON object with a single key "themes" containing an array:
     }}
   ]
 }}
+
+
+FOR PREDEFINED THEMES
+=====================
+
+When using a predefined theme:
+- theme_name MUST exactly match the predefined theme_name.
+- theme_code MUST exactly match the predefined theme_code.
+- theme_source MUST be "PREDEFINED".
+- theme_description should use the predefined theme description.
+- Do not modify or rename the predefined theme.
+
+
+FOR GENERATED THEMES
+====================
+
+When generating a new theme:
+- theme_source MUST be "GENERATED".
+- theme_code must be null.
+- theme_name must be a meaningful new investment theme.
+- theme_description must describe the new investment narrative.
+- Do not create a theme that is simply a rewording of a predefined theme.
+
 """.strip()
 
-
-def distil_into_themes(client, trends):
+def distil_into_themes(client, trends, predefined_themes):
     if not trends:
         return []
-    lines = [f"[{i}] ({t.get('direction','?')}) {t['trend_name']}: {t.get('trend_description','')}"
-             for i, t in enumerate(trends)]
-    trends_block = "\n".join(lines)
-    prompt = PROMPT_THEMES.format(trends_block=trends_block)
-    result = openai_json(client, prompt, SYSTEM_THEMES)
+
+    # -----------------------------
+    # Build trends block
+    # -----------------------------
+    trend_lines = [
+        f"[{i}] ({t.get('direction', '?')}) "
+        f"{t['trend_name']}: "
+        f"{t.get('trend_description', '')}"
+        for i, t in enumerate(trends)
+    ]
+
+    trends_block = "\n".join(trend_lines)
+
+    # -----------------------------
+    # Build predefined themes block
+    # -----------------------------
+    theme_lines = []
+
+    for theme in predefined_themes:
+        theme_lines.append(
+            f"[{theme.get('theme_code', '')}] "
+            f"{theme.get('theme_name', '')}\n"
+            f"Category: {theme.get('category', '')}\n"
+            f"Description: {theme.get('description', '')}\n"
+            f"Classification guidance: "
+            f"{theme.get('classification_guidance', '')}"
+        )
+
+    themes_block = "\n\n".join(theme_lines)
+
+    # -----------------------------
+    # Build prompt
+    # -----------------------------
+    prompt = PROMPT_THEMES.format(
+        trends_block=trends_block,
+        themes_block=themes_block,
+    )
+
+    # -----------------------------
+    # Call LLM
+    # -----------------------------
+    result = openai_json(
+        client,
+        prompt,
+        SYSTEM_THEMES
+    )
+
     if not isinstance(result, list):
         return []
-    return result
+
+    valid_themes = []
+    classified_indices = set()
+
+    for theme in result:
+        if not isinstance(theme, dict):
+            continue
+
+        indices = theme.get("trend_indices", [])
+
+        if not isinstance(indices, list):
+            indices = []
+
+        valid_indices = [
+            idx for idx in indices
+            if isinstance(idx, int)
+            and 0 <= idx < len(trends)
+        ]
+
+        theme["trend_indices"] = valid_indices
+
+        for idx in valid_indices:
+            classified_indices.add(idx)
+
+        valid_themes.append(theme)
+
+    # Log trends that were not assigned to any theme
+    unclassified_indices = set(range(len(trends))) - classified_indices
+
+    if unclassified_indices:
+        log.warning(
+            f"  Unclassified trend indices from Stage C: "
+            f"{sorted(unclassified_indices)}"
+        )
+
+    return valid_themes
 
 
 # ==============================================
@@ -466,8 +785,20 @@ def run_processing(article_ids=None):
 
         # STAGE C – distil trends into themes + sector tags
         log.info(f"\n  Distilling {len(trend_rows)} trends into investment themes ...")
+
         try:
-            raw_themes = distil_into_themes(client, raw_trends)
+            predefined_themes = load_predefined_themes()
+
+            log.info(
+                f"  -> Loaded {len(predefined_themes)} predefined investment themes"
+            )
+
+            raw_themes = distil_into_themes(
+                client,
+                raw_trends,
+                predefined_themes
+            )
+
         except Exception as e:
             log.error(f"  Theme distillation failed: {e}")
             raw_themes = []

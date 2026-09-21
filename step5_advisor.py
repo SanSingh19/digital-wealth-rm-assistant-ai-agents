@@ -70,6 +70,10 @@ PROMPT = ChatPromptTemplate.from_template(
     """You are a financial news analyst. Based on the client's sector exposures and
 the recent news provided below, write a concise sector-focused news summary.
 
+Use only the provided portfolio holdings, top 3 matched investment themes,
+and recent market news as the evidence for this outlook.
+Do not introduce or infer additional client themes that are not provided.
+
 For the headline_outlook: summarise what is actually happening in the markets
 across the sectors this client is most heavily invested in. Write it like a
 briefing note — cover key events, moves, and sentiment shifts. Do NOT frame
@@ -95,8 +99,8 @@ RECENT MARKET NEWS & EVENTS
 -----------------------------
 {news_text}
 
-MATCHED INVESTMENT THEMES
---------------------------
+MATCHED INVESTMENT THEMES – TOP 3 BY EXPOSURE
+----------------------------------------------
 {themes_text}
 
 {format_instructions}
@@ -195,43 +199,45 @@ def _build_citation(
     """
     Build deterministic provenance for the market outlook.
 
-    Themes:
-        The same ClientThemeMatch rows passed to the LLM.
+    Hierarchy:
+        Theme
+            -> Trend
+                -> Market Event
+                    -> News Article
 
-    News:
-        The same NewsArticle rows passed to the LLM.
-
-    Trends / Market Events:
-        Linked provenance between those themes and selected news articles.
+    Only display names/text/URLs are exposed in the final JSON.
+    Database IDs are used internally only for grouping relationships.
     """
 
     theme_ids = [m.theme_id for m in matches]
     news_ids = [article.id for article in news]
 
     citations = {
-        "themes": [
-            m.theme.name
-            for m in matches
-        ],
-        "trends": [],
-        "market_events": [],
-        "news_articles": [
-            article.url
-            for article in news
-        ],
+        "themes": []
     }
 
     if not theme_ids or not news_ids:
         return json.dumps(citations)
 
+    # Map selected news articles by their internal DB ID.
+    # IDs are used internally only and are NOT exposed in the output.
+    news_by_id = {
+        article.id: {
+            "title": article.title,
+            "url": article.url,
+        }
+        for article in news
+    }
+
     rows = (
         session.query(
             Theme.id.label("theme_id"),
+            Theme.name.label("theme_name"),
             Trend.id.label("trend_id"),
             Trend.name.label("trend_name"),
-            Trend.direction.label("trend_direction"),
             MarketEvent.id.label("event_id"),
             MarketEvent.event_text.label("event_text"),
+            MarketEvent.article_id.label("article_id"),
         )
         .join(
             TrendTheme,
@@ -256,24 +262,77 @@ def _build_citation(
         .all()
     )
 
-    seen_trends = set()
-    seen_events = set()
+    # Internal lookup structures.
+    # These IDs never appear in the final JSON.
+    theme_lookup = {}
 
     for row in rows:
 
-        if row.trend_id not in seen_trends:
-            citations["trends"].append(
-                row.trend_name
-            )
+        # -----------------------------
+        # Theme
+        # -----------------------------
+        if row.theme_id not in theme_lookup:
+            theme_entry = {
+                "theme": row.theme_name,
+                "trends": []
+            }
 
-            seen_trends.add(row.trend_id)
+            citations["themes"].append(theme_entry)
+            theme_lookup[row.theme_id] = {
+                "entry": theme_entry,
+                "trends": {}
+            }
 
-        if row.event_id not in seen_events:
-            citations["market_events"].append(
-                row.event_text
-            )
+        theme_data = theme_lookup[row.theme_id]
 
-            seen_events.add(row.event_id)
+        # -----------------------------
+        # Trend
+        # -----------------------------
+        if row.trend_id not in theme_data["trends"]:
+            trend_entry = {
+                "trend": row.trend_name,
+                "events": []
+            }
+
+            theme_data["entry"]["trends"].append(trend_entry)
+
+            theme_data["trends"][row.trend_id] = {
+                "entry": trend_entry,
+                "events": {}
+            }
+
+        trend_data = theme_data["trends"][row.trend_id]
+
+        # -----------------------------
+        # Market Event
+        # -----------------------------
+        if row.event_id not in trend_data["events"]:
+            event_entry = {
+                "event": row.event_text,
+                "news_articles": []
+            }
+
+            trend_data["entry"]["events"].append(event_entry)
+
+            trend_data["events"][row.event_id] = {
+                "entry": event_entry,
+                "articles": set()
+            }
+
+        event_data = trend_data["events"][row.event_id]
+
+        # -----------------------------
+        # News Article
+        # -----------------------------
+        article = news_by_id.get(row.article_id)
+
+        if article and row.article_id not in event_data["articles"]:
+            event_data["entry"]["news_articles"].append({
+                "title": article["title"],
+                "url": article["url"],
+            })
+
+            event_data["articles"].add(row.article_id)
 
     return json.dumps(citations)
 
@@ -317,15 +376,19 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
                 .order_by(ClientThemeMatch.exposure_pct.desc())
                 .all()
             )
-            news = _relevant_news_for_client(session, matches)
+            # Use the same top 3 themes for both:
+            # 1. relevant news selection
+            # 2. LLM context
+            top_matches = matches[:3]
+            news = _relevant_news_for_client(session, top_matches)
 
-            context = _build_context(client, matches, news)
-            citation_json = _build_citation(session, matches, news)
+            context = _build_context(client, top_matches, news)
+            citation_json = _build_citation(session, top_matches, news)
 
             try:
                 result: ClientOutlookResult = chain.invoke(context)
             except Exception as e:
-                log.error(f"  [{client.client_code}] LLM call failed: {e}")
+                log.exception(f"  [{client.client_code}] LLM call failed")
                 continue
 
             existing = session.query(ClientOutlook).filter_by(client_id=client.id).first()
