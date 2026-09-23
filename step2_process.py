@@ -154,7 +154,6 @@ Respond ONLY with valid JSON – no preamble, no markdown fences.
 
 PROMPT_MARKET_EVENTS = """
 Article title:   {title}
-Article summary: {summary}
 Article text:    {body}
 
 Extract all distinct market events mentioned.
@@ -177,10 +176,9 @@ Return {{"events": []}} if no clear market events are found.
 
 
 def extract_market_events(client, article: NewsArticle):
-    body = (article.full_text or article.summary or "")[:3000]  # cap tokens
+    body = (article.full_text or "")[:3500]  # cap tokens
     prompt = PROMPT_MARKET_EVENTS.format(
         title   = article.title,
-        summary = article.summary or "",
         body    = body,
     )
     result = openai_json(client, prompt, SYSTEM_MARKET_EVENTS)

@@ -20,6 +20,9 @@ from pathlib import Path
 
 import feedparser
 import requests
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -120,16 +123,16 @@ def fetch_feed(source: dict) -> list[dict]:
         raw_path.write_bytes(raw_content)
         log.info(f"  Raw XML saved -> {raw_path.name}  ({len(raw_content)} bytes)")
     except Exception as exc:
-        log.warning(f"  Live fetch failed: {exc} – using mock data for dev/demo")
-        return _mock_entries(source)
+        log.error(f"  Live fetch failed for {name}: {exc}")
+        return []
 
     # -- parse ----------------------------------
     feed    = feedparser.parse(raw_content)
     entries = feed.entries
     log.info(f"  Parsed {len(entries)} entries")
     if not entries:
-        log.warning("  Empty feed – using mock data")
-        return _mock_entries(source)
+        log.warning(f"  Empty feed received from {name}")
+        return []
 
     return [_normalise_entry(e, name) for e in entries]
 
@@ -162,6 +165,220 @@ def scrape_full_text(url: str) -> str:
         log.debug(f"  newspaper3k scrape failed for {url}: {exc}")
         return ""
 
+# ==============================================
+#  EXTRACTIVE ARTICLE SUMMARIZATION
+# ==============================================
+
+def _split_into_sentences(text: str) -> list[str]:
+    """
+    Split article text into reasonably clean sentences.
+
+    This is intentionally extractive:
+    sentences are taken from the original article and are
+    never rewritten or generated.
+    """
+    if not text:
+        return []
+
+    text = re.sub(r"\s+", " ", text).strip()
+
+    # Split on sentence-ending punctuation followed by whitespace.
+    sentences = re.split(
+        r"(?<=[.!?])\s+(?=[A-Z0-9\"'])",
+        text,
+    )
+
+    cleaned = []
+
+    for sentence in sentences:
+        sentence = sentence.strip()
+
+        if not sentence:
+            continue
+
+        # Ignore extremely short fragments.
+        if len(sentence) < 40:
+            continue
+
+        cleaned.append(sentence)
+
+    return cleaned
+
+
+def _textrank_scores(sentences: list[str]) -> np.ndarray:
+    """
+    Calculate TextRank-style importance scores for sentences.
+
+    Each sentence is represented using TF-IDF.
+    Sentence similarity creates a graph.
+    PageRank-style iterations determine which sentences
+    are most representative of the article.
+
+    No new text is generated.
+    """
+    if len(sentences) == 1:
+        return np.array([1.0])
+
+    vectorizer = TfidfVectorizer(
+        stop_words="english",
+        lowercase=True,
+        max_features=10000,
+    )
+
+    try:
+        matrix = vectorizer.fit_transform(sentences)
+    except ValueError:
+        # All sentences may contain only stop words.
+        return np.ones(len(sentences))
+
+    similarity = cosine_similarity(matrix)
+
+    # A sentence should not vote for itself.
+    np.fill_diagonal(similarity, 0.0)
+
+    sentence_count = len(sentences)
+
+    # PageRank initialization.
+    scores = np.ones(sentence_count) / sentence_count
+
+    damping = 0.85
+
+    # Pre-calculate outgoing weights.
+    row_sums = similarity.sum(axis=1)
+
+    for _ in range(50):
+        new_scores = np.ones(sentence_count) * (
+            (1.0 - damping) / sentence_count
+        )
+
+        for i in range(sentence_count):
+            if row_sums[i] == 0:
+                continue
+
+            for j in range(sentence_count):
+                if similarity[j, i] == 0:
+                    continue
+
+                if row_sums[j] == 0:
+                    continue
+
+                new_scores[i] += (
+                    damping
+                    * similarity[j, i]
+                    / row_sums[j]
+                    * scores[j]
+                )
+
+        # Stop when scores have stabilized.
+        if np.allclose(scores, new_scores, atol=1e-6):
+            scores = new_scores
+            break
+
+        scores = new_scores
+
+    return scores
+
+
+def generate_article_summary(
+    title: str,
+    full_text: str,
+    rss_summary: str = "",
+    max_sentences: int = 7,
+    max_chars: int = 2000,
+) -> str:
+    """
+    Generate a concise extractive summary from the complete article.
+
+    IMPORTANT:
+    - No LLM is used.
+    - No new facts are generated.
+    - Every summary sentence comes directly from the article.
+    - The complete article is analyzed before selecting sentences.
+
+    If article scraping fails, the RSS summary is used as fallback.
+    """
+
+    text = (full_text or "").strip()
+
+    # ------------------------------------------------
+    # Fallback if full article could not be scraped
+    # ------------------------------------------------
+    if not text:
+        fallback = re.sub(
+            r"\s+",
+            " ",
+            (rss_summary or "").strip(),
+        )
+
+        return fallback[:max_chars].strip()
+
+    sentences = _split_into_sentences(text)
+
+    if not sentences:
+        fallback = re.sub(
+            r"\s+",
+            " ",
+            (rss_summary or "").strip(),
+        )
+
+        return fallback[:max_chars].strip()
+
+    # ------------------------------------------------
+    # Very short article
+    # ------------------------------------------------
+    if len(sentences) <= max_sentences:
+        return " ".join(sentences)[:max_chars].strip()
+
+    # ------------------------------------------------
+    # Calculate TextRank importance
+    # ------------------------------------------------
+    scores = _textrank_scores(sentences)
+
+    # Select the most important sentences.
+    ranked_indices = np.argsort(scores)[::-1]
+
+    selected_indices = sorted(
+        ranked_indices[:max_sentences]
+    )
+
+    selected_sentences = [
+        sentences[index]
+        for index in selected_indices
+    ]
+
+    summary = " ".join(selected_sentences).strip()
+
+    # ------------------------------------------------
+    # Keep the summary concise.
+    #
+    # Do not cut a sentence in half because that
+    # would make the extractive summary invalid.
+    # ------------------------------------------------
+    if len(summary) <= max_chars:
+        return summary
+
+    shortened = []
+
+    current_length = 0
+
+    for sentence in selected_sentences:
+        additional_length = len(sentence)
+
+        if shortened:
+            additional_length += 1
+
+        if current_length + additional_length > max_chars:
+            break
+
+        shortened.append(sentence)
+        current_length += additional_length
+
+    if shortened:
+        return " ".join(shortened).strip()
+
+    # If even the first selected sentence is longer
+    # than max_chars, return that complete sentence.
+    return selected_sentences[0].strip()
 
 # ==============================================
 #  SAVE TO DISK  (data/articles/YYYY-MM-DD/<title>.json)
@@ -200,12 +417,36 @@ def save_article_to_disk(article_data: dict) -> Path:
 
 def persist_article(session: Session, article_data: dict, file_path: Path) -> NewsArticle | None:
     """
-    Insert NewsArticle row.  Returns None if guid already exists (duplicate skip).
+    Insert a new NewsArticle or update an existing article.
+    Existing records are updated so that old articles with missing
+    summaries/full text can be backfilled.
     """
-    existing = session.query(NewsArticle).filter_by(guid=article_data["guid"]).first()
+
+    existing = (
+        session.query(NewsArticle)
+        .filter_by(guid=article_data["guid"])
+        .first()
+    )
+
     if existing:
-        log.debug(f"  Duplicate guid – skipping: {article_data['title'][:60]}")
-        return None
+        # Update summary when a new valid summary is available.
+        if article_data.get("summary"):
+            existing.summary = article_data["summary"]
+        # Update full text when scraping succeeded.
+        if article_data.get("full_text"):
+            existing.full_text = article_data["full_text"]
+        if article_data.get("url"):
+            existing.url = article_data["url"]
+        if article_data.get("published_at"):
+            existing.published_at = article_data["published_at"]
+        existing.raw_file_path = str(file_path)
+
+        log.info(
+            f"  >> DB update id={existing.id} "
+            f"title='{article_data['title'][:55]}...'"
+        )
+
+        return existing
 
     row = NewsArticle(
         guid          = article_data["guid"],
@@ -252,6 +493,17 @@ def run_ingestion(limit: int = MAX_ARTICLES_PER_RUN) -> list[int]:
             for entry in entries[:limit]:
                 # -- optionally scrape full text --
                 entry["full_text"] = scrape_full_text(entry["url"])
+                # -- generate extractive summary ----------------
+                entry["summary"] = generate_article_summary(
+                    title=entry["title"],
+                    full_text=entry["full_text"],
+                    rss_summary=entry.get("summary", ""),
+                )
+
+                log.info(
+                    f"  >> summary generated "
+                    f"({len(entry['summary'])} chars)"
+                )
 
                 # -- save file -------------------
                 fpath = save_article_to_disk(entry)

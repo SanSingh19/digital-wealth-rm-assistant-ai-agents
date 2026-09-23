@@ -74,17 +74,185 @@ Use only the provided portfolio holdings, top 3 matched investment themes,
 and recent market news as the evidence for this outlook.
 Do not introduce or infer additional client themes that are not provided.
 
-For the headline_outlook: summarise what is actually happening in the markets
-across the sectors this client is most heavily invested in. Write it like a
-briefing note — cover key events, moves, and sentiment shifts. Do NOT frame
-it as advice or portfolio impact. Stick strictly to what the news says.
+For the headline_outlook: summarise only what is explicitly supported by
+the RECENT MARKET NEWS & EVENTS provided below.
 
-For the drivers: pick 2-3 specific events from the news that are most relevant
-to this client's sector exposure, with one sentence on what happened.
+Do not generalize a specific news event into a broader sector trend,
+industry trend, technology trend, market trend, or economic trend unless
+that broader trend is explicitly stated or clearly supported by the
+provided news.
 
-For each driver status field: set "Increase" if the event positively impacts
-the client's holdings in that sector, "Decrease" if it negatively impacts them. Base this strictly on the holdings
-and sector exposure provided — not general market opinion.
+Do not describe an event as being part of a sector or industry unless
+the provided news explicitly identifies that sector or industry.
+
+Do not use words such as "significant", "major trend", "ongoing trend",
+"growing trend", "increasing trend", or similar broad characterizations
+unless the provided news explicitly supports them.
+
+Use the client's portfolio holdings and sectors ONLY to determine which
+news is relevant to the client.
+Do NOT introduce a portfolio company, security, sector, product, or industry
+into the headline_outlook merely because it appears in the portfolio.
+A portfolio sector is NOT evidence that a news event affected that sector.
+A company, security, product, or event mentioned in the news does not by
+itself establish that the news relates to a particular sector.
+
+Do not map a company to a sector using outside knowledge. Use a sector
+connection only when the sector is explicitly stated in the provided news
+or when the provided news directly describes an activity that is explicitly
+identified with that sector in the supplied context.
+
+If the sector connection cannot be established from the supplied evidence,
+do not mention that sector in the headline or driver.
+If the provided news does not contain a development related to a client's
+sector, do not manufacture a sector-specific connection. Summarise only
+the market developments actually present in the news.
+
+Write it like a concise factual briefing note covering only the key events
+and market movements explicitly stated in the provided news.
+
+Do not add interpretation, causality, sentiment, significance, or broader
+market conclusions unless they are explicitly stated in the provided news.
+
+Do NOT frame it as advice or portfolio impact.
+
+For the drivers: select up to 3 specific events from the provided news
+that have an explicitly supported connection to the client's matched
+sectors.
+
+Do not force the output to contain 2-3 drivers.
+
+If only 1 event is sufficiently supported, return 1 driver.
+If no event is sufficiently supported, return an empty drivers array.
+
+Never create a driver merely to satisfy the requested number of drivers.
+
+IMPORTANT DRIVER GROUNDING RULES:
+- The driver title must describe the underlying market development using
+  facts explicitly supported by the provided news.
+- Do not copy the article title verbatim or near-verbatim.
+- Do not simply replace or rearrange words from the article title.
+- The driver title should identify the actual development, such as a rate
+  decision, regulatory action, acquisition approval, earnings result, policy
+  change, or market movement, only when that development is explicitly
+  supported by the provided evidence.
+- Do not add a sector, industry, company impact, or broader market trend to
+  the driver title unless it is explicitly supported by the provided news.
+- The driver title and commentary must be based only on facts explicitly
+  stated in the provided news.
+- Do not introduce any company, security, sector, product, customer,
+  competitor, beneficiary, or business relationship that is not explicitly
+  mentioned in the provided news or portfolio holdings.
+- Do not assume that a company benefits from or is affected by a news event
+  unless the provided news explicitly supports that relationship.
+- Do not use outside knowledge or general knowledge about the sector to fill
+  missing information.
+- Every factual statement in the driver commentary must be directly
+  supported by the provided news.
+- If the news does not provide enough evidence to create a specific driver,
+  omit that driver rather than guessing or generating unsupported information.
+- The news article title is only the source title. Do not automatically use
+  the article title as the driver title.
+
+For example:
+News article:
+"Air Products Is Doubling Down on the Gases Inside Chip Fabs"
+Driver title:
+"Semiconductor fab investment is expanding"
+Do NOT create unsupported statements such as:
+"This benefits NVIDIA and ASML."
+unless NVIDIA and ASML and that relationship are explicitly supported by
+the provided news.
+
+SECTOR SCOPING RULE:
+
+For each matched investment theme, use ONLY the sectors listed in that client's
+matched_sectors value.
+
+A theme may affect multiple sectors globally, but that does NOT mean every
+sector under that theme belongs to this client.
+
+A news article/event is relevant to the client only when its actual content
+supports a connection to one of the client's matched sectors.
+
+Do NOT infer sector relevance merely because:
+• the article belongs to a matched theme
+• the company mentioned in the article belongs to another sector
+• the theme has that sector globally
+• the portfolio contains a related theme
+
+The provided news context includes the client's matched sectors,
+trend, market event, and article information.
+
+For each news item, first determine whether the Trend, Market Event,
+or News Article content is actually relevant to one of the client's
+matched sectors.
+
+Focus only on sector-relevant information supported by that content.
+If a news item does not contain enough evidence connecting it to the
+client's matched sector, ignore it.
+
+Do not assume that every news item under a matched theme is relevant
+to every sector within that theme.
+
+The matched sector list is a relevance filter, not evidence.
+
+A news item must contain explicit evidence connecting the event to the
+specific matched sector.
+
+Do not use the theme name, trend name, company name, or portfolio holding
+alone to establish that connection.
+
+If the connection requires outside knowledge or an unstated assumption,
+treat the news item as not sufficiently supported and omit it.
+
+If the supplied evidence does not establish that the news/event relates to
+the client's matched sector, DO NOT use that article as a market driver.
+
+When sector relevance cannot be established from the supplied evidence,
+omit the driver rather than guessing.
+
+
+For each driver status field: set "Increase" if the provided news explicitly supports a positive impact on the client's holdings
+or sector exposure, and "Decrease" if the provided news explicitly supports a negative impact.
+Do not infer the impact from general market knowledge or assumptions.
+If the direction of impact is not explicitly supported by the provided news,
+do not invent a directional claim.
+
+The headline_outlook must also follow strict evidence grounding:
+- For headline_outlook, mention only companies, sectors, products, events,
+  numbers, and relationships explicitly present in the provided news.
+- Portfolio holdings and sectors are used only to determine relevance.
+- Do not introduce portfolio companies or sectors into the headline_outlook
+  unless they are explicitly mentioned in the provided news.
+- Do not introduce companies merely because they are generally associated
+  with the mentioned sector.
+- Do not infer that a company benefits from, depends on, competes with,
+  supplies, or is affected by an event unless the provided evidence explicitly
+  states that relationship.
+- If a fact is not supported by the provided evidence, leave it out.
+STRICT EVIDENCE RULE:
+
+Treat the provided news as the complete evidence set.
+
+Do not convert facts into broader interpretations.
+
+For example:
+- "Company A settled a lawsuit" does not mean the company won a major
+  legal victory unless the provided news explicitly says so.
+- "Company A announced an acquisition" does not mean the acquisition is
+  beneficial to the market or represents an industry trend.
+- "The dollar rose" does not mean investors are concerned about inflation
+  unless the provided news explicitly states that.
+- A company's presence in the portfolio does not mean the company was
+  affected by the news.
+- A matched theme does not prove that a news event is relevant to every
+  sector under that theme.
+
+When a statement requires an inference beyond the provided evidence,
+remove that statement.
+
+Prefer a narrower factual statement over a broader interpretation.
 
 CLIENT SECTOR EXPOSURE
 -----------------------
@@ -130,8 +298,26 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
         )
 
     news_lines = []
-    for article in news:
-        news_lines.append(f"- {article.title}: {article.summary or ''}".strip())
+
+    for article, market_event, trend, theme_id in news:
+
+        match = next(
+            (m for m in matches if m.theme_id == theme_id),
+            None
+        )
+
+        if not match:
+            continue
+
+        sectors = json.loads(match.matched_sectors or "[]")
+
+        news_lines.append(
+            f"- Client matched sectors for this theme: {', '.join(sectors)}\n"
+            f"  Trend: {trend.name}\n"
+            f"  Market Event: {market_event.event_text}\n"
+            f"  News Article: {article.title}\n"
+            f"  Summary: {article.summary or ''}"
+        )
 
     return {
         "client_name": client.name,
@@ -146,21 +332,27 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
 def _relevant_news_for_client(
     session,
     matches: list[ClientThemeMatch],
-    limit: int = 5
+    limit: int = 10
 ) -> list:
 
     top_matches = sorted(
-    matches,
-    key=lambda x: x.exposure_pct,
-    reverse=True)[:3]
+        matches,
+        key=lambda x: x.exposure_pct,
+        reverse=True
+    )[:3]
+
+    if not top_matches:
+        return []
 
     theme_ids = [m.theme_id for m in top_matches]
 
-    if not theme_ids:
-        return []
-
-    articles = (
-        session.query(NewsArticle)
+    rows = (
+        session.query(
+            NewsArticle,
+            MarketEvent,
+            Trend,
+            TrendTheme.theme_id
+        )
         .join(
             MarketEvent,
             MarketEvent.article_id == NewsArticle.id
@@ -188,151 +380,110 @@ def _relevant_news_for_client(
         .all()
     )
 
-    return articles
+    return rows
 
 
 def _build_citation(
-    session,
     matches: list[ClientThemeMatch],
-    news: list[NewsArticle],
+    news: list,
 ) -> str:
     """
-    Build deterministic provenance for the market outlook.
+    Build citation directly from the exact news context passed to the LLM.
 
     Hierarchy:
         Theme
             -> Trend
-                -> Market Event
-                    -> News Article
-
-    Only display names/text/URLs are exposed in the final JSON.
-    Database IDs are used internally only for grouping relationships.
+                -> News Article
+                    -> Market Events
     """
-
-    theme_ids = [m.theme_id for m in matches]
-    news_ids = [article.id for article in news]
 
     citations = {
         "themes": []
     }
 
-    if not theme_ids or not news_ids:
+    if not news:
         return json.dumps(citations)
 
-    # Map selected news articles by their internal DB ID.
-    # IDs are used internally only and are NOT exposed in the output.
-    news_by_id = {
-        article.id: {
-            "title": article.title,
-            "url": article.url,
-        }
-        for article in news
-    }
-
-    rows = (
-        session.query(
-            Theme.id.label("theme_id"),
-            Theme.name.label("theme_name"),
-            Trend.id.label("trend_id"),
-            Trend.name.label("trend_name"),
-            MarketEvent.id.label("event_id"),
-            MarketEvent.event_text.label("event_text"),
-            MarketEvent.article_id.label("article_id"),
-        )
-        .join(
-            TrendTheme,
-            TrendTheme.theme_id == Theme.id
-        )
-        .join(
-            Trend,
-            Trend.id == TrendTheme.trend_id
-        )
-        .join(
-            MarketEventTrend,
-            MarketEventTrend.trend_id == Trend.id
-        )
-        .join(
-            MarketEvent,
-            MarketEvent.id == MarketEventTrend.market_event_id
-        )
-        .filter(
-            Theme.id.in_(theme_ids),
-            MarketEvent.article_id.in_(news_ids),
-        )
-        .all()
-    )
-
-    # Internal lookup structures.
-    # These IDs never appear in the final JSON.
     theme_lookup = {}
 
-    for row in rows:
+    for article, market_event, trend, theme_id in news:
 
-        # -----------------------------
+        match = next(
+            (m for m in matches if m.theme_id == theme_id),
+            None
+        )
+
+        if not match:
+            continue
+
+        # ---------------------------------------------------------
         # Theme
-        # -----------------------------
-        if row.theme_id not in theme_lookup:
+        # ---------------------------------------------------------
+        if theme_id not in theme_lookup:
+
             theme_entry = {
-                "theme": row.theme_name,
+                "theme": match.theme.name,
                 "trends": []
             }
 
             citations["themes"].append(theme_entry)
-            theme_lookup[row.theme_id] = {
+
+            theme_lookup[theme_id] = {
                 "entry": theme_entry,
                 "trends": {}
             }
 
-        theme_data = theme_lookup[row.theme_id]
+        theme_data = theme_lookup[theme_id]
 
-        # -----------------------------
+        # ---------------------------------------------------------
         # Trend
-        # -----------------------------
-        if row.trend_id not in theme_data["trends"]:
+        # ---------------------------------------------------------
+        if trend.id not in theme_data["trends"]:
+
             trend_entry = {
-                "trend": row.trend_name,
-                "events": []
+                "trend": trend.name,
+                "news_articles": []
             }
 
             theme_data["entry"]["trends"].append(trend_entry)
 
-            theme_data["trends"][row.trend_id] = {
+            theme_data["trends"][trend.id] = {
                 "entry": trend_entry,
-                "events": {}
+                "articles": {}
             }
 
-        trend_data = theme_data["trends"][row.trend_id]
+        trend_data = theme_data["trends"][trend.id]
 
-        # -----------------------------
-        # Market Event
-        # -----------------------------
-        if row.event_id not in trend_data["events"]:
-            event_entry = {
-                "event": row.event_text,
-                "news_articles": []
-            }
-
-            trend_data["entry"]["events"].append(event_entry)
-
-            trend_data["events"][row.event_id] = {
-                "entry": event_entry,
-                "articles": set()
-            }
-
-        event_data = trend_data["events"][row.event_id]
-
-        # -----------------------------
+        # ---------------------------------------------------------
         # News Article
-        # -----------------------------
-        article = news_by_id.get(row.article_id)
+        # ---------------------------------------------------------
+        if article.id not in trend_data["articles"]:
 
-        if article and row.article_id not in event_data["articles"]:
-            event_data["entry"]["news_articles"].append({
-                "title": article["title"],
-                "url": article["url"],
-            })
+            article_entry = {
+                "title": article.title,
+                "url": article.url,
+                "market_events": []
+            }
 
-            event_data["articles"].add(row.article_id)
+            trend_data["entry"]["news_articles"].append(article_entry)
+
+            trend_data["articles"][article.id] = {
+                "entry": article_entry,
+                "events": set()
+            }
+
+        article_data = trend_data["articles"][article.id]
+
+        # ---------------------------------------------------------
+        # Market Event
+        # ---------------------------------------------------------
+        if market_event.id not in article_data["events"]:
+
+            article_data["entry"]["market_events"].append(
+                market_event.event_text
+            )
+
+            article_data["events"].add(market_event.id)
 
     return json.dumps(citations)
 
@@ -383,7 +534,7 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
             news = _relevant_news_for_client(session, top_matches)
 
             context = _build_context(client, top_matches, news)
-            citation_json = _build_citation(session, top_matches, news)
+            citation_json = _build_citation(top_matches, news)
 
             try:
                 result: ClientOutlookResult = chain.invoke(context)
