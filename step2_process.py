@@ -53,18 +53,18 @@ from models import (
 #  PREDEFINED INVESTMENT THEMES
 # ==============================================
 
-THEMES_FILE = (
-    Path(__file__).resolve().parent
-    / "config"
-    / "predefined_themes.json"
-)
-
-
-def load_predefined_themes():
-    with open(THEMES_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return data.get("themes", [])
+# THEMES_FILE = (
+#     Path(__file__).resolve().parent
+#     / "config"
+#     / "predefined_themes.json"
+# )
+#
+#
+# def load_predefined_themes():
+#     with open(THEMES_FILE, "r", encoding="utf-8") as f:
+#         data = json.load(f)
+#
+#     return data.get("themes", [])
 
 # -- logging ------------------------------------
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -154,7 +154,7 @@ Respond ONLY with valid JSON – no preamble, no markdown fences.
 
 PROMPT_MARKET_EVENTS = """
 Article title:   {title}
-Article text:    {body}
+Article summary: {summary}
 
 Extract all distinct market events mentioned.
 A market event is a specific, factual occurrence with market implications
@@ -176,10 +176,9 @@ Return {{"events": []}} if no clear market events are found.
 
 
 def extract_market_events(client, article: NewsArticle):
-    body = (article.full_text or "")[:3500]  # cap tokens
     prompt = PROMPT_MARKET_EVENTS.format(
-        title   = article.title,
-        body    = body,
+        title=article.title,
+        summary=article.summary or "",
     )
     result = openai_json(client, prompt, SYSTEM_MARKET_EVENTS)
     if not isinstance(result, list):

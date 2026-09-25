@@ -17,12 +17,13 @@ Architecture
     For each sector the client holds:
 
       Signal 1 — Outlook driver status (weight 20%)
-        Scan all drivers for keywords matching this sector
-        Increase → +1,  Neutral → 0,  Decrease → -1
+          Match each driver to its ClientThemeMatch using client_match_theme_id,
+          then check whether the sector is directly present in matched_sectors.
+          Increase → +1  Neutral  → 0 Decrease → -1
 
       Signal 2 — Theme sentiment (weight 30%)
-        Scan themes matched to this client that cover this sector
-        Positive → +1,  Mixed/Neutral → 0,  Negative → -1
+          Check ClientThemeMatch.matched_sectors for a direct sector match.
+          Positive → +1 Mixed/Neutral → 0 Negative → -1
 
       Signal 3 — SectorTag sentiment from processed news (weight 50%)
         Scan SectorTag rows for this sector name
@@ -85,30 +86,30 @@ log = logging.getLogger("step8_recommend")
 #  driver titles and theme names
 # ==============================================
 
-SECTOR_KEYWORDS: dict[str, list[str]] = {
-    "Technology":           ["tech", "technology", "software", "cloud", "ai", "microsoft", "apple", "msft", "aapl"],
-    "Semiconductors":       ["semiconductor", "chip", "nvidia", "asml", "amd", "nvda"],
-    "Financials":           ["bank", "financ", "rate", "bond", "ecb", "fed", "interest", "credit"],
-    "Energy":               ["oil", "crude oil", "natural gas", "gas prices", "petroleum","fossil fuel","coal","opec","oil prices","energy prices"],
-    "Renewable Energy":     ["renewable", "solar", "wind", "green", "esg", "climate", "nordea", "alt"],
-    "Real Estate":          ["real estate", "reit", "property", "housing", "flats", "house"],
-    "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon", "flipkart"],
-    "Healthcare":           ["health", "pharma", "biotech", "drug", "medical"],
-    "Utilities":            ["utility", "utilities", "power", "electric"],
-    "Industrials":          ["industrial", "manufacturing", "factory", "automation", "robotics", "infrastructure", "construction", "engineering", "machinery", "capital goods", "caterpillar", "siemens"],
-    "Communication Services": ["communication","AI","Interest Rates","Fed", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
-    "Materials":             ["materials", "mining", "metals", "steel", "aluminium", "aluminum", "copper", "commodity", "commodities", "gold", "silver", "lithium", "iron ore", "rio tinto", "bhp"],
-    "Utilities":             ["utilities","electric", "utility", "electricity", "power", "power grid", "grid", "renewable grid", "water", "gas distribution", "electric utility", "energy distribution", "next era", "nextera", "enel"],
-    "E-Commerce":            ["e-commerce", "ecommerce", "online retail", "digital commerce", "online shopping", "marketplace", "consumer internet", "retail", "amazon", "shopify", "flipkart", "ebay", "etsy"],
-    "Cryptocurrency":        ["bitcoin", "btc", "ethereum", "eth", "crypto", "cryptocurrency", "blockchain", "digital asset", "digital assets", "stablecoin", "web3", "defi", "token", "coinbase", "binance"],
-    "Small Cap": ["small cap", "small-cap", "mid cap", "mid-cap", "growth companies", "emerging companies", "high growth", "small capitalization", "small business"],
-    "Artificial Intelligence": ["ai", "artificial intelligence", "machine learning", "deep learning", "generative ai", "chatgpt", "llm", "openai", "copilot", "automation", "ai infrastructure"],
-    "Cloud Computing": ["cloud", "cloud computing", "azure", "aws", "amazon web services", "google cloud", "gcp", "saas", "software as a service", "cloud infrastructure"],
-    "Digital Infrastructure": ["digital infrastructure", "data center", "datacenter", "server", "compute", "gpu", "network", "fiber", "5g", "hyperscaler", "digital backbone"],
-    "Cybersecurity": ["cybersecurity", "cyber", "security", "ransomware", "endpoint", "firewall", "identity security", "crowdstrike", "palo alto", "zero trust"],
-    "Blockchain": ["blockchain", "distributed ledger", "smart contract", "web3", "ethereum", "bitcoin", "tokenization", "crypto infrastructure"]
-
-}
+# SECTOR_KEYWORDS: dict[str, list[str]] = {
+#     "Technology":           ["tech", "technology", "software", "cloud", "ai", "microsoft", "apple", "msft", "aapl"],
+#     "Semiconductors":       ["semiconductor", "chip", "nvidia", "asml", "amd", "nvda"],
+#     "Financials":           ["bank", "financ", "rate", "bond", "ecb", "fed", "interest", "credit"],
+#     "Energy":               ["oil", "crude oil", "natural gas", "gas prices", "petroleum","fossil fuel","coal","opec","oil prices","energy prices"],
+#     "Renewable Energy":     ["renewable", "solar", "wind", "green", "esg", "climate", "nordea", "alt"],
+#     "Real Estate":          ["real estate", "reit", "property", "housing", "flats", "house"],
+#     "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon", "flipkart"],
+#     "Healthcare":           ["health", "pharma", "biotech", "drug", "medical"],
+#     "Utilities":            ["utility", "utilities", "power", "electric"],
+#     "Industrials":          ["industrial", "manufacturing", "factory", "automation", "robotics", "infrastructure", "construction", "engineering", "machinery", "capital goods", "caterpillar", "siemens"],
+#     "Communication Services": ["communication","AI","Interest Rates","Fed", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
+#     "Materials":             ["materials", "mining", "metals", "steel", "aluminium", "aluminum", "copper", "commodity", "commodities", "gold", "silver", "lithium", "iron ore", "rio tinto", "bhp"],
+#     "Utilities":             ["utilities","electric", "utility", "electricity", "power", "power grid", "grid", "renewable grid", "water", "gas distribution", "electric utility", "energy distribution", "next era", "nextera", "enel"],
+#     "E-Commerce":            ["e-commerce", "ecommerce", "online retail", "digital commerce", "online shopping", "marketplace", "consumer internet", "retail", "amazon", "shopify", "flipkart", "ebay", "etsy"],
+#     "Cryptocurrency":        ["bitcoin", "btc", "ethereum", "eth", "crypto", "cryptocurrency", "blockchain", "digital asset", "digital assets", "stablecoin", "web3", "defi", "token", "coinbase", "binance"],
+#     "Small Cap": ["small cap", "small-cap", "mid cap", "mid-cap", "growth companies", "emerging companies", "high growth", "small capitalization", "small business"],
+#     "Artificial Intelligence": ["ai", "artificial intelligence", "machine learning", "deep learning", "generative ai", "chatgpt", "llm", "openai", "copilot", "automation", "ai infrastructure"],
+#     "Cloud Computing": ["cloud", "cloud computing", "azure", "aws", "amazon web services", "google cloud", "gcp", "saas", "software as a service", "cloud infrastructure"],
+#     "Digital Infrastructure": ["digital infrastructure", "data center", "datacenter", "server", "compute", "gpu", "network", "fiber", "5g", "hyperscaler", "digital backbone"],
+#     "Cybersecurity": ["cybersecurity", "cyber", "security", "ransomware", "endpoint", "firewall", "identity security", "crowdstrike", "palo alto", "zero trust"],
+#     "Blockchain": ["blockchain", "distributed ledger", "smart contract", "web3", "ethereum", "bitcoin", "tokenization", "crypto infrastructure"]
+#
+# }
 
 # Sentiment → numeric score
 SENTIMENT_SCORE = {
@@ -950,68 +951,140 @@ Finally provide one concise portfolio rationale (maximum 60 words) explaining:
 #  SIGNAL ENGINE (pure Python)
 # ==============================================
 
-def _sector_keywords(sector_name: str) -> list[str]:
-    """Get keywords for a sector, fallback to lowercase sector name."""
-    return SECTOR_KEYWORDS.get(sector_name, [sector_name.lower()])
+# def _sector_keywords(sector_name: str) -> list[str]:
+#     """Get keywords for a sector, fallback to lowercase sector name."""
+#     return SECTOR_KEYWORDS.get(sector_name, [sector_name.lower()])
 
 
-def _score_from_drivers(sector_name: str, drivers: list[dict]) -> float:
+def _score_from_drivers(sector_name: str, drivers: list[dict], matches: list,) -> float:
     """
-    Signal 1 (weight 20%): scan outlook drivers for sector keywords.
-    Returns average status score across matching drivers.
+    Signal 1 (weight 20%): match each outlook driver to its
+    ClientThemeMatch using client_match_theme_id, then check whether
+    the sector is directly present in that theme's matched_sectors.
+    Increase -> +1
+    Decrease -> -1
+    Drivers whose ClientThemeMatch does not contain the sector
+    contribute nothing.
     """
-    keywords = _sector_keywords(sector_name)
-    scores   = []
 
-    for d in drivers:
-        text   = (d.get("title", "") + " " + d.get("commentary", "")).lower()
-        status = d.get("status", "Neutral")
-        if any(kw in text for kw in keywords):
-            scores.append(SENTIMENT_SCORE.get(status, 0.0))
+    scores = []
+
+    # ClientThemeMatch.id -> ClientThemeMatch
+    theme_matches = {
+        match.id: match
+        for match in matches
+    }
+
+    for driver in drivers:
+
+        # Step 5 tells us exactly which ClientThemeMatch
+        # generated this driver.
+        theme_id = driver.get("client_match_theme_id")
+
+        if not theme_id:
+            continue
+
+        match = theme_matches.get(theme_id)
+
+        if not match:
+            continue
+
+        # Get sectors affected by this specific client theme.
+        try:
+            matched_sectors = json.loads(
+                match.matched_sectors or "[]"
+            )
+        except (json.JSONDecodeError, TypeError):
+            matched_sectors = []
+
+        # Direct sector comparison.
+        sector_match = any(
+            str(sector).strip().lower() == sector_name.strip().lower()
+            for sector in matched_sectors
+        )
+
+        log.info(
+            "[SIGNAL 1 - MATCH] sector='%s', theme_id=%s, "
+            "matched_sectors=%s, sector_match=%s",
+            sector_name,
+            theme_id,
+            matched_sectors,
+            sector_match,
+        )
+
+        if not sector_match:
+            continue
+
+        # Only the driver's status determines the score.
+        status = driver.get("status", "Neutral")
+        score = SENTIMENT_SCORE.get(status, 0.0)
+
+        log.info(
+            "[SIGNAL 1 - SCORE] sector='%s', theme_id=%s, "
+            "status='%s', score=%s",
+            sector_name,
+            theme_id,
+            status,
+            score,
+        )
+
+        scores.append(score)
 
     return sum(scores) / len(scores) if scores else 0.0
 
 
 def _score_from_themes(sector_name: str, matches: list, session: Session) -> float:
     """
-    Signal 2 (weight 30%): scan client theme matches for themes that
-    have SectorTag entries matching this sector.
-    Returns average sentiment score across matching theme-sector pairs.
+    Signal 2 (weight 30%): directly match the sector name against
+    the matched_sectors stored in ClientThemeMatch.
+
+    Positive -> +1
+    Mixed/Neutral -> 0
+    Negative -> -1
     """
-    keywords = _sector_keywords(sector_name)
-    scores   = []
+
+    scores = []
 
     for match in matches:
-        # Check matched_sectors JSON for this sector
-        matched_sectors = json.loads(match.matched_sectors or "[]")
-        sector_hit = any(
-            any(kw in s.lower() for kw in keywords)
-            for s in matched_sectors
+
+        try:
+            matched_sectors = json.loads(
+                match.matched_sectors or "[]"
+            )
+        except (json.JSONDecodeError, TypeError):
+            matched_sectors = []
+
+        # Direct sector-name comparison.
+        sector_match = any(
+            str(sector).strip().lower() == sector_name.strip().lower()
+            for sector in matched_sectors
         )
-        if sector_hit and match.sentiment:
-            scores.append(SENTIMENT_SCORE.get(match.sentiment.value, 0.0))
+
+        if sector_match and match.sentiment:
+            scores.append(SENTIMENT_SCORE.get(match.sentiment.value, 0.0 ))
 
     return sum(scores) / len(scores) if scores else 0.0
 
 
 def _score_from_sector_tags(sector_name: str, session: Session) -> float:
     """
-    Signal 3 (weight 50%): scan SectorTag table for this sector name.
-    Returns confidence-weighted average sentiment.
+    Signal 3 (weight 50%): directly match SectorTag.sector_name
+    with the sector being scored.
+    Uses confidence-weighted sentiment.
     """
-    keywords = _sector_keywords(sector_name)
 
     tags = session.query(SectorTag).all()
     weighted_scores = []
-    total_weight    = 0.0
+    total_weight = 0.0
 
     for tag in tags:
-        tag_lower = tag.sector_name.lower()
-        if any(kw in tag_lower for kw in keywords):
-            score  = SENTIMENT_SCORE.get(tag.sentiment.value, 0.0)
-            weight = tag.confidence
-            weighted_scores.append(score * weight)
-            total_weight += weight
+        # Direct sector-name comparison.
+        if tag.sector_name.strip().lower() != sector_name.strip().lower():
+            continue
+        score  = SENTIMENT_SCORE.get(tag.sentiment.value, 0.0)
+        weight = tag.confidence
+        weighted_scores.append(score * weight)
+        total_weight += weight
 
     return sum(weighted_scores) / total_weight if total_weight > 0 else 0.0
 
@@ -1026,7 +1099,7 @@ def compute_signal(
     Compute weighted signal score for a sector.
     Returns {sector_name, signal_score, action, signals_detail}
     """
-    s1 = _score_from_drivers(sector_name, drivers)
+    s1 = _score_from_drivers(sector_name, drivers, matches)
     s2 = _score_from_themes(sector_name, matches, session)
     s3 = _score_from_sector_tags(sector_name, session)
 

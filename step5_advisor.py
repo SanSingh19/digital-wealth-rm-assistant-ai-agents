@@ -48,6 +48,10 @@ class OutlookDriver(BaseModel):
         description="Indicates whether this market event is positively increasing, "
                     "negatively decreasing impact on the client's portfolio value or exposure."
     )
+    client_match_theme_id: int = Field(
+            description="The exact ClientThemeMatch.id of the matched investment theme "
+                        "that this driver was generated from."
+        )
 
 
 class ClientOutlookResult(BaseModel):
@@ -209,9 +213,31 @@ treat the news item as not sufficiently supported and omit it.
 If the supplied evidence does not establish that the news/event relates to
 the client's matched sector, DO NOT use that article as a market driver.
 
-When sector relevance cannot be established from the supplied evidence,
-omit the driver rather than guessing.
+When sector relevance cannot be established from the supplied evidence, omit the driver rather than guessing.
 
+DRIVER THEME SOURCE RULE:
+
+For every driver, you MUST set client_match_theme_id to the exact
+ClientThemeMatch ID of the matched investment theme that the driver
+was generated from.
+
+The client_match_theme_id must be the exact ClientThemeMatch ID attached
+to the RECENT MARKET NEWS & EVENTS evidence used to generate that driver.
+
+Copy the ID exactly as supplied.
+
+Do not determine the ID by comparing theme names or sector names.
+Do not invent, modify, calculate, or infer an ID.
+
+If the evidence used to create a driver cannot be tied to exactly one
+supplied ClientThemeMatch ID, omit that driver.
+
+Each driver must have exactly one client_match_theme_id.
+
+Do not invent, modify, or reuse an ID that is not provided.
+
+The selected theme must be the specific theme whose affected sectors
+and provided evidence support the driver.
 
 For each driver status field: set "Increase" if the provided news explicitly supports a positive impact on the client's holdings
 or sector exposure, and "Decrease" if the provided news explicitly supports a negative impact.
@@ -292,9 +318,11 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
     for m in matches:
         sectors = json.loads(m.matched_sectors or "[]")
         theme_lines.append(
-            f"- {m.theme.name}: sentiment={m.sentiment.value if m.sentiment else 'N/A'}, "
-            f"exposure={m.exposure_pct:.1f}% (${m.exposure_value:,.0f}), "
-            f"via sectors: {', '.join(sectors)}"
+            f"- ClientThemeMatch ID: {m.id}\n"
+            f"  Theme: {m.theme.name}\n"
+            f"  Sentiment: {m.sentiment.value if m.sentiment else 'N/A'}\n"
+            f"  Exposure: {m.exposure_pct:.1f}% (${m.exposure_value:,.0f})\n"
+            f"  Affected sectors: {', '.join(sectors)}"
         )
 
     news_lines = []
@@ -312,7 +340,9 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
         sectors = json.loads(match.matched_sectors or "[]")
 
         news_lines.append(
-            f"- Client matched sectors for this theme: {', '.join(sectors)}\n"
+            f"- ClientThemeMatch ID: {match.id}\n"
+            f"  Theme: {match.theme.name}\n"
+            f"  Client matched sectors for this theme: {', '.join(sectors)}\n"
             f"  Trend: {trend.name}\n"
             f"  Market Event: {market_event.event_text}\n"
             f"  News Article: {article.title}\n"
@@ -541,6 +571,55 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
             except Exception as e:
                 log.exception(f"  [{client.client_code}] LLM call failed")
                 continue
+            # ==========================================================
+            # Validate driver -> ClientThemeMatch relationship
+            # ==========================================================
+
+            # These are the Theme IDs that actually have news evidence
+            # supplied to GPT.
+            news_theme_ids = {
+                theme_id
+                for _, _, _, theme_id in news
+            }
+
+            # Convert the Theme IDs into this client's valid
+            # ClientThemeMatch IDs.
+            valid_client_match_ids = {
+                match.id
+                for match in top_matches
+                if match.theme_id in news_theme_ids
+            }
+            log.info(
+                "[%s] Valid ClientThemeMatch IDs for outlook drivers: %s",
+                client.client_code,
+                sorted(valid_client_match_ids),
+            )
+
+            valid_drivers = []
+
+            for driver in result.drivers:
+
+                if driver.client_match_theme_id not in valid_client_match_ids:
+
+                    log.warning(
+                        "[%s] Removing driver '%s': "
+                        "invalid client_match_theme_id=%s",
+                        client.client_code,
+                        driver.title,
+                        driver.client_match_theme_id,
+                    )
+
+                    continue
+
+                valid_drivers.append(driver)
+
+            # Replace GPT output with only validated drivers.
+            result.drivers = valid_drivers
+
+
+            # ==========================================================
+            # Save ClientOutlook
+            # ==========================================================
 
             existing = session.query(ClientOutlook).filter_by(client_id=client.id).first()
             drivers_json = json.dumps([d.model_dump() for d in result.drivers])
