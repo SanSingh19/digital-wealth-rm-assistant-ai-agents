@@ -24,7 +24,9 @@ from models import (
     ClientRiskOverview,
     SecurityPriceHistory,
     Transaction,
-    ClientAITalkingPoints
+    ClientAITalkingPoints,
+    FundList,
+    Theme
 )
 
 from config.settings import DATABASE_URL
@@ -35,6 +37,118 @@ from config.settings import DATABASE_URL
 RMS = [
     {"id": 1001, "rm_code": "RM001", "name": "John Smith"},
     {"id": 1002, "rm_code": "RM002", "name": "Sarah Lee"},
+]
+
+# ==============================================
+# PREDEFINED INVESTMENT THEMES
+# ==============================================
+
+THEMES = [
+    {
+        "theme_code": "THM_001",
+        "theme_name": "Artificial Intelligence, Automation & Advanced Computing",
+        "category": "Technology & Innovation",
+        "description": "Structural adoption and commercialization of artificial intelligence, machine learning, intelligent software, robotics, automation, semiconductors and advanced computing technologies across industries.",
+        "classification_guidance": "Use when the primary investment narrative concerns AI adoption, generative AI, machine learning, AI agents, robotics, automation, autonomous systems, semiconductors, GPUs, AI accelerators or advanced computing."
+    },
+    {
+        "theme_code": "THM_002",
+        "theme_name": "Digital Infrastructure & Cloud",
+        "category": "Technology & Innovation",
+        "description": "Expansion of infrastructure supporting the digital economy, including cloud computing, data centers, networking, connectivity, telecom infrastructure and large-scale computing capacity.",
+        "classification_guidance": "Use when the primary investment narrative concerns data centers, cloud infrastructure, hyperscaler capital expenditure, networking, telecom infrastructure, fiber connectivity, 5G or expansion of digital computing infrastructure."
+    },
+    {
+        "theme_code": "THM_003",
+        "theme_name": "Cybersecurity & Digital Trust",
+        "category": "Technology & Innovation",
+        "description": "Growing demand for cybersecurity, identity protection, privacy, data protection and resilient digital infrastructure as economic activity becomes increasingly digital.",
+        "classification_guidance": "Use when the primary investment narrative concerns cybersecurity spending, cyber threats, data protection, cloud security, network security, identity management, digital trust or protection of critical digital infrastructure."
+    },
+    {
+        "theme_code": "THM_004",
+        "theme_name": "Digital Finance & Financial Innovation",
+        "category": "Technology & Innovation",
+        "description": "Transformation of financial services through digital payments, fintech, blockchain, tokenization, digital assets, embedded finance and next-generation financial infrastructure.",
+        "classification_guidance": "Use when the primary investment narrative concerns technology-driven transformation of payments, banking, financial platforms, blockchain, digital assets, tokenization or other financial technology."
+    },
+    {
+        "theme_code": "THM_005",
+        "theme_name": "Energy Transition, Electrification & Power Infrastructure",
+        "category": "Energy, Resources & Environment",
+        "description": "Structural transformation of energy systems through renewable generation, electrification, energy storage, electric mobility and expansion or modernization of electricity and power infrastructure.",
+        "classification_guidance": "Use when the primary investment narrative concerns renewable energy, electrification, batteries, electric vehicles, energy storage, power generation, grids, transmission infrastructure, utilities or rising electricity demand including demand related to AI and data centers."
+    },
+    {
+        "theme_code": "THM_006",
+        "theme_name": "Critical Resources & Natural Capital",
+        "category": "Energy, Resources & Environment",
+        "description": "Strategic demand and supply dynamics affecting critical minerals, metals, water, food systems and other natural resources essential to economic, technological and environmental development.",
+        "classification_guidance": "Use when the primary investment narrative concerns critical minerals, strategic commodities, mining capacity, resource scarcity, water availability, agriculture, food security or sustainable management of natural resources."
+    },
+    {
+        "theme_code": "THM_007",
+        "theme_name": "Healthcare Innovation & Longevity",
+        "category": "Healthcare & Demographics",
+        "description": "Structural transformation of healthcare through biotechnology, innovative medicines, medical technology, diagnostics, digital health and increasing healthcare demand associated with ageing populations and longer lifespans.",
+        "classification_guidance": "Use when the primary investment narrative concerns biotechnology, pharmaceutical innovation, next-generation treatments, medical devices, diagnostics, digital health, ageing populations, longevity or increasing age-related healthcare demand."
+    },
+    {
+        "theme_code": "THM_008",
+        "theme_name": "Demographic & Consumer Transformation",
+        "category": "Demographics & Society",
+        "description": "Structural changes in population, household behavior, workforce composition and consumption patterns driven by demographic evolution, income growth, digital lifestyles and changing consumer preferences.",
+        "classification_guidance": "Use when the primary investment narrative concerns demographic change, changing consumer behavior, emerging-market consumption, digital commerce, lifestyle transformation, workforce demographics or structural changes in household spending."
+    },
+    {
+        "theme_code": "THM_009",
+        "theme_name": "Geopolitical Fragmentation, Defense & Security",
+        "category": "Geopolitics & Security",
+        "description": "Investment implications of increasing geopolitical competition, economic fragmentation, trade restrictions, defense spending and national-security priorities in a more multipolar global economy.",
+        "classification_guidance": "Use when the primary investment narrative concerns geopolitical competition, trade wars, tariffs, sanctions, export controls, defense spending, military modernization, aerospace security or strategic national-security priorities."
+    },
+    {
+        "theme_code": "THM_010",
+        "theme_name": "Supply Chain Resilience & Reshoring",
+        "category": "Geopolitics & Industrial Transformation",
+        "description": "Restructuring of global supply chains toward greater resilience, diversification, localization, reshoring, nearshoring and reduced dependence on strategically vulnerable suppliers and regions.",
+        "classification_guidance": "Use when the primary investment narrative concerns manufacturing relocation, reshoring, nearshoring, friend-shoring, supplier diversification, localization of production or strategic restructuring of global supply chains."
+    },
+    {
+        "theme_code": "THM_011",
+        "theme_name": "Industrial Modernization & Infrastructure",
+        "category": "Industrial Transformation",
+        "description": "Long-term investment in manufacturing capacity, industrial modernization, physical infrastructure, transportation systems and productivity-enhancing industrial technologies.",
+        "classification_guidance": "Use when the primary investment narrative concerns reindustrialization, manufacturing investment, factory construction, industrial capital expenditure, transportation infrastructure, industrial equipment or modernization of physical production systems."
+    },
+    {
+        "theme_code": "THM_012",
+        "theme_name": "Monetary Policy & Interest Rate Cycle",
+        "category": "Macro & Capital Markets",
+        "description": "Market implications of central-bank policy, interest-rate cycles, liquidity, financial conditions and transitions between monetary tightening, easing and normalization regimes.",
+        "classification_guidance": "Use when the primary investment narrative concerns central-bank decisions, interest-rate increases or cuts, monetary tightening or easing, yield-curve changes, liquidity conditions or monetary-policy divergence."
+    },
+    {
+        "theme_code": "THM_013",
+        "theme_name": "Inflation & Cost Pressures",
+        "category": "Macro & Capital Markets",
+        "description": "Investment implications of persistent, accelerating or declining inflation across wages, commodities, energy, goods, services and corporate input costs.",
+        "classification_guidance": "Use when the primary investment narrative concerns inflation, disinflation, wage pressures, commodity-driven inflation, energy prices, input costs, pricing pressure or corporate pricing power."
+    },
+    {
+        "theme_code": "THM_014",
+        "theme_name": "Fiscal Policy & Government Investment",
+        "category": "Macro & Capital Markets",
+        "description": "Market effects of government spending, fiscal stimulus, taxation, deficits, sovereign debt, subsidies, infrastructure programs and strategic industrial policy.",
+        "classification_guidance": "Use when the primary investment narrative concerns fiscal policy, public spending, sovereign borrowing, taxation, government subsidies, fiscal stimulus, infrastructure programs or government-led strategic investment."
+    },
+    {
+        "theme_code": "THM_015",
+        "theme_name": "Capital Markets, M&A & Corporate Restructuring",
+        "category": "Macro & Capital Markets",
+        "description": "Market developments resulting from mergers, acquisitions, IPOs, private capital activity, corporate consolidation, restructuring, spin-offs and changing corporate capital-allocation activity.",
+        "classification_guidance": "Use when the primary investment narrative concerns mergers and acquisitions, corporate consolidation, IPO activity, private equity transactions, spin-offs, restructuring, takeovers or major strategic asset transactions."
+    },
 ]
 
 # ---------------- SectorMasters -------------------------------
@@ -183,6 +297,277 @@ sector_master = [
     }
 
 ]
+
+# ---------------- Fund List -----------------------------------
+
+FUNDS = [
+
+    # Technology
+    {
+        "fund_id": "F001",
+        "fund_name": "Global Technology Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Technology",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F002",
+        "fund_name": "Digital Innovation Fund",
+        "risk": "Aggressive",
+        "sector": "Technology",
+        "investment_style": "Growth"
+    },
+
+    # Semiconductors
+    {
+        "fund_id": "F003",
+        "fund_name": "Global Semiconductor Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Semiconductors",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F004",
+        "fund_name": "AI Infrastructure Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Semiconductors",
+        "investment_style": "Growth"
+    },
+
+    # Financials
+    {
+        "fund_id": "F005",
+        "fund_name": "European Financial Opportunities Fund",
+        "risk": "Moderate",
+        "sector": "Financials",
+        "investment_style": "Balanced"
+    },
+    {
+        "fund_id": "F006",
+        "fund_name": "Dividend Income Fund",
+        "risk": "Conservative",
+        "sector": "Financials",
+        "investment_style": "Income"
+    },
+
+    # Healthcare
+    {
+        "fund_id": "F007",
+        "fund_name": "Global Healthcare Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Healthcare",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F0202",
+        "fund_name": "Healthcare Opportunities ESG Fund",
+        "risk": "Moderate",
+        "sector": "Healthcare",
+        "investment_style": "Balanced"
+    },
+    {
+        "fund_id": "F0230",
+        "fund_name": "Global Life Sciences Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Healthcare",
+        "investment_style": "Growth"
+    },
+
+    # Renewable Energy
+    {
+        "fund_id": "F008",
+        "fund_name": "Clean Energy Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Renewable Energy",
+        "investment_style": "Growth"
+    },
+
+    # Consumer Discretionary
+    {
+        "fund_id": "F013",
+        "fund_name": "Global Consumer Growth Fund",
+        "risk": "Moderate",
+        "sector": "Consumer Discretionary",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F014",
+        "fund_name": "Consumer Lifestyle Opportunities Fund",
+        "risk": "Aggressive",
+        "sector": "Consumer Discretionary",
+        "investment_style": "Growth"
+    },
+
+    # Energy
+    {
+        "fund_id": "F009",
+        "fund_name": "Global Energy Opportunities Fund",
+        "risk": "Moderate",
+        "sector": "Energy",
+        "investment_style": "Balanced"
+    },
+
+    # Real Estate
+    {
+        "fund_id": "F010",
+        "fund_name": "European Real Estate Income Fund",
+        "risk": "Conservative",
+        "sector": "Real Estate",
+        "investment_style": "Income"
+    },
+
+    # Industrials
+    {
+        "fund_id": "F015",
+        "fund_name": "Global Industrials Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Industrials",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F016",
+        "fund_name": "Infrastructure Opportunities Fund",
+        "risk": "Moderate",
+        "sector": "Industrials",
+        "investment_style": "Balanced"
+    },
+    {
+        "fund_id": "F017",
+        "fund_name": "Smart Manufacturing Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Industrials",
+        "investment_style": "Growth"
+    },
+
+    # Communication Services
+    {
+        "fund_id": "F018",
+        "fund_name": "Global Communication Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Communication Services",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F019",
+        "fund_name": "Digital Media Opportunities Fund",
+        "risk": "Aggressive",
+        "sector": "Communication Services",
+        "investment_style": "Growth"
+    },
+
+    # Materials
+    {
+        "fund_id": "F020",
+        "fund_name": "Global Materials Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Materials",
+        "investment_style": "Balanced"
+    },
+    {
+        "fund_id": "F021",
+        "fund_name": "Commodity Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Materials",
+        "investment_style": "Growth"
+    },
+
+    # Utilities
+    {
+        "fund_id": "F022",
+        "fund_name": "Global Utilities Income Fund",
+        "risk": "Conservative",
+        "sector": "Utilities",
+        "investment_style": "Income"
+    },
+    {
+        "fund_id": "F023",
+        "fund_name": "Essential Infrastructure Fund",
+        "risk": "Moderate",
+        "sector": "Utilities",
+        "investment_style": "Balanced"
+    },
+
+    # E-Commerce
+    {
+        "fund_id": "F024",
+        "fund_name": "Global E-Commerce Growth Fund",
+        "risk": "Moderate",
+        "sector": "E-Commerce",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F025",
+        "fund_name": "Digital Commerce Innovation Fund",
+        "risk": "Aggressive",
+        "sector": "E-Commerce",
+        "investment_style": "Growth"
+    },
+
+    # Small Cap
+    {
+        "fund_id": "F028",
+        "fund_name": "Global Small Cap Growth Fund",
+        "risk": "Aggressive",
+        "sector": "Small Cap",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F029",
+        "fund_name": "Emerging Companies Fund",
+        "risk": "Moderate",
+        "sector": "Small Cap",
+        "investment_style": "Growth"
+    },
+
+    # Artificial Intelligence
+    {
+        "fund_id": "F030",
+        "fund_name": "AI Innovation Fund",
+        "risk": "Aggressive",
+        "sector": "Artificial Intelligence",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F031",
+        "fund_name": "Global AI Leaders Fund",
+        "risk": "Moderate",
+        "sector": "Artificial Intelligence",
+        "investment_style": "Growth"
+    },
+
+    # Cloud Computing
+    {
+        "fund_id": "F032",
+        "fund_name": "Cloud Infrastructure Fund",
+        "risk": "Moderate",
+        "sector": "Cloud Computing",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F033",
+        "fund_name": "Global Cloud Leaders Fund",
+        "risk": "Aggressive",
+        "sector": "Cloud Computing",
+        "investment_style": "Growth"
+    },
+
+    # Cryptocurrency
+    {
+        "fund_id": "F026",
+        "fund_name": "Digital Assets Strategy Fund",
+        "risk": "Aggressive",
+        "sector": "Cryptocurrency",
+        "investment_style": "Growth"
+    },
+    {
+        "fund_id": "F027",
+        "fund_name": "Blockchain Innovation Fund",
+        "risk": "Aggressive",
+        "sector": "Cryptocurrency",
+        "investment_style": "Growth"
+    }
+]
+
 
 # ---------------- Securities ----------------
 securities = [
@@ -1011,6 +1396,30 @@ def seed_all_clients():
 
     with Session() as session:
 
+    # ---------------- Seed Themes ----------------
+        for theme in THEMES:
+
+            existing_theme = (
+                session.query(Theme)
+                .filter_by(name=theme["theme_name"])
+                .first()
+            )
+
+            if not existing_theme:
+
+                session.add(
+                    Theme(
+                        name=theme["theme_name"],
+                        category=theme["category"],
+                        description=theme["description"],
+                        classification_guidance=theme["classification_guidance"]
+                    )
+                )
+
+        session.commit()
+
+        print("Themes seeded successfully")
+
         # Seed Sector Master
         for sector in sector_master:
 
@@ -1033,6 +1442,30 @@ def seed_all_clients():
 
         session.commit()
 
+        # ---------------- Seed Fund List ----------------
+
+        for fund in FUNDS:
+
+            existing_fund = session.query(
+                FundList
+            ).filter_by(
+                fund_id=fund["fund_id"]
+            ).first()
+
+            if not existing_fund:
+
+                session.add(
+                    FundList(
+                        fund_id=fund["fund_id"],
+                        fund_name=fund["fund_name"],
+                        sector=fund["sector"],
+                        risk=fund["risk"],
+                        investment_style=fund["investment_style"]
+                    )
+                )
+
+        session.commit()
+        print("Fund list seeded successfully")
 
         # Seed Securities
         for sec in securities:

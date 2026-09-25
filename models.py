@@ -148,7 +148,9 @@ class Theme(Base):
 
     id             = Column(Integer, primary_key=True, autoincrement=True)
     name           = Column(String(256), nullable=False, unique=True)
+    category = Column(String(256), nullable=True)
     description    = Column(Text)
+    classification_guidance = Column(Text, nullable=True)
     created_at     = Column(DateTime, default=datetime.utcnow)
     last_updated   = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -716,6 +718,61 @@ class ClientFundRecommendation(Base):
 
     def __repr__(self):
         return f"<ClientFundRecommendation client_id={self.client_id}>"
+
+# ═══════════════════════════════════════════════
+#  FUND MASTER / FUND LIST
+# ═══════════════════════════════════════════════
+
+class FundList(Base):
+    """
+    Master list of funds available for Step 8 investment recommendations.
+
+    Funds are mapped to sectors and contain the suitability attributes
+    currently used by the recommendation logic.
+
+    Step 8 retrieves funds from this table instead of using the
+    hardcoded FUND_UNIVERSE dictionary.
+    """
+
+    __tablename__ = "fund_list"
+
+    id = Column(Integer,primary_key=True, autoincrement=True)
+
+    fund_id = Column(
+        String(50),
+        unique=True,
+        nullable=False
+    )
+
+    fund_name = Column(
+        String(256),
+        nullable=False
+    )
+
+    sector = Column(
+        String(128),
+        nullable=False
+    )
+
+    risk = Column(
+        String(50),
+        nullable=False
+    )
+
+    investment_style = Column(
+        String(50),
+        nullable=False
+    )
+
+    def __repr__(self):
+        return (
+            f"<FundList "
+            f"fund_id='{self.fund_id}' "
+            f"fund_name='{self.fund_name}' "
+            f"sector='{self.sector}' "
+            f"risk='{self.risk}'>"
+        )
+
 
 
 # ═══════════════════════════════════════════════

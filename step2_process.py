@@ -49,23 +49,6 @@ from models import (
     init_db, get_session_factory,
 )
 
-# ==============================================
-#  PREDEFINED INVESTMENT THEMES
-# ==============================================
-
-# THEMES_FILE = (
-#     Path(__file__).resolve().parent
-#     / "config"
-#     / "predefined_themes.json"
-# )
-#
-#
-# def load_predefined_themes():
-#     with open(THEMES_FILE, "r", encoding="utf-8") as f:
-#         data = json.load(f)
-#
-#     return data.get("themes", [])
-
 # -- logging ------------------------------------
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -242,11 +225,16 @@ You are a senior portfolio strategist AI.
 
 Your job is to classify market trends into investment themes.
 
+The existing investment themes provided in the user prompt come
+directly from the Theme database table.
+
 For EVERY trend, follow this decision process in this exact order:
 
-STEP 1 — CHECK PREDEFINED THEMES
---------------------------------
-Compare the trend against ALL predefined investment themes.
+STEP 1 — CHECK EXISTING DATABASE THEMES
+---------------------------------------
+
+Compare the trend against ALL existing investment themes provided
+in the prompt.
 
 Evaluate the underlying investment meaning using:
 - trend_name
@@ -263,62 +251,64 @@ Do NOT use simple keyword matching.
 
 Do NOT require exact wording.
 
-A trend can match a predefined theme even when the wording is
+A trend can match an existing theme even when the wording is
 different, as long as the underlying investment narrative is
 genuinely the same.
 
-STEP 2 — USE PREDEFINED THEME WHEN THERE IS A GENUINE MATCH
--------------------------------------------------------------
-If ANY predefined theme genuinely represents the primary investment
+STEP 2 — USE EXISTING DATABASE THEME
+------------------------------------
+
+If an existing theme genuinely represents the primary investment
 narrative of the trend:
 
-- MUST use that predefined theme.
+- MUST use that existing theme.
 - MUST NOT create a new theme.
-- theme_source MUST be "PREDEFINED".
-- theme_code MUST be the exact predefined theme_code.
-- theme_name MUST exactly match the predefined theme_name.
-- theme_description MUST use the predefined theme description.
+- theme_id MUST be the exact database Theme.id.
+- theme_name MUST exactly match the database theme name.
+- theme_description MUST use the existing database description.
 
-STEP 3 — GENERATE A NEW THEME ONLY WHEN NO PREDEFINED THEME FITS
------------------------------------------------------------------
-If NONE of the predefined themes genuinely represents the underlying
-investment narrative:
+STEP 3 — GENERATE A NEW THEME ONLY WHEN NECESSARY
+--------------------------------------------------
+
+If NONE of the existing database themes genuinely represents
+the underlying investment narrative:
 
 - Create a new theme.
-- theme_source MUST be "GENERATED".
-- theme_code MUST be null.
-- The generated theme must be a meaningful, reusable investment theme.
+- theme_id MUST be null.
+- The generated theme must be meaningful and reusable.
 - It must describe a broader investment narrative.
 - It must NOT be a company name.
 - It must NOT be a news headline.
 - It must NOT be a temporary event.
-- It must NOT simply reword an existing predefined theme.
+- It must NOT simply reword an existing database theme.
 
 IMPORTANT MATCHING RULES
 ------------------------
+
 1. Match based on investment meaning, not word overlap.
 
-2. Do not map a trend to a theme only because one word appears in
-   both.
+2. Do not map a trend to a theme only because one word appears
+   in both.
 
-3. When multiple predefined themes are related, select the theme
+3. When multiple existing themes are related, select the theme
    representing the PRIMARY investment narrative.
 
 4. Multiple trends may map to the same theme.
 
-5. A trend may map to multiple themes only when it genuinely contains
-   multiple distinct investment narratives.
+5. A trend may map to multiple themes only when it genuinely
+   contains multiple distinct investment narratives.
 
-6. Do not force a trend into an unrelated predefined theme just to
-   avoid generating a theme.
+6. Do not force a trend into an unrelated existing theme merely
+   to avoid creating a new theme.
 
-7. Generated themes are allowed, but ONLY after all predefined themes
+7. New themes are allowed only after ALL existing database themes
    have been considered and none is a genuine match.
 
 SECTOR TAGGING
 --------------
-For every resulting theme, identify the affected equity sectors and
-assign sentiment.
+
+For every resulting theme, identify the affected equity sectors
+and assign sentiment.
 
 Do not invent sectors simply to create a client match.
 
@@ -332,7 +322,7 @@ CURRENT MARKET TRENDS
 {trends_block}
 
 
-PREDEFINED INVESTMENT THEMES
+EXISTING INVESTMENT THEMES FROM DATABASE
 ============================
 
 {themes_block}
@@ -344,27 +334,27 @@ TASK
 For EACH market trend, perform the following steps IN ORDER:
 
 STEP 1:
-Compare the trend against ALL predefined investment themes.
+Compare the trend against ALL EXISTING INVESTMENT THEMES FROM DATABASE.
 
 STEP 2:
-If a predefined theme is a genuine semantic match for the trend's
-primary investment narrative, use that predefined theme.
+If a existing database theme is a genuine semantic match for the trend's
+primary investment narrative, use that existing database theme.
 
 STEP 3:
-Only if NO predefined theme is a genuine match, create a new
+Only if NO existing database theme is a genuine match, create a new
 GENERATED investment theme.
 
-NEVER generate a new theme when an existing predefined theme is a
+NEVER generate a new theme when an existing database theme is a
 genuine match.
 
-NEVER force a trend into an unrelated predefined theme merely to avoid
+NEVER force a trend into an unrelated existing database theme merely to avoid
 generating a new theme.
 
 
 MATCHING REQUIREMENT
 ====================
 
-You MUST evaluate the predefined themes FIRST.
+You MUST evaluate the existing database themes FIRST.
 
 The matching must be SEMANTIC.
 
@@ -379,19 +369,24 @@ Do NOT use simple keyword matching.
 
 An exact word or phrase match is NOT required.
 
-A trend can match a predefined theme even when the wording is
+A trend can match a existing database theme even when the wording is
 different, if the underlying investment concept is genuinely the same.
 
-A trend must NOT match a predefined theme only because a word
+A trend must NOT match a existing database theme only because a word
 happens to appear in both the trend and the theme.
 
 When multiple themes are related, identify the PRIMARY investment
-narrative of the trend and select the predefined theme that best
+narrative of the trend and select the existing database theme that best
 represents that narrative.
 
-Only generate a new theme when NONE of the predefined themes
+Only generate a new theme when NONE of the existing database themes
 genuinely represent the trend's underlying investment concept.
 
+The examples below illustrate how to reason about semantic matching.
+They are NOT hardcoded mappings. Always compare against the actual
+database themes provided above and use an existing theme only when
+its actual database description and classification guidance support
+the match.
 
 IMPORTANT EXAMPLES
 ==================
@@ -431,21 +426,20 @@ reshoring narrative and should map to:
 "Supply Chain Resilience & Reshoring"
 
 Example 5:
-If a trend does not genuinely fit ANY predefined theme, create a
+If a trend does not genuinely fit ANY existing database theme, create a
 new theme rather than forcing the trend into an unrelated
-predefined theme.
+existing database theme.
 
 Example 6:
 Trend:
 "Commercial space infrastructure investment is accelerating through
 launch capacity, satellite infrastructure and private-space
 deployment."
-
-If none of the predefined themes genuinely represents this
+If none of the existing database themes genuinely represents this
 investment narrative, generate:
-theme_name:"Commercial Space Infrastructure"
-theme_source: "GENERATED"
-theme_code: null
+theme_id: null
+theme_name: "Commercial Space Infrastructure"
+theme_description: "<description of the investment narrative>"
 
 
 OUTPUT FORMAT
@@ -456,10 +450,11 @@ Return a JSON object with exactly one key: "themes".
 {{
   "themes": [
     {{
-      "theme_name": "<exact predefined theme name OR generated theme name>",
-      "theme_source": "<PREDEFINED | GENERATED>",
-      "theme_code": "<exact predefined theme_code when PREDEFINED, otherwise null>",
-      "theme_description": "<theme description>",
+      "theme_id": <existing database Theme.id OR null>,
+      "theme_name": "<exact existing theme name OR generated theme name>",
+      "theme_description": "<existing description OR generated description>",
+      "category": "<existing database category OR generated category>",
+      "classification_guidance": "<existing database guidance OR generated guidance>",
       "trend_indices": [<0-based trend indices>],
       "match_reason": "<short explanation of why the trend meaning matches this theme>",
       "sector_tags": [
@@ -474,31 +469,30 @@ Return a JSON object with exactly one key: "themes".
   ]
 }}
 
-
-FOR PREDEFINED THEMES
-=====================
-
-When using a predefined theme:
-- theme_name MUST exactly match the predefined theme_name.
-- theme_code MUST exactly match the predefined theme_code.
-- theme_source MUST be "PREDEFINED".
-- theme_description should use the predefined theme description.
-- Do not modify or rename the predefined theme.
-
+FOR EXISTING DATABASE THEMES
+============================
+When using an existing database theme:
+- theme_id MUST exactly match the Theme ID provided in the database theme list.
+- theme_name MUST exactly match the existing database theme name.
+- theme_description MUST use the existing database theme description.
+- category MUST exactly match the existing database theme category.
+- classification_guidance MUST exactly match the existing database classification guidance.
+- Do not modify or rename the existing database theme.
 
 FOR GENERATED THEMES
-====================
+===================
 
 When generating a new theme:
-- theme_source MUST be "GENERATED".
-- theme_code must be null.
+- theme_id MUST be null.
 - theme_name must be a meaningful new investment theme.
 - theme_description must describe the new investment narrative.
-- Do not create a theme that is simply a rewording of a predefined theme.
+- category must be a meaningful broad investment category.
+- classification_guidance must explain when this theme should be used for future trend classification.
+- Do not create a theme that is simply a rewording of an existing database theme.
 
 """.strip()
 
-def distil_into_themes(client, trends, predefined_themes):
+def distil_into_themes(client, trends, existing_themes):
     if not trends:
         return []
 
@@ -519,9 +513,9 @@ def distil_into_themes(client, trends, predefined_themes):
     # -----------------------------
     theme_lines = []
 
-    for theme in predefined_themes:
+    for theme in existing_themes:
         theme_lines.append(
-            f"[{theme.get('theme_code', '')}] "
+            f"[Theme ID: {theme.get('theme_id')}] "
             f"{theme.get('theme_name', '')}\n"
             f"Category: {theme.get('category', '')}\n"
             f"Description: {theme.get('description', '')}\n"
@@ -642,14 +636,56 @@ def link_events_to_trend(session: Session, trend: Trend,
                 relevance_score = float(score),
             ))
 
+def get_existing_themes(session: Session):
+    """
+    Load all existing themes from the Theme database table.
 
-def get_or_create_theme(session: Session, name: str, description: str) -> Theme:
+    These themes are provided to the LLM during Stage C.
+    """
+
+    themes = (
+        session.query(Theme)
+        .order_by(Theme.id)
+        .all()
+    )
+
+    return [
+        {
+            "theme_id": theme.id,
+            "theme_name": theme.name,
+            "category": theme.category or "",
+            "description": theme.description or "",
+            "classification_guidance": (
+                theme.classification_guidance or ""
+            ),
+        }
+        for theme in themes
+    ]
+
+def get_or_create_theme(
+    session: Session,
+    name: str,
+    description: str,
+    category: str = "",
+    classification_guidance: str = "",
+) -> Theme:
+
     row = session.query(Theme).filter_by(name=name).first()
+
     if row:
         row.last_updated = datetime.utcnow()
-        row.description  = description
+        row.description = description
+        row.category = category
+        row.classification_guidance = classification_guidance
         return row
-    row = Theme(name=name, description=description)
+
+    row = Theme(
+        name=name,
+        category=category,
+        description=description,
+        classification_guidance=classification_guidance,
+    )
+
     session.add(row)
     session.flush()
     return row
@@ -784,16 +820,17 @@ def run_processing(article_ids=None):
         log.info(f"\n  Distilling {len(trend_rows)} trends into investment themes ...")
 
         try:
-            predefined_themes = load_predefined_themes()
+            existing_themes = get_existing_themes(session)
 
             log.info(
-                f"  -> Loaded {len(predefined_themes)} predefined investment themes"
+                f"  -> Loaded {len(existing_themes)} existing investment "
+                f"themes from database"
             )
 
             raw_themes = distil_into_themes(
                 client,
                 raw_trends,
-                predefined_themes
+                existing_themes,
             )
 
         except Exception as e:
@@ -803,16 +840,72 @@ def run_processing(article_ids=None):
         log.info(f"  -> {len(raw_themes)} themes identified")
 
         for rt in raw_themes:
-            theme = get_or_create_theme(
-                session,
-                name        = rt["theme_name"],
-                description = rt.get("theme_description", ""),
-            )
+
+            theme_id = rt.get("theme_id")
+
+            # --------------------------------------
+            # EXISTING DATABASE THEME
+            # --------------------------------------
+
+            if theme_id is not None:
+
+                theme = (
+                    session.query(Theme)
+                    .filter_by(id=theme_id)
+                    .first()
+                )
+
+                if not theme:
+                    log.warning(
+                        f"  AI returned Theme ID {theme_id}, "
+                        f"but it does not exist in the database. "
+                        f"Skipping."
+                    )
+                    continue
+
+                if rt.get("theme_name") != theme.name:
+                    log.warning(
+                        f"  AI returned Theme ID {theme_id} "
+                        f"with mismatched theme name "
+                        f"'{rt.get('theme_name')}'. "
+                        f"Expected '{theme.name}'. Skipping."
+                    )
+                    continue
+
+            # --------------------------------------
+            # NEW GENERATED THEME
+            # --------------------------------------
+
+            else:
+
+                theme = get_or_create_theme(
+                    session,
+                    name=rt["theme_name"],
+                    description=rt.get("theme_description", ""),
+                    category=rt.get("category", ""),
+                    classification_guidance=rt.get("classification_guidance", ""),
+                )
+
+            # --------------------------------------
+            # TREND -> THEME
+            # --------------------------------------
+
             link_trends_to_theme(
-                session, theme, trend_rows,
-                indices = rt.get("trend_indices", []),
+                session,
+                theme,
+                trend_rows,
+                indices=rt.get("trend_indices", []),
             )
-            add_sector_tags(session, theme, rt.get("sector_tags", []))
+
+            # --------------------------------------
+            # THEME -> SECTOR TAG
+            # --------------------------------------
+
+            add_sector_tags(
+                session,
+                theme,
+                rt.get("sector_tags", []),
+            )
 
         session.commit()
 

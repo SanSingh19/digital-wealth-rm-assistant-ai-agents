@@ -74,42 +74,11 @@ from models import (
     SectorTag, Theme,
     SectorMaster,
     ClientSectorRecommendation,
-    ClientFundRecommendation
+    ClientFundRecommendation,
+    FundList
 )
 
 log = logging.getLogger("step8_recommend")
-
-
-# ==============================================
-#  SECTOR KEYWORD MAP
-#  Maps sector names → keywords to scan in
-#  driver titles and theme names
-# ==============================================
-
-# SECTOR_KEYWORDS: dict[str, list[str]] = {
-#     "Technology":           ["tech", "technology", "software", "cloud", "ai", "microsoft", "apple", "msft", "aapl"],
-#     "Semiconductors":       ["semiconductor", "chip", "nvidia", "asml", "amd", "nvda"],
-#     "Financials":           ["bank", "financ", "rate", "bond", "ecb", "fed", "interest", "credit"],
-#     "Energy":               ["oil", "crude oil", "natural gas", "gas prices", "petroleum","fossil fuel","coal","opec","oil prices","energy prices"],
-#     "Renewable Energy":     ["renewable", "solar", "wind", "green", "esg", "climate", "nordea", "alt"],
-#     "Real Estate":          ["real estate", "reit", "property", "housing", "flats", "house"],
-#     "Consumer Discretionary": ["consumer", "retail", "tesla", "amazon", "flipkart"],
-#     "Healthcare":           ["health", "pharma", "biotech", "drug", "medical"],
-#     "Utilities":            ["utility", "utilities", "power", "electric"],
-#     "Industrials":          ["industrial", "manufacturing", "factory", "automation", "robotics", "infrastructure", "construction", "engineering", "machinery", "capital goods", "caterpillar", "siemens"],
-#     "Communication Services": ["communication","AI","Interest Rates","Fed", "telecom", "media","communication", "streaming", "advertising", "social media", "internet", "digital platform", "meta", "facebook", "google", "alphabet", "youtube"],
-#     "Materials":             ["materials", "mining", "metals", "steel", "aluminium", "aluminum", "copper", "commodity", "commodities", "gold", "silver", "lithium", "iron ore", "rio tinto", "bhp"],
-#     "Utilities":             ["utilities","electric", "utility", "electricity", "power", "power grid", "grid", "renewable grid", "water", "gas distribution", "electric utility", "energy distribution", "next era", "nextera", "enel"],
-#     "E-Commerce":            ["e-commerce", "ecommerce", "online retail", "digital commerce", "online shopping", "marketplace", "consumer internet", "retail", "amazon", "shopify", "flipkart", "ebay", "etsy"],
-#     "Cryptocurrency":        ["bitcoin", "btc", "ethereum", "eth", "crypto", "cryptocurrency", "blockchain", "digital asset", "digital assets", "stablecoin", "web3", "defi", "token", "coinbase", "binance"],
-#     "Small Cap": ["small cap", "small-cap", "mid cap", "mid-cap", "growth companies", "emerging companies", "high growth", "small capitalization", "small business"],
-#     "Artificial Intelligence": ["ai", "artificial intelligence", "machine learning", "deep learning", "generative ai", "chatgpt", "llm", "openai", "copilot", "automation", "ai infrastructure"],
-#     "Cloud Computing": ["cloud", "cloud computing", "azure", "aws", "amazon web services", "google cloud", "gcp", "saas", "software as a service", "cloud infrastructure"],
-#     "Digital Infrastructure": ["digital infrastructure", "data center", "datacenter", "server", "compute", "gpu", "network", "fiber", "5g", "hyperscaler", "digital backbone"],
-#     "Cybersecurity": ["cybersecurity", "cyber", "security", "ransomware", "endpoint", "firewall", "identity security", "crowdstrike", "palo alto", "zero trust"],
-#     "Blockchain": ["blockchain", "distributed ledger", "smart contract", "web3", "ethereum", "bitcoin", "tokenization", "crypto infrastructure"]
-#
-# }
 
 # Sentiment → numeric score
 SENTIMENT_SCORE = {
@@ -242,335 +211,6 @@ INSTRUCTIONS
 {format_instructions}
 """
 )
-
-# ==============================================
-# FUND UNIVERSE
-# ==============================================
-
-FUND_UNIVERSE = {
-
-    "Technology": [
-
-        {
-            "fund_id": "F001",
-            "fund_name": "Global Technology Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Technology",
-            "investment_style": "Growth"
-        },
-
-        {
-            "fund_id": "F002",
-            "fund_name": "Digital Innovation Fund",
-            "risk": "Aggressive",
-            "sector": "Technology",
-            "investment_style": "Growth"
-        }
-
-    ],
-
-    "Semiconductors": [
-
-        {
-            "fund_id": "F003",
-            "fund_name": "Global Semiconductor Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Semiconductors",
-            "investment_style": "Growth"
-        },
-
-        {
-            "fund_id": "F004",
-            "fund_name": "AI Infrastructure Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Semiconductors",
-            "investment_style": "Growth"
-        }
-
-    ],
-
-    "Financials": [
-
-        {
-            "fund_id": "F005",
-            "fund_name": "European Financial Opportunities Fund",
-            "risk": "Moderate",
-            "sector": "Financials",
-            "investment_style": "Balanced"
-        },
-
-        {
-            "fund_id": "F006",
-            "fund_name": "Dividend Income Fund",
-            "risk": "Conservative",
-            "sector": "Financials",
-            "investment_style": "Income"
-        }
-
-    ],
-
-    "Healthcare": [
-
-        {
-            "fund_id": "F007",
-            "fund_name": "Global Healthcare Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Healthcare",
-            "investment_style": "Growth"
-        },
-
-        {
-            "fund_id": "F0202",
-            "fund_name": "Healthcare Opportunities ESG Fund",
-            "risk": "Moderate",
-            "sector": "Healthcare",
-            "investment_style": "Balanced"
-        },
-
-        {
-            "fund_id": "F0230",
-            "fund_name": "Global Life Sciences Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Healthcare",
-            "investment_style": "Growth"
-        }
-
-    ],
-
-    "Renewable Energy": [
-
-        {
-            "fund_id": "F008",
-            "fund_name": "Clean Energy Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Renewable Energy",
-            "investment_style": "Growth"
-        }
-
-    ],
-
-    "Consumer Discretionary": [
-
-        {
-            "fund_id": "F013",
-            "fund_name": "Global Consumer Growth Fund",
-            "risk": "Moderate",
-            "sector": "Consumer Discretionary",
-            "investment_style": "Growth"
-        },
-
-        {
-            "fund_id": "F014",
-            "fund_name": "Consumer Lifestyle Opportunities Fund",
-            "risk": "Aggressive",
-            "sector": "Consumer Discretionary",
-            "investment_style": "Growth"
-        }
-
-    ],
-
-    "Energy": [
-
-        {
-            "fund_id": "F009",
-            "fund_name": "Global Energy Opportunities Fund",
-            "risk": "Moderate",
-            "sector": "Energy",
-            "investment_style": "Balanced"
-        }
-
-    ],
-
-    "Real Estate": [
-
-        {
-            "fund_id": "F010",
-            "fund_name": "European Real Estate Income Fund",
-            "risk": "Conservative",
-            "sector": "Real Estate",
-            "investment_style": "Income"
-        }
-
-    ],
-
-    "Industrials": [
-        {
-            "fund_id": "F015",
-            "fund_name": "Global Industrials Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Industrials",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F016",
-            "fund_name": "Infrastructure Opportunities Fund",
-            "risk": "Moderate",
-            "sector": "Industrials",
-            "investment_style": "Balanced"
-        },
-        {
-            "fund_id": "F017",
-            "fund_name": "Smart Manufacturing Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Industrials",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Communication Services": [
-        {
-            "fund_id": "F018",
-            "fund_name": "Global Communication Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Communication Services",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F019",
-            "fund_name": "Digital Media Opportunities Fund",
-            "risk": "Aggressive",
-            "sector": "Communication Services",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Materials": [
-        {
-            "fund_id": "F020",
-            "fund_name": "Global Materials Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Materials",
-            "investment_style": "Balanced"
-        },
-        {
-            "fund_id": "F021",
-            "fund_name": "Commodity Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Materials",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Utilities": [
-        {
-            "fund_id": "F022",
-            "fund_name": "Global Utilities Income Fund",
-            "risk": "Conservative",
-            "sector": "Utilities",
-            "investment_style": "Income"
-        },
-        {
-            "fund_id": "F023",
-            "fund_name": "Essential Infrastructure Fund",
-            "risk": "Moderate",
-            "sector": "Utilities",
-            "investment_style": "Balanced"
-        }
-    ],
-
-    "E-Commerce": [
-        {
-            "fund_id": "F024",
-            "fund_name": "Global E-Commerce Growth Fund",
-            "risk": "Moderate",
-            "sector": "E-Commerce",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F025",
-            "fund_name": "Digital Commerce Innovation Fund",
-            "risk": "Aggressive",
-            "sector": "E-Commerce",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Small Cap": [
-        {
-            "fund_id": "F028",
-            "fund_name": "Global Small Cap Growth Fund",
-            "risk": "Aggressive",
-            "sector": "Small Cap",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F029",
-            "fund_name": "Emerging Companies Fund",
-            "risk": "Moderate",
-            "sector": "Small Cap",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Artificial Intelligence": [
-        {
-            "fund_id": "F030",
-            "fund_name": "AI Innovation Fund",
-            "risk": "Aggressive",
-            "sector": "Artificial Intelligence",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F031",
-            "fund_name": "Global AI Leaders Fund",
-            "risk": "Moderate",
-            "sector": "Artificial Intelligence",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Cloud Computing": [
-        {
-            "fund_id": "F032",
-            "fund_name": "Cloud Infrastructure Fund",
-            "risk": "Moderate",
-            "sector": "Cloud Computing",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F033",
-            "fund_name": "Global Cloud Leaders Fund",
-            "risk": "Aggressive",
-            "sector": "Cloud Computing",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Cloud Computing": [
-        {
-            "fund_id": "F032",
-            "fund_name": "Cloud Infrastructure Fund",
-            "risk": "Moderate",
-            "sector": "Cloud Computing",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F033",
-            "fund_name": "Global Cloud Leaders Fund",
-            "risk": "Aggressive",
-            "sector": "Cloud Computing",
-            "investment_style": "Growth"
-        }
-    ],
-
-    "Cryptocurrency": [
-        {
-            "fund_id": "F026",
-            "fund_name": "Digital Assets Strategy Fund",
-            "risk": "Aggressive",
-            "sector": "Cryptocurrency",
-            "investment_style": "Growth"
-        },
-        {
-            "fund_id": "F027",
-            "fund_name": "Blockchain Innovation Fund",
-            "risk": "Aggressive",
-            "sector": "Cryptocurrency",
-            "investment_style": "Growth"
-        }
-    ]
-
-}
 
 FUND_RECOMMENDATION_PROMPT = ChatPromptTemplate.from_template("""
 You are a Senior Wealth Relationship Manager at a leading global private bank.
@@ -1383,26 +1023,77 @@ def _build_candidate_text(candidates):
 
     return "\n\n".join(lines)
 
-def _get_candidate_funds(signals):
+def _fund_to_dict(fund: FundList) -> dict:
     """
-    Returns all candidate funds belonging to BUY sectors.
+    Convert FundList DB entity into the dictionary structure
+    already expected by the existing Step 8 logic.
     """
 
-    candidate_funds = []
+    return {
+        "fund_id": fund.fund_id,
+        "fund_name": fund.fund_name,
+        "sector": fund.sector,
+        "risk": fund.risk,
+        "investment_style": fund.investment_style,
+    }
 
-    for signal in signals:
-        funds = FUND_UNIVERSE.get(
-            signal["sector_name"],
-            []
-        )
-        candidate_funds.extend(funds)
 
-    return candidate_funds
+def _get_funds_for_sector(
+    session: Session,
+    sector_name: str,
+) -> list[dict]:
+    """
+    Retrieve all funds available for a specific sector
+    from the fund_list table.
+    """
+
+    funds = (
+        session.query(FundList)
+        .filter(FundList.sector == sector_name)
+        .all()
+    )
+
+    return [
+        _fund_to_dict(fund)
+        for fund in funds
+    ]
+
+
+def _get_candidate_funds(
+    signals: list[dict],
+    session: Session,
+) -> list[dict]:
+    """
+    Returns all candidate funds belonging to the supplied
+    positive opportunity sectors.
+
+    Funds are retrieved from the fund_list DB table.
+    """
+
+    sector_names = {
+        signal["sector_name"]
+        for signal in signals
+    }
+
+    if not sector_names:
+        return []
+
+    funds = (
+        session.query(FundList)
+        .filter(FundList.sector.in_(sector_names))
+        .all()
+    )
+
+    return [
+        _fund_to_dict(fund)
+        for fund in funds
+    ]
 
 def _build_owned_sector_candidates(
     signals: list[dict],
     sectors_held: dict[str, float],
     client: Client,
+    session: Session,
 ):
     """
     Build candidates only from sectors already owned by the client.
@@ -1443,9 +1134,9 @@ def _build_owned_sector_candidates(
         # Existing BUY sector
         if action == "BUY":
 
-            funds = FUND_UNIVERSE.get(
-                sector_name,
-                []
+            funds = _get_funds_for_sector(
+                session,
+                sector_name
             )
 
             if funds:
@@ -1998,8 +1689,17 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                 ) or "None",
             )
 
-            owned_sector_candidates = _build_owned_sector_candidates( signals=signals, sectors_held=sectors_held, client=client)
-            candidate_funds = _get_candidate_funds(positive_opportunity_signals)
+            owned_sector_candidates = _build_owned_sector_candidates(
+                signals=signals,
+                sectors_held=sectors_held,
+                client=client,
+                session=session,
+            )
+
+            candidate_funds = _get_candidate_funds(
+                positive_opportunity_signals,
+                session,
+            )
 
             log.info(
                 "[PART 2] Candidate Funds:"

@@ -362,7 +362,7 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
 def _relevant_news_for_client(
     session,
     matches: list[ClientThemeMatch],
-    limit: int = 10
+    limit: int = 5
 ) -> list:
 
     top_matches = sorted(
