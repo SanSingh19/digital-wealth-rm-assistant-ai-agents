@@ -709,8 +709,26 @@ def get_or_create_client_talking_points(session, client_result):
     log.info("Created talking points for client_id=%s with %s opener(s)", client_id, len(openers))
     return row
 
+def _append_user_feedback(
+    prompt: str,
+    user_feedback: str | None = None
+) -> str:
 
-def populate_conversation_openers(session, clients, openai_client):
+    if not user_feedback or not user_feedback.strip():
+        return prompt
+
+    return (
+        f"{prompt}\n\n"
+        "--------------------------------------------------\n"
+        "USER FEEDBACK FOR THIS REGENERATION\n"
+        "--------------------------------------------------\n"
+        f"{user_feedback.strip()}\n\n"
+        "Use the user feedback to improve the requested talking point. "
+        "Do not invent facts and do not contradict the client data provided above."
+    )
+
+
+def populate_conversation_openers(session, clients, openai_client, user_feedback: str = None):
     if not clients:
         return {"client_id": None, "conversationOpeners": [], "citation": {}}
 
@@ -728,6 +746,8 @@ def populate_conversation_openers(session, clients, openai_client):
     trends_block = "\n".join(client_lines)
     log.info("Preparing prompt with %s client entry/entries", len(client_lines))
     prompt = PROMPT_CONVERSATION_OPENERS.format(client_block=trends_block)
+    prompt = _append_user_feedback(prompt,user_feedback)
+
     log.debug("Prompt length: %s characters", len(prompt))
 
     # Store exactly the source/input data used to build the LLM input.
@@ -769,7 +789,7 @@ def populate_conversation_openers(session, clients, openai_client):
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
     return {"client_id": None, "conversationOpeners": result, "citation": citation}
 
-def populate_product_introductions(clients, openai_client):
+def populate_product_introductions(clients, openai_client, user_feedback: str = None):
     if not clients:
         return {"client_id": None, "product_introduction": [],"citation": {}}
 
@@ -793,6 +813,10 @@ def populate_product_introductions(clients, openai_client):
 
     prompt = PROMPT_PRODUCT_INTRODUCTION.format(
         client_block=client_block
+    )
+    prompt = _append_user_feedback(
+        prompt,
+        user_feedback
     )
 
     log.debug("Prompt length: %s characters", len(prompt))
@@ -881,7 +905,7 @@ def populate_product_introductions(clients, openai_client):
         "citation": citation
     }
 
-def populate_portfolio_discussion(session, clients, openai_client):
+def populate_portfolio_discussion(session, clients, openai_client, user_feedback: str = None):
 
     if not clients:
         return {"client_id": None, "portfolioDiscussion": [],"citation": {}}
@@ -1032,6 +1056,10 @@ def populate_portfolio_discussion(session, clients, openai_client):
     prompt = PROMPT_PORTFOLIO_DISCUSSION.format(
         portfolio_context = portfolio_context
     )
+    prompt = _append_user_feedback(
+        prompt,
+        user_feedback
+    )
 
     result = openai_json(
         openai_client,
@@ -1055,7 +1083,7 @@ def populate_portfolio_discussion(session, clients, openai_client):
         "citation": citation
     }
 
-def populate_anticipated_objections(session, clients, openai_client):
+def populate_anticipated_objections(session, clients, openai_client, user_feedback: str = None):
 
     if not clients:
         return {
@@ -1156,6 +1184,10 @@ Recommended Funds:
     prompt = PROMPT_ANTICIPATED_OBJECTIONS.format(
         fund_block=fund_block
     )
+    prompt = _append_user_feedback(
+        prompt,
+        user_feedback
+    )
 
     result = openai_json(
         openai_client,
@@ -1180,6 +1212,252 @@ Recommended Funds:
         "citation": citation
     }
 
+def _append_user_feedback(
+    prompt: str,
+    user_feedback: str | None = None
+) -> str:
+
+    if not user_feedback or not user_feedback.strip():
+        return prompt
+
+    return (
+        f"{prompt}\n\n"
+        "--------------------------------------------------\n"
+        "USER FEEDBACK FOR THIS REGENERATION\n"
+        "--------------------------------------------------\n"
+        f"{user_feedback.strip()}\n\n"
+        "Use the user feedback to improve the requested talking point. "
+        "Do not invent facts and do not contradict the client data provided above."
+    )
+
+def regenerate_talking_point(
+    client_id: int,
+    section: str,
+    user_feedback: str = None
+):
+    """
+    Regenerate only the requested talking-point section for a client.
+
+    Supported sections:
+        - conversationOpeners
+        - portfolioDiscussion
+        - productIntroduction
+        - anticipatedObjections
+
+    Only the selected DB column is updated.
+    All other talking-point sections remain unchanged.
+    """
+
+    allowed_sections = {
+        "conversationOpeners",
+        "portfolioDiscussion",
+        "productIntroduction",
+        "anticipatedObjections",
+    }
+
+    if section not in allowed_sections:
+        raise ValueError(
+            f"Invalid talking-point section: {section}. "
+            f"Allowed sections: {', '.join(sorted(allowed_sections))}"
+        )
+
+    if user_feedback:
+        user_feedback = user_feedback.strip()
+
+    engine = init_db(DATABASE_URL)
+    Session = get_session_factory(engine)
+    openai_client = get_openai_client()
+
+    with Session() as session:
+
+        # ---------------------------------------------------------
+        # Check that existing talking-point row is available
+        # ---------------------------------------------------------
+        talking_points = (
+            session.query(ClientAITalkingPoints)
+            .filter_by(client_id=client_id)
+            .first()
+        )
+
+        if not talking_points:
+            log.warning(
+                "Talking points not found for client_id=%s",
+                client_id
+            )
+            return None
+
+        # ---------------------------------------------------------
+        # Common client information
+        # ---------------------------------------------------------
+        client_details = (
+            session.query(ClientPersonalDetails)
+            .filter(ClientPersonalDetails.client_id == client_id)
+            .first()
+        )
+
+        if not client_details:
+            log.warning(
+                "Client personal details not found for client_id=%s",
+                client_id
+            )
+            return None
+
+        meeting = (
+            session.query(ClientMeetingSummary)
+            .filter(ClientMeetingSummary.client_id == client_id)
+            .first()
+        )
+
+        client_tuple = [
+            (client_details, meeting)
+        ]
+
+        # =========================================================
+        # 1. CONVERSATION OPENERS
+        # =========================================================
+        if section == "conversationOpeners":
+
+            result = populate_conversation_openers(
+                session,
+                client_tuple,
+                openai_client,
+                user_feedback=user_feedback
+            )
+
+            talking_points.conversation_openers = result.get(
+                "conversationOpeners",
+                []
+            )
+
+            talking_points.conversation_openers_citation = result.get(
+                "citation",
+                {}
+            )
+
+        # =========================================================
+        # 2. PORTFOLIO DISCUSSION
+        # =========================================================
+        elif section == "portfolioDiscussion":
+
+            result = populate_portfolio_discussion(
+                session,
+                client_tuple,
+                openai_client,
+                user_feedback=user_feedback
+            )
+
+            talking_points.portfolio_discussion = result.get(
+                "portfolioDiscussion",
+                []
+            )
+
+            talking_points.portfolio_discussion_citation = result.get(
+                "citation",
+                {}
+            )
+
+        # =========================================================
+        # 3. PRODUCT INTRODUCTION
+        # =========================================================
+        elif section == "productIntroduction":
+
+            product_query = (
+                session.query(
+                    Client,
+                    ClientMeetingSummary,
+                    ClientOutlook,
+                    ClientFundRecommendation
+                )
+                .outerjoin(
+                    ClientMeetingSummary,
+                    Client.id == ClientMeetingSummary.client_id
+                )
+                .outerjoin(
+                    ClientOutlook,
+                    Client.id == ClientOutlook.client_id
+                )
+                .outerjoin(
+                    ClientFundRecommendation,
+                    Client.id == ClientFundRecommendation.client_id
+                )
+                .filter(Client.id == client_id)
+            )
+
+            product_data = product_query.first()
+
+            if not product_data:
+                log.warning(
+                    "Product introduction data not found for client_id=%s",
+                    client_id
+                )
+                return None
+
+            client, meeting_summary, outlook, recommendation = product_data
+
+            product_client_tuple = [
+                (
+                    outlook,
+                    meeting_summary,
+                    recommendation
+                )
+            ]
+
+            result = populate_product_introductions(
+                product_client_tuple,
+                openai_client,
+                user_feedback=user_feedback
+            )
+
+            talking_points.product_introduction = result.get(
+                "product_introduction",
+                []
+            )
+
+            talking_points.product_introduction_citation = result.get(
+                "citation",
+                {}
+            )
+
+        # =========================================================
+        # 4. ANTICIPATED OBJECTIONS
+        # =========================================================
+        elif section == "anticipatedObjections":
+
+            result = populate_anticipated_objections(
+                session,
+                client_tuple,
+                openai_client,
+                user_feedback=user_feedback
+            )
+
+            talking_points.anticipated_objections = result.get(
+                "anticipatedObjections",
+                []
+            )
+
+            talking_points.anticipated_objections_citation = result.get(
+                "citation",
+                {}
+            )
+
+        # ---------------------------------------------------------
+        # Save only the selected section
+        # ---------------------------------------------------------
+        session.commit()
+        # Refresh the object after commit so all attributes are loaded
+        # before the session is closed.
+        session.refresh(talking_points)
+
+
+        log.info(
+            "Successfully regenerated talking-point section '%s' "
+            "for client_id=%s",
+            section,
+            client_id
+        )
+
+        return talking_points
+
 def get_openai_client() -> OpenAI:
     api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
     if not api_key or api_key == "sk-your-openai-key-here":
@@ -1188,6 +1466,7 @@ def get_openai_client() -> OpenAI:
             "Export it or update OPENAI_API_KEY in config/settings.py"
         )
     return OpenAI(api_key=api_key, http_client=httpx.Client(verify=False))
+
 
 
 def openai_json(client: OpenAI, prompt: str, system: str) -> Any:

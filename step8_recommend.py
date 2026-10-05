@@ -229,6 +229,44 @@ Investment Preference: {preference}
 Client Constraints   : {constraints}
 
 ========================
+USER FEEDBACK
+========================
+
+{user_feedback}
+
+The user's explicit feedback is a HIGH-PRIORITY instruction for this regeneration.
+
+You MUST follow explicit user requests such as:
+- excluding a sector
+- excluding a fund
+- avoiding an investment
+- preferring another sector
+- requesting different investment options
+- change the rationale
+
+If the user explicitly excludes a sector or investment, DO NOT recommend it.
+
+Do not reinterpret an explicit exclusion as a preference.
+
+Example:
+If the user says "do not recommend Technology funds", no recommendation
+may belong to the Technology sector.
+
+After applying the user's explicit instructions, apply:
+1. Client suitability
+2. Existing portfolio rules
+3. Market/sector signals
+4. Recommendation ranking rules
+5. Diversification rules
+
+User feedback does NOT allow you to:
+- invent investments
+- invent investment attributes
+- ignore missing suitability information
+- recommend an investment not supplied in the input data
+- violate mandatory suitability constraints
+
+========================
 MARKET CONTEXT
 ========================
 
@@ -1491,7 +1529,8 @@ def _generate_fund_recommendations(
     positive_opportunity_signals,
     drivers_text,
     themes_text,
-    constraints
+    constraints,
+    user_feedback=None
 ):
     """
     Generates AI-based investment recommendations.
@@ -1530,6 +1569,7 @@ def _generate_fund_recommendations(
             "service_model": client.service_model or "N/A",
             "preference": client.preference or "N/A",
             "constraints": constraints,
+            "user_feedback": user_feedback or "No user feedback provided.",
             "drivers_text": drivers_text,
             "themes_text": themes_text,
             "owned_sector_candidates": owned_sector_text,
@@ -1551,7 +1591,7 @@ def _generate_fund_recommendations(
 #  MAIN FUNCTION
 # ==============================================
 
-def run_recommendations(client_ids: list[int] | None = None) -> dict:
+def run_recommendations(client_ids: list[int] | None = None, user_feedback: str | None = None) -> dict:
     """
     Step 8: For each client, compute sector-level BUY/HOLD/SELL signals
     and generate 1-line descriptions via LLM.
@@ -1767,7 +1807,8 @@ def run_recommendations(client_ids: list[int] | None = None) -> dict:
                     positive_opportunity_signals=positive_opportunity_signals,
                     drivers_text=drivers_text,
                     themes_text=themes_text,
-                    constraints=constraints
+                    constraints=constraints,
+                    user_feedback=user_feedback
                 )
 
                 validated_recommendations = _validate_fund_recommendations(

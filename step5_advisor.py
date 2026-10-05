@@ -56,15 +56,22 @@ class OutlookDriver(BaseModel):
 
 class ClientOutlookResult(BaseModel):
     headline_outlook: str = Field(
-        description="A 2-3 sentence news summary covering key recent happenings "
-                    "across the sectors this client is most exposed to. Focus on "
+        description="A concise 2-3 sentence news summary covering key recent happenings "
+                    "across the sectors this client is most exposed to. The required "
+                    "length and format must follow the USER FEEDBACK when explicitly specified. "
+                    "If no length is specified by the user, use 2-3 sentences. Focus on "
                     "what is actually happening in the market, not on portfolio impact."
+                    "summary must remain strictly grounded in the provided evidence."
     )
     drivers: list[OutlookDriver] = Field(
         description="2-3 specific market drivers (news events, theme shifts, rate "
                     "decisions, earnings) each with portfolio-specific commentary "
                     "and a status indicating Increase, Decrease impact "
-                    "on the client's portfolio."
+                    "on the client's portfolio. Follow explicit USER FEEDBACK "
+                    "instructions regarding number, selection, format, style, and level "
+                    "of detail. Every driver must remain strictly grounded in the "
+                    "provided evidence."
+
     )
 
 
@@ -77,6 +84,22 @@ the recent news provided below, write a concise sector-focused news summary.
 Use only the provided portfolio holdings, top 3 matched investment themes,
 and recent market news as the evidence for this outlook.
 Do not introduce or infer additional client themes that are not provided.
+
+DEFAULT HEADLINE LENGTH:
+Unless USER FEEDBACK explicitly specifies a different length or format,
+write the headline_outlook in 2-3 sentences.
+
+USER FEEDBACK PRIORITY:
+If USER FEEDBACK explicitly specifies the required length, number of
+sentences, format, or style of the headline_outlook, follow that
+instruction instead of the default 2-3 sentence requirement.
+
+For example, if USER FEEDBACK says "Give only one sentence for the
+market outlook summary", headline_outlook MUST contain exactly one
+sentence.
+
+Do not produce additional sentences to satisfy the default 2-3 sentence
+requirement when the user has explicitly requested a different length.
 
 For the headline_outlook: summarise only what is explicitly supported by
 the RECENT MARKET NEWS & EVENTS provided below.
@@ -297,12 +320,37 @@ MATCHED INVESTMENT THEMES – TOP 3 BY EXPOSURE
 ----------------------------------------------
 {themes_text}
 
+USER FEEDBACK
+-------------
+{user_feedback}
+
+IMPORTANT USER FEEDBACK RULE:
+- User feedback is optional.
+- If user feedback is "No user feedback provided.", ignore this section completely.
+- Do not invent, assume, or infer any user feedback when none is provided.
+- If actual user feedback is provided, treat explicit instructions in the
+  feedback as higher priority than the DEFAULT formatting, length, sentence
+  count, or style instructions in this prompt.
+- If the user explicitly specifies a sentence count, follow it exactly.
+- If the user says "one sentence", the headline_outlook MUST contain exactly
+  one sentence.
+- If the user specifies a maximum number of sentences, do not exceed it.
+- If the user specifies a minimum number of sentences, satisfy that minimum
+  unless doing so would violate the evidence-grounding rules.
+- User feedback must not override the provided portfolio, matched themes,
+  market news, or strict evidence-grounding rules above.
+- User feedback must not cause the model to invent facts, companies, sectors,
+  events, relationships, or conclusions that are not supported by the supplied
+  evidence.
+- Preserve the existing market-outlook structure and grounding rules while
+  applying the user's explicit formatting and length instructions.
+
 {format_instructions}
 """
 )
 
 
-def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) -> dict:
+def _build_context(client: Client, matches: list[ClientThemeMatch], news: list,user_feedback: str | None = None) -> dict:
     holdings_lines = []
     for account in client.accounts:
         for pf in account.portfolios:
@@ -355,6 +403,8 @@ def _build_context(client: Client, matches: list[ClientThemeMatch], news: list) 
         "holdings_text": "\n".join(holdings_lines) or "No holdings on file.",
         "themes_text": "\n".join(theme_lines) or "No matched themes.",
         "news_text": "\n".join(news_lines) or "No recent relevant news.",
+        "user_feedback": user_feedback.strip() if user_feedback and user_feedback.strip()
+                             else "No user feedback provided.",
         "format_instructions": PARSER.get_format_instructions(),
     }
 
@@ -517,7 +567,7 @@ def _build_citation(
 
     return json.dumps(citations)
 
-def run_advisor(client_ids: list[int] | None = None) -> dict:
+def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = None) -> dict:
     """Generate and save market outlooks for all (or specified) clients."""
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
@@ -563,8 +613,20 @@ def run_advisor(client_ids: list[int] | None = None) -> dict:
             top_matches = matches[:3]
             news = _relevant_news_for_client(session, top_matches)
 
-            context = _build_context(client, top_matches, news)
+            context = _build_context(client, top_matches, news, user_feedback=user_feedback)
             citation_json = _build_citation(top_matches, news)
+
+            if user_feedback and user_feedback.strip():
+                log.info(
+                    "[%s] Generating outlook with user feedback: %s",
+                    client.client_code,
+                    user_feedback.strip()
+                )
+            else:
+                log.info(
+                    "[%s] Generating outlook without user feedback",
+                    client.client_code
+                )
 
             try:
                 result: ClientOutlookResult = chain.invoke(context)

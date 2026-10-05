@@ -4,7 +4,8 @@ api.py – Read-only REST API over the Finance Pipeline database.
 Serves client portfolio, themes, outlook, fund recommendations,
 talking points, transactions, price history, and meeting data.
 
-Does NOT trigger scraping, LLM calls, or matching — reads pipeline output only.
+Also supports regeneration of AI-generated content by triggering
+the corresponding AI pipeline step with optional user feedback.
 """
 
 import json
@@ -27,19 +28,26 @@ from models import (
     RelationshipManager, Transaction, SecurityPriceHistory,
 )
 from config.settings import DATABASE_URL
+from step5_advisor import run_advisor
+from step7_client_meeting_summary import generate_client_meeting_summary
+from step8_recommend import run_recommendations
+from step6_generated_talking_points import (
+    generated_talking_points,
+    regenerate_talking_point as regenerate_step6_talking_point
+)
 
 log = logging.getLogger("api")
 
 app = FastAPI(
     title       = "Wealth RM Meeting Preparation API",
-    description = "Read-only API for client portfolios, themes, outlooks and fund recommendations.",
+    description = "API for client portfolios, themes, AI-generated content and meeting data.",
     version     = "2.0.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins  = ["*"],
-    allow_methods  = ["GET"],
+    allow_methods  = ["GET", "POST"],
     allow_headers  = ["*"],
 )
 
@@ -175,6 +183,8 @@ class ClientOutlookOut(BaseModel):
     drivers:          list[OutlookDriverOut]
     generated_at:     Optional[datetime]
 
+class OutlookRegenerateRequest(BaseModel):
+    user_feedback: Optional[str] = None
 
 # -- Fund Recommendations --
 
@@ -186,17 +196,28 @@ class ScoreBreakdownOut(BaseModel):
     risk_match:      int
 
 
-class FundRecommendationOut(BaseModel):
-    rank:                     int
-    fund_id:                  str
-    fund_name:                str
-    action:                   str    # BUY / HOLD / SWITCH / SELL
-    priority:                 str    # High / Medium / Low
-    total_score:              int
-    score_breakdown:          ScoreBreakdownOut
-    rationale:                str
-    suggested_allocation_pct: float
+# class FundRecommendationOut(BaseModel):
+#     rank:                     int
+#     fund_id:                  str
+#     fund_name:                str
+#     action:                   str    # BUY / HOLD / SWITCH / SELL
+#     priority:                 str    # High / Medium / Low
+#     total_score:              int
+#     score_breakdown:          ScoreBreakdownOut
+#     rationale:                str
+#     suggested_allocation_pct: float
 
+class FundRecommendationOut(BaseModel):
+    rank:                int
+    recommendation_type: str
+    investment_id:       str
+    investment_name:     str
+    sector:              str
+    action:              str
+    priority:            str
+    signal_score:        Optional[float] = None
+    confidence:          int
+    rationale:           str
 
 class ClientFundRecommendationOut(BaseModel):
     mifid_suitability:   str                        # "All Pass – Suitability validated against ..."
@@ -204,6 +225,8 @@ class ClientFundRecommendationOut(BaseModel):
     recommendations:     list[FundRecommendationOut]
     generated_at:        Optional[datetime]
 
+class FundRecommendationRegenerateRequest(BaseModel):
+    user_feedback: Optional[str] = None
 
 # -- AI Talking Points --
 
@@ -213,6 +236,9 @@ class AITalkingPointsOut(BaseModel):
     product_introduction:   Optional[list]
     anticipated_objections: Optional[list]
 
+class TalkingPointRegenerateRequest(BaseModel):
+    section: str
+    user_feedback: Optional[str] = None
 
 # ═══════════════════════════════════════════════
 #  HELPERS
@@ -459,10 +485,74 @@ def get_client_outlook(client_id: int, db: Session = Depends(get_db)):
         generated_at     = outlook.generated_at,
     )
 
+@app.post(
+    "/clients/{client_id}/outlook/regenerate",
+    response_model=ClientOutlookOut
+)
+def regenerate_client_outlook(
+    client_id: int,
+    request: OutlookRegenerateRequest,
+    db: Session = Depends(get_db),
+):
+    """Regenerate AI-generated market outlook (step 5) with optional user feedback."""
+
+    # Validate that the client exists.
+    _client_or_404(db, client_id)
+
+    # Use only feedback actually provided by the caller.
+    user_feedback = (
+        request.user_feedback.strip()
+        if request.user_feedback and request.user_feedback.strip()
+        else None
+    )
+
+    try:
+        results = run_advisor(
+            client_ids=[client_id],
+            user_feedback=user_feedback,
+        )
+    except Exception:
+        log.exception(
+            "[%s] Failed to regenerate market outlook",
+            client_id,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to regenerate market outlook",
+        )
+
+    # run_advisor() returns the generated result keyed by client ID.
+    if client_id not in results:
+        raise HTTPException(
+            status_code=500,
+            detail="Market outlook regeneration failed",
+        )
+
+    # run_advisor() uses its own DB session, so make sure this API
+    # session does not return a stale ClientOutlook object.
+    db.expire_all()
+
+    outlook = (
+        db.query(ClientOutlook)
+        .filter_by(client_id=client_id)
+        .first()
+    )
+
+    if not outlook:
+        raise HTTPException(
+            status_code=500,
+            detail="Market outlook was regenerated but could not be read from the database",
+        )
+
+    return ClientOutlookOut(
+        headline_outlook=outlook.headline_outlook,
+        drivers=json.loads(outlook.drivers or "[]"),
+        generated_at=outlook.generated_at,
+    )
 
 @app.get("/clients/{client_id}/recommendations", response_model=ClientFundRecommendationOut)
 def get_client_recommendations(client_id: int, db: Session = Depends(get_db)):
-    """AI-scored fund recommendations (step 6 output)."""
+    """AI-scored fund recommendations (step 8 output)."""
     _client_or_404(db, client_id)
     rec = db.query(ClientFundRecommendation).filter_by(client_id=client_id).first()
     if not rec:
@@ -474,6 +564,77 @@ def get_client_recommendations(client_id: int, db: Session = Depends(get_db)):
         generated_at        = rec.generated_at,
     )
 
+@app.post(
+    "/clients/{client_id}/recommendations/regenerate",
+    response_model=ClientFundRecommendationOut
+)
+def regenerate_client_recommendations(
+    client_id: int,
+    request: FundRecommendationRegenerateRequest,
+    db: Session = Depends(get_db),
+):
+    """Regenerate AI-generated fund recommendations (step 8)
+    with optional user feedback.
+    """
+
+    # Validate that the client exists.
+    _client_or_404(db, client_id)
+
+    # Use only feedback actually provided by the caller.
+    user_feedback = (
+        request.user_feedback.strip()
+        if request.user_feedback and request.user_feedback.strip()
+        else None
+    )
+
+    try:
+        results = run_recommendations(
+            client_ids=[client_id],
+            user_feedback=user_feedback,
+        )
+    except Exception:
+        log.exception(
+            "[%s] Failed to regenerate fund recommendations",
+            client_id,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to regenerate fund recommendations",
+        )
+
+    # run_recommendations() returns the generated result
+    # keyed by client ID.
+    if client_id not in results:
+        raise HTTPException(
+            status_code=500,
+            detail="Fund recommendation regeneration failed",
+        )
+
+    # run_recommendations() uses its own DB session,
+    # so refresh this API session before reading the updated row.
+    db.expire_all()
+
+    rec = (
+        db.query(ClientFundRecommendation)
+        .filter_by(client_id=client_id)
+        .first()
+    )
+
+    if not rec:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Fund recommendations were regenerated but "
+                "could not be read from the database"
+            ),
+        )
+
+    return ClientFundRecommendationOut(
+        mifid_suitability=rec.mifid_suitability or "",
+        portfolio_rationale=rec.portfolio_rationale or "",
+        recommendations=json.loads(rec.recommendations or "[]"),
+        generated_at=rec.generated_at,
+    )
 
 @app.get("/clients/{client_id}/talking-points", response_model=AITalkingPointsOut)
 def get_client_talking_points(client_id: int, db: Session = Depends(get_db)):
@@ -489,6 +650,126 @@ def get_client_talking_points(client_id: int, db: Session = Depends(get_db)):
         anticipated_objections = tp.anticipated_objections,
     )
 
+@app.post("/clients/{client_id}/talking-points/regenerate")
+def regenerate_client_talking_point(
+    client_id: int,
+    request: TalkingPointRegenerateRequest,
+    db: Session = Depends(get_db),
+):
+    """Regenerate one AI talking-point section with optional user feedback."""
+
+    _client_or_404(db, client_id)
+
+    user_feedback = (
+        request.user_feedback.strip()
+        if request.user_feedback and request.user_feedback.strip()
+        else None
+    )
+
+    try:
+        result = regenerate_step6_talking_point(
+            client_id=client_id,
+            section=request.section,
+            user_feedback=user_feedback,
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        )
+
+    except Exception:
+        log.exception(
+            "[%s] Failed to regenerate talking-point section '%s'",
+            client_id,
+            request.section,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to regenerate talking point",
+        )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No talking points found for client_id={client_id}",
+        )
+
+    return {
+        "client_id": client_id,
+        "section": request.section,
+        "message": "Talking point regenerated successfully",
+        "data": {
+            "conversationOpeners": result.conversation_openers,
+            "portfolioDiscussion": result.portfolio_discussion,
+            "productIntroduction": result.product_introduction,
+            "anticipatedObjections": result.anticipated_objections,
+        },
+    }
+
+@app.post("/clients/{client_id}/prepare-brief")
+def prepare_client_brief(client_id: int, db: Session = Depends(get_db)):
+    _client_or_404(db, client_id)
+
+    try:
+        log.info("[%s] Prepare Brief started", client_id)
+
+        # STEP 5 - Market Outlook
+        log.info("[%s] Running Step 5 - Market Outlook", client_id)
+        step5_result = run_advisor(client_ids=[client_id])
+        if client_id not in step5_result:
+            raise RuntimeError( "Step 5 did not generate market outlook" )
+        log.info("[%s] Step 5 completed", client_id)
+
+        # STEP 7 - Meeting Summary
+        log.info("[%s] Running Step 7 - Meeting Summary", client_id)
+        generate_client_meeting_summary( client_ids=[client_id])
+        log.info("[%s] Step 7 completed", client_id)
+
+        # STEP 8 - Fund Recommendations
+        log.info("[%s] Running Step 8 - Recommendations", client_id)
+        step8_result = run_recommendations( client_ids=[client_id])
+        if client_id not in step8_result:
+            raise RuntimeError("Step 8 did not generate recommendations")
+        log.info("[%s] Step 8 completed", client_id)
+
+        # STEP 6 - AI Talking Points
+        log.info("[%s] Running Step 6 - Talking Points", client_id)
+        step6_result = generated_talking_points(client_ids=[client_id])
+        if client_id not in step6_result:
+            raise RuntimeError( "Step 6 did not generate talking points" )
+        log.info("[%s] Step 6 completed", client_id)
+
+        # The pipeline steps use their own DB sessions.
+        # Refresh this API session before any subsequent DB reads.
+        db.expire_all()
+        log.info("[%s] Prepare Brief completed successfully", client_id)
+
+        return {
+            "client_id": client_id,
+            "message": "Brief prepared successfully",
+            "steps": {
+                "step5": "completed",
+                "step7": "completed",
+                "step8": "completed",
+                "step6": "completed",
+            }
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        log.exception(
+            "[%s] Failed to prepare client brief",
+            client_id,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to prepare client brief",
+        )
 
 # ── Securities ────────────────────────────────────
 
