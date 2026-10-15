@@ -5,6 +5,8 @@ from datetime import datetime
 
 from models import (
     Client,
+    Brief,
+    Meeting,
     ClientMeetingSummary,
     init_db,
     get_session_factory
@@ -156,7 +158,7 @@ def generate_meeting_summary(client_code: str, meeting_date):
     }
 
 
-def generate_client_meeting_summary(client_ids=None):
+def generate_client_meeting_summary(brief_id: int):
 
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
@@ -165,14 +167,38 @@ def generate_client_meeting_summary(client_ids=None):
 
     with Session() as session:
 
-        client_query = session.query(Client)
+            brief = (
+                session.query(Brief)
+                .filter(Brief.id == brief_id)
+                .first()
+            )
 
-        if client_ids:
-            client_query = client_query.filter(Client.id.in_(client_ids))
+            if not brief:
+                raise ValueError(
+                    f"Brief {brief_id} not found"
+                )
 
-        clients = client_query.all()
+            meeting = (
+                session.query(Meeting)
+                .filter(Meeting.id == brief.meeting_id)
+                .first()
+            )
 
-        for db_client in clients:
+            if not meeting:
+                raise ValueError(
+                    f"Meeting not found for brief {brief_id}"
+                )
+
+            db_client = (
+                session.query(Client)
+                .filter(Client.id == int(meeting.client_id))
+                .first()
+            )
+
+            if not db_client:
+                raise ValueError(
+                    f"Client not found for meeting {meeting.id}"
+                )
 
             print(f"\nGenerating summary for {db_client.client_code}")
 
@@ -183,7 +209,7 @@ def generate_client_meeting_summary(client_ids=None):
                 existing_summary = (
                     session.query(ClientMeetingSummary)
                     .filter(
-                        ClientMeetingSummary.client_id == db_client.id,
+                        ClientMeetingSummary.brief_id == brief_id,
                         ClientMeetingSummary.last_meeting_date == meeting_date
                     )
                     .first()
@@ -202,7 +228,7 @@ def generate_client_meeting_summary(client_ids=None):
 
                     row = ClientMeetingSummary(
                         rm_id=db_client.rm_id,
-                        client_id=db_client.id,
+                        brief_id=brief_id,
                         last_meeting_date=summary["last_meeting_date"],
                         main_discussion_points=summary["main_discussion_points"],
                         client_questions=summary["client_questions"]
@@ -210,9 +236,9 @@ def generate_client_meeting_summary(client_ids=None):
 
                     session.add(row)
 
-                results[db_client.id] = row
+                results[brief_id] = row
 
-        session.commit()
+            session.commit()
 
     return results
 

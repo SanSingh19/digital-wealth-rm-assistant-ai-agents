@@ -69,7 +69,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config.settings import DATABASE_URL, OPENAI_API_KEY
 from models import (
     init_db, get_session_factory,
-    Client, Account, Portfolio, Holding, Security,
+    Client,Brief, Meeting, Account, Portfolio, Holding, Security,
     ClientThemeMatch, ClientOutlook, ClientPersonalDetails,
     SectorTag, Theme,
     SectorMaster,
@@ -888,7 +888,7 @@ def _build_themes_text(matches: list) -> str:
 
 def _save_sector_recommendations(
     session: Session,
-    client_id: int,
+    brief_id: int,
     signals: list[dict],
     descriptions: dict[str, str],
 ):
@@ -898,7 +898,7 @@ def _save_sector_recommendations(
         desc    = descriptions.get(sector, "")
         existing = (
             session.query(ClientSectorRecommendation)
-            .filter_by(client_id=client_id, sector_name=sector)
+            .filter_by(brief_id=brief_id, sector_name=sector)
             .first()
         )
         if existing:
@@ -908,7 +908,7 @@ def _save_sector_recommendations(
             existing.generated_at = datetime.utcnow()
         else:
             session.add(ClientSectorRecommendation(
-                client_id    = client_id,
+                brief_id=brief_id,
                 sector_name  = sector,
                 action       = sig["action"],
                 signal_score = sig["signal_score"],
@@ -976,7 +976,7 @@ def _build_fund_recommendation_citation(
 
 def _save_fund_recommendations(
     session: Session,
-    client_id: int,
+    brief_id: int,
     recommendation_result: InvestmentRecommendationResult,
     citation_json: str,
 ):
@@ -986,7 +986,7 @@ def _save_fund_recommendations(
 
     existing = (
         session.query(ClientFundRecommendation)
-        .filter_by(client_id=client_id)
+        .filter_by(brief_id=brief_id)
         .first()
     )
 
@@ -1024,7 +1024,7 @@ def _save_fund_recommendations(
 
         session.add(
             ClientFundRecommendation(
-                client_id=client_id,
+                brief_id=brief_id,
                 generated_at=datetime.utcnow(),
                 mifid_suitability=recommendation_result.mifid_suitability,
                 portfolio_rationale= recommendation_result.portfolio_rationale,
@@ -1591,7 +1591,7 @@ def _generate_fund_recommendations(
 #  MAIN FUNCTION
 # ==============================================
 
-def run_recommendations(client_ids: list[int] | None = None, user_feedback: str | None = None) -> dict:
+def run_recommendations(brief_id: int, user_feedback: str | None = None) -> dict:
     """
     Step 8: For each client, compute sector-level BUY/HOLD/SELL signals
     and generate 1-line descriptions via LLM.
@@ -1612,17 +1612,48 @@ def run_recommendations(client_ids: list[int] | None = None, user_feedback: str 
 
     with Factory() as session:
 
-        client_query = session.query(Client).options(
-            joinedload(Client.accounts)
-            .joinedload(Account.portfolios)
-            .joinedload(Portfolio.holdings)
-            .joinedload(Holding.security)
-            .joinedload(Security.sector),
-            joinedload(Client.personal_details),
+        brief = (
+            session.query(Brief)
+            .filter(Brief.id == brief_id)
+            .first()
         )
-        if client_ids:
-            client_query = client_query.filter(Client.id.in_(client_ids))
-        clients = client_query.all()
+
+        if not brief:
+            raise ValueError(
+                f"Brief {brief_id} not found"
+            )
+
+        meeting = (
+            session.query(Meeting)
+            .filter(Meeting.id == brief.meeting_id)
+            .first()
+        )
+
+        if not meeting:
+            raise ValueError(
+                f"Meeting not found for brief {brief_id}"
+            )
+
+        client = (
+            session.query(Client)
+            .options(
+                joinedload(Client.accounts)
+                .joinedload(Account.portfolios)
+                .joinedload(Portfolio.holdings)
+                .joinedload(Holding.security)
+                .joinedload(Security.sector),
+                joinedload(Client.personal_details),
+            )
+            .filter(Client.id == meeting.client_id)
+            .first()
+        )
+
+        if not client:
+            raise ValueError(
+                f"Client not found for meeting {meeting.id}"
+            )
+
+        clients = [client]
 
         if not clients:
             log.warning("No clients found.")
@@ -1650,7 +1681,7 @@ def run_recommendations(client_ids: list[int] | None = None, user_feedback: str 
             log.info(f"  Sectors held: {list(sectors_held.keys())}")
 
             # -- Fetch outlook drivers ----------
-            outlook = session.query(ClientOutlook).filter_by(client_id=client.id).first()
+            outlook = session.query(ClientOutlook).filter_by(brief_id=brief_id).first()
             drivers = json.loads(outlook.drivers or "[]") if outlook else []
 
             if not drivers:
@@ -1702,7 +1733,7 @@ def run_recommendations(client_ids: list[int] | None = None, user_feedback: str 
                     descriptions[sig["sector_name"]] = _fallback_description(sig)
 
             # -- Save to DB --------------------
-            _save_sector_recommendations(session, client.id, signals, descriptions)
+            _save_sector_recommendations(session, brief_id, signals, descriptions)
 
 
             # ---------- NEW PART 2 STARTS HERE ----------
@@ -1820,12 +1851,12 @@ def run_recommendations(client_ids: list[int] | None = None, user_feedback: str 
 
             _save_fund_recommendations(
                 session=session,
-                client_id=client.id,
+                brief_id=brief_id,
                 recommendation_result=validated_recommendations,
                 citation_json=citation_json
             )
 
-            results[client.id] = {s["sector_name"]: s["action"] for s in signals}
+            results[brief_id] = {s["sector_name"]: s["action"] for s in signals}
             log.info(f"  [{client.client_code}] {len(signals)} sector recommendation(s) saved.")
 
     return results

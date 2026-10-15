@@ -21,7 +21,7 @@ from sqlalchemy.orm import joinedload
 
 from models import (
     init_db, get_session_factory,
-    Client, Account, Portfolio, Holding, Security,
+    Client,Brief, Meeting, Account, Portfolio, Holding, Security,
     Theme, SectorTag, ClientThemeMatch, NewsArticle, MarketEvent,MarketEventTrend,
     Trend,
     TrendTheme,
@@ -567,7 +567,7 @@ def _build_citation(
 
     return json.dumps(citations)
 
-def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = None) -> dict:
+def run_advisor(brief_id: int,user_feedback: str | None = None) -> dict:
     """Generate and save market outlooks for all (or specified) clients."""
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
@@ -584,22 +584,42 @@ def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = 
 
     results = {}
     with Session() as session:
-        client_query = session.query(Client).options(
-            joinedload(Client.accounts)
-            .joinedload(Account.portfolios)
-            .joinedload(Portfolio.holdings)
-            .joinedload(Holding.security)
-            .joinedload(Security.sector)
-        )
-        if client_ids:
-            client_query = client_query.filter(Client.id.in_(client_ids))
-        clients = client_query.all()
+            brief = (
+                session.query(Brief)
+                .options(
+                    joinedload(Brief.meeting)
+                )
+                .filter(Brief.id == brief_id)
+                .first()
+            )
 
-        if not clients:
-            log.warning("No clients found.")
-            return {}
+            if not brief:
+                raise ValueError(f"Brief {brief_id} not found")
 
-        for client in clients:
+            meeting = brief.meeting
+            if not meeting:
+                raise ValueError(
+                    f"Meeting not found for brief {brief_id}"
+                )
+
+            client = (
+                session.query(Client)
+                .options(
+                    joinedload(Client.accounts)
+                    .joinedload(Account.portfolios)
+                    .joinedload(Portfolio.holdings)
+                    .joinedload(Holding.security)
+                    .joinedload(Security.sector)
+                )
+                .filter(Client.id == int(meeting.client_id))
+                .first()
+            )
+
+            if not client:
+                raise ValueError(
+                    f"Client not found for meeting {meeting.id}"
+                )
+
             matches = (
                 session.query(ClientThemeMatch)
                 .options(joinedload(ClientThemeMatch.theme))
@@ -624,15 +644,25 @@ def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = 
                 )
             else:
                 log.info(
-                    "[%s] Generating outlook without user feedback",
+                    "[Brief=%s Client=%s] Generating outlook without user feedback",
+                    brief_id,
                     client.client_code
                 )
 
             try:
                 result: ClientOutlookResult = chain.invoke(context)
             except Exception as e:
-                log.exception(f"  [{client.client_code}] LLM call failed")
-                continue
+
+                brief.status = "FAILED"
+                session.commit()
+
+                log.exception(
+                    f"[{client.client_code}] LLM call failed"
+                )
+
+                raise
+
+
             # ==========================================================
             # Validate driver -> ClientThemeMatch relationship
             # ==========================================================
@@ -683,7 +713,9 @@ def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = 
             # Save ClientOutlook
             # ==========================================================
 
-            existing = session.query(ClientOutlook).filter_by(client_id=client.id).first()
+            existing = session.query(ClientOutlook).filter_by(
+                brief_id=brief_id
+            ).first()
             drivers_json = json.dumps([d.model_dump() for d in result.drivers])
 
             if existing:
@@ -693,14 +725,17 @@ def run_advisor(client_ids: list[int] | None = None,user_feedback: str | None = 
                 existing.generated_at = datetime.utcnow()
             else:
                 session.add(ClientOutlook(
-                    client_id=client.id,
+                    brief_id=brief_id,
                     headline_outlook=result.headline_outlook,
                     drivers=drivers_json,
                     citation=citation_json,
                 ))
 
+            brief.status = "COMPLETED"
+            brief.completed_at = datetime.utcnow()
+
             session.commit()
-            results[client.id] = result.headline_outlook
+            results[brief_id] = result.headline_outlook
             log.info(f"  [{client.client_code}] outlook generated "
                       f"({len(result.drivers)} drivers).")
 

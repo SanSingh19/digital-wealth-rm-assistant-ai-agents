@@ -32,6 +32,16 @@ RSS_SOURCES = [
         "url": "https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US",
         "enabled": True,
     },
+    {
+        "name": "Markets News",
+        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+        "enabled": True,
+    },
+    {
+        "name": "Google News",
+        "url": "https://news.google.com/rss/search?q=when:24h+site:reuters.com/world/india&ceid=US:en&hl=en-US&gl=US",
+        "enabled": True,
+    }
 ]
 
 # ── Storage ────────────────────────────────────

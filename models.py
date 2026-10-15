@@ -261,12 +261,6 @@ class Client(Base):
             cascade="all, delete-orphan"
     )
 
-    client_summary = relationship(
-            "ClientMeetingSummary",
-             back_populates="client_meeting_data",
-             cascade="all, delete-orphan"
-    )
-
     accounts       = relationship("Account", back_populates="client",
                                   cascade="all, delete-orphan")
 
@@ -283,32 +277,32 @@ class Client(Base):
         cascade="all, delete-orphan"
     )
 
-    outlook = relationship(
-        "ClientOutlook",
-        back_populates="client",
-        uselist=False,
-        cascade="all, delete-orphan"
-    )
-
-    ai_talking_points = relationship(
-        "ClientAITalkingPoints",
-        back_populates="client",
-        uselist=False,
-        cascade="all, delete-orphan"
-    )
-
-    fund_recommendations = relationship(
-        "ClientFundRecommendation",
-        back_populates="client",
-        uselist=False,
-        cascade="all, delete-orphan"
-    )
-
-    sector_recommendations = relationship(
-        "ClientSectorRecommendation",
-        back_populates="client",
-        cascade="all, delete-orphan"
-    )
+#     outlook = relationship(
+#         "ClientOutlook",
+#         back_populates="client",
+#         uselist=False,
+#         cascade="all, delete-orphan"
+#     )
+#
+#     ai_talking_points = relationship(
+#         "ClientAITalkingPoints",
+#         back_populates="client",
+#         uselist=False,
+#         cascade="all, delete-orphan"
+#     )
+#
+#     fund_recommendations = relationship(
+#         "ClientFundRecommendation",
+#         back_populates="client",
+#         uselist=False,
+#         cascade="all, delete-orphan"
+#     )
+#
+#     sector_recommendations = relationship(
+#         "ClientSectorRecommendation",
+#         back_populates="client",
+#         cascade="all, delete-orphan"
+#     )
 
     def __repr__(self):
         return f"<Client code={self.client_code} name='{self.name}'>"
@@ -377,6 +371,78 @@ class Meeting(Base):
         back_populates="meet"
     )
 
+    briefs = relationship(
+        "Brief",
+        back_populates="meeting",
+        cascade="all, delete-orphan"
+    )
+
+# ---------------- Brief ----------------
+
+class Brief(Base):
+    __tablename__ = "briefs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    meeting_id = Column(
+        Integer,
+        ForeignKey("meetings.id"),
+        nullable=False,
+        index=True
+    )
+
+    status = Column(
+        String(30),
+        nullable=False,
+        default="IN_PROGRESS"
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    completed_at = Column(DateTime, nullable=True)
+
+    meeting = relationship(
+        "Meeting",
+        back_populates="briefs"
+    )
+
+    outlook = relationship(
+        "ClientOutlook",
+        back_populates="brief",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    ai_talking_points = relationship(
+        "ClientAITalkingPoints",
+        back_populates="brief",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    fund_recommendations = relationship(
+        "ClientFundRecommendation",
+        back_populates="brief",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    sector_recommendations = relationship(
+        "ClientSectorRecommendation",
+        back_populates="brief",
+        cascade="all, delete-orphan"
+    )
+
+    meeting_summary = relationship(
+        "ClientMeetingSummary",
+        back_populates="brief",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
 
 # ---------------- Personal Details ----------------
 
@@ -418,9 +484,9 @@ class ClientMeetingSummary(Base):
         nullable=False
     )
 
-    client_id = Column(
-        String,
-        ForeignKey("clients.id"),
+    brief_id = Column(
+        Integer,
+        ForeignKey("briefs.id"),
         nullable=False
     )
 
@@ -433,9 +499,9 @@ class ClientMeetingSummary(Base):
         back_populates="rm_meeting_summary"
     )
 
-    client_meeting_data = relationship(
-        "Client",
-        back_populates="client_summary"
+    brief = relationship(
+        "Brief",
+        back_populates="meeting_summary"
     )
 
 class Account(Base):
@@ -607,20 +673,24 @@ class ClientOutlook(Base):
     __tablename__ = "client_outlooks"
 
     id                  = Column(Integer, primary_key=True, autoincrement=True)
-    client_id           = Column(Integer, ForeignKey("clients.id"), nullable=False, unique=True)
+#     client_id           = Column(Integer, ForeignKey("clients.id"), nullable=False, unique=True)
+    brief_id           = Column(Integer, ForeignKey("briefs.id"), nullable=False, unique=True)
     generated_at        = Column(DateTime, default=datetime.utcnow)
     headline_outlook    = Column(Text, nullable=False) # The narrative paragraph
     drivers             = Column(Text) # JSON list of {title, commentary}
     citation            = Column(Text)
 
-    client = relationship("Client", back_populates = "outlook")
-
+#     client = relationship("Client", back_populates = "outlook")
+    brief = relationship(
+        "Brief",
+        back_populates="outlook"
+    )
 
 class ClientAITalkingPoints(Base):
     __tablename__ = "client_ai_talking_points"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer,ForeignKey("clients.id"), nullable=False,unique=True)
+    brief_id = Column(Integer,ForeignKey("briefs.id"), nullable=False,unique=True)
     conversation_openers = Column(JSON)
     conversation_openers_citation = Column(JSON)
     portfolio_discussion = Column(JSON)
@@ -630,7 +700,12 @@ class ClientAITalkingPoints(Base):
     anticipated_objections = Column(JSON)
     anticipated_objections_citation = Column(JSON)
 
-    client = relationship("Client",back_populates="ai_talking_points")
+    brief = relationship(
+        "Brief",
+        back_populates="ai_talking_points"
+    )
+
+#     client = relationship("Client",back_populates="ai_talking_points")
 
 
 # ═══════════════════════════════════════════════
@@ -649,7 +724,7 @@ class ClientSectorRecommendation(Base):
     __tablename__ = "client_sector_recommendations"
 
     id = Column(Integer,primary_key=True,autoincrement=True)
-    client_id = Column( Integer,ForeignKey("clients.id"), nullable=False)
+    brief_id = Column( Integer,ForeignKey("briefs.id"), nullable=False)
     sector_name = Column(String(128),nullable=False )
     action = Column(  String(20),nullable=False )       # BUY / HOLD / SELL
 
@@ -664,21 +739,21 @@ class ClientSectorRecommendation(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "client_id",
+            "brief_id",
             "sector_name",
             name="uq_client_sector_recommendation"
         ),
     )
 
-    client = relationship(
-        "Client",
+    brief = relationship(
+        "Brief",
         back_populates="sector_recommendations"
     )
 
     def __repr__(self):
         return (
             f"<ClientSectorRecommendation "
-            f"client_id={self.client_id} "
+            f"brief_id={self.brief_id}"
             f"sector='{self.sector_name}' "
             f"action='{self.action}'>"
         )
@@ -706,7 +781,7 @@ class ClientFundRecommendation(Base):
     __tablename__ = "client_fund_recommendations"
 
     id                  = Column(Integer, primary_key=True, autoincrement=True)
-    client_id           = Column(Integer, ForeignKey("clients.id"),
+    brief_id           = Column(Integer, ForeignKey("briefs.id"),
                                  nullable=False, unique=True)
     generated_at        = Column(DateTime, default=datetime.utcnow)
     mifid_suitability   = Column(String(256))   # e.g. "All Pass – Suitability validated against Aggressive (RP5)"
@@ -714,10 +789,14 @@ class ClientFundRecommendation(Base):
     recommendations     = Column(Text)          # JSON list
     citation            = Column(Text)
 
-    client = relationship("Client", back_populates="fund_recommendations")
+#     client = relationship("Client", back_populates="fund_recommendations")
+    brief = relationship(
+        "Brief",
+        back_populates="fund_recommendations"
+    )
 
     def __repr__(self):
-        return f"<ClientFundRecommendation client_id={self.client_id}>"
+        return f"<ClientFundRecommendation  brief_id={self.brief_id}>"
 
 # ═══════════════════════════════════════════════
 #  FUND MASTER / FUND LIST

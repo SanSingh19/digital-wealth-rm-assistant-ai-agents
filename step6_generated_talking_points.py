@@ -47,6 +47,7 @@ from models import (
     ClientPersonalDetails,
     ClientRiskOverview,
     ClientThemeMatch,
+    Brief,
     get_session_factory,
     init_db,
 )
@@ -89,7 +90,7 @@ def _summarize_client_product_introductions(
             recommendations = []
 
     return (
-        f"client_id={outlook.client_id if outlook else recommendation.client_id if recommendation else 'Unknown'}, "
+        f"brief_id={outlook.brief_id if outlook else recommendation.brief_id if recommendation else 'Unknown'}, "
         f"client_question={_truncate(meeting_summary.client_questions) if meeting_summary else 'No Client Questions'}, "
         f"market_outlook={_truncate(outlook.headline_outlook) if outlook else 'No Market Outlook'}, "
         f"funds={json.dumps(recommendations, indent=2)}"
@@ -159,7 +160,7 @@ Respond ONLY with valid JSON.
 
 
 {{
-  "client_id": "<use the current client's id from the client block>",
+  "brief_id": "<use current brief_id>",
   "conversationOpeners": ["string"]
 }}
 """.strip()
@@ -301,7 +302,7 @@ STYLE
 Return ONLY valid JSON.
 
 {{
-  "client_id": "<use the current client's id from the client block>",
+  "brief_id": "<use current brief id>",
   "product_introduction": [
     "string"
   ]
@@ -393,7 +394,7 @@ RULES:
 Return ONLY JSON.
 
 {{
-    "client_id":"client id",
+    "brief_id":"brief id",
     "portfolioDiscussion":[
         "discussion point 1",
         "discussion point 2"
@@ -450,7 +451,7 @@ Rules
 Return ONLY JSON.
 
 {{
-    "client_id":"client id",
+    "brief_id":"brief id",
     "anticipatedObjections":[
         "string",
         "string"
@@ -458,30 +459,62 @@ Return ONLY JSON.
 }}
 """.strip()
 
-def generated_talking_points(client_ids: list[int] | None = None) -> dict:
+def generated_talking_points(brief_id: int) -> dict:
     results = {}
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
     openai_client = get_openai_client()
 
     with Session() as session:
-        client_query = (
-            session.query(ClientPersonalDetails, ClientMeetingSummary)
-            .outerjoin(
-                ClientMeetingSummary,
-                ClientPersonalDetails.client_id == ClientMeetingSummary.client_id,
+        meeting_summary = (
+            session.query(ClientMeetingSummary)
+            .filter(
+                ClientMeetingSummary.brief_id == brief_id
             )
+            .first()
         )
-        if client_ids:
-            client_query = client_query.filter(ClientPersonalDetails.client_id.in_(client_ids))
-        clients = client_query.all()
+
+        if not meeting_summary:
+            return {}
+
+        brief = (
+            session.query(Brief)
+            .filter(Brief.id == brief_id)
+            .first()
+        )
+        if not brief:
+            log.warning(
+                "Brief not found for brief_id=%s",
+                brief_id
+            )
+            return {}
+
+        client = brief.meeting.meeting_client
+
+        client_details = (
+            session.query(ClientPersonalDetails)
+            .filter(
+                ClientPersonalDetails.client_id == client.id
+            )
+            .first()
+        )
+        if not client_details:
+            log.warning(
+                "ClientPersonalDetails not found for client_id=%s",
+                client.id
+            )
+            return {}
+
+        clients = [
+            (client_details, meeting_summary)
+        ]
 
         log.info("Starting talking-point generation for %s client(s)", len(clients))
         if not clients:
             log.warning("No clients found for talking-point generation")
             return results
 
-        product_introduction_results = generated_product_introductions(client_ids)
+        product_introduction_results = generated_product_introductions(brief_id)
 
         for client_details, meeting in clients:
             log.info(
@@ -496,8 +529,8 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
             )
 
             product_introduction_result = product_introduction_results.get(
-                client_details.id,
-                {"client_id": client_details.id, "product_introduction": []},
+                brief_id,
+                {"brief_id": brief_id, "product_introduction": []},
             )
 
             portfolio_result = populate_portfolio_discussion(
@@ -509,17 +542,13 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
             objection_result = populate_anticipated_objections(
                 session,
                 [(client_details, meeting)],
-                openai_client
+                openai_client,
+                brief_id
             )
 
             client_result = {
-                "client_id": (
-                        conversation_result.get("client_id")
-                        or portfolio_result.get("client_id")
-                        or product_introduction_result.get("client_id")
-                        or objection_result.get("client_id")
-                        or client_details.id
-                ),
+                "brief_id": brief_id,
+
                 "conversationOpeners": conversation_result.get(
                     "conversationOpeners",
                     []
@@ -559,7 +588,7 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
                 client_result
             )
 
-            results[client_details.id] = row
+            results[brief_id] = row
 
         session.commit()
         log.info("Completed talking-point generation for %s client(s)", len(results))
@@ -567,49 +596,61 @@ def generated_talking_points(client_ids: list[int] | None = None) -> dict:
 
     return results
 
-def generated_product_introductions(client_ids: list[int] | None = None) -> dict:
+def generated_product_introductions(brief_id: int) -> dict:
     results = {}
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
     openai_client = get_openai_client()
 
     with Session() as session:
-        client_query = (
-            session.query(Client, ClientMeetingSummary, ClientOutlook, ClientFundRecommendation)
-            .outerjoin(
-                ClientMeetingSummary,
-                Client.id == ClientMeetingSummary.client_id,
-            )
-            .outerjoin(
-                ClientOutlook,
-                Client.id == ClientOutlook.client_id,
-            )
-            .outerjoin(
-                ClientFundRecommendation,
-                Client.id == ClientFundRecommendation.client_id,
-            )
+        brief = (
+            session.query(Brief)
+            .filter(Brief.id == brief_id)
+            .first()
         )
-        if client_ids:
-            client_query = client_query.filter(Client.id.in_(client_ids))
-        clients = client_query.all()
+
+        meeting_summary = (
+            session.query(ClientMeetingSummary)
+            .filter(ClientMeetingSummary.brief_id == brief_id)
+            .first()
+        )
+
+        outlook = (
+            session.query(ClientOutlook)
+            .filter(ClientOutlook.brief_id == brief_id)
+            .first()
+        )
+
+        recommendation = (
+            session.query(ClientFundRecommendation)
+            .filter(ClientFundRecommendation.brief_id == brief_id)
+            .first()
+        )
+
+        clients = [
+            (
+                meeting_summary,
+                outlook,
+                recommendation
+            )
+        ]
 
         log.info("Starting Product Introduction generation for %s client(s)", len(clients))
         if not clients:
             log.warning("No clients found for Product Introduction generation")
             return results
 
-        for client_details, meeting_summary, outlook, recommendation in clients:
+        for meeting_summary, outlook, recommendation in clients:
             log.info(
-                "Processing client %s: %s",
-                client_details.id,
+                "Processing brief %s: %s", brief_id,
                 _summarize_client_product_introductions(outlook, meeting_summary, recommendation),
             )
             client_result = populate_product_introductions([(outlook, meeting_summary, recommendation)], openai_client)
             if isinstance(client_result, dict):
-                results[client_details.id] = client_result
+                results[brief_id] = client_result
             else:
-                results[client_details.id] = {
-                    "client_id": client_details.id,
+                results[brief_id] = {
+                    "brief_id": brief_id,
                     "product_introduction": [],
                 }
 
@@ -620,7 +661,7 @@ def generated_product_introductions(client_ids: list[int] | None = None) -> dict
 
 
 def get_or_create_client_talking_points(session, client_result):
-    client_id = client_result.get("client_id")
+    brief_id = client_result.get("brief_id")
     openers = client_result.get("conversationOpeners", [])
     portfolio_discussion = client_result.get(
         "portfolioDiscussion",
@@ -660,15 +701,15 @@ def get_or_create_client_talking_points(session, client_result):
         portfolio_discussion,
     )
 
-    if not client_id:
-        log.warning("Skipping DB write because no client_id was returned from the AI response")
+    if not brief_id:
+        log.warning("Skipping DB write because no brief_id was returned from the AI response")
         return None
 
-    existing_row = session.query(ClientAITalkingPoints).filter_by(client_id=client_id).first()
+    existing_row = session.query(ClientAITalkingPoints).filter_by(brief_id=brief_id).first()
     if existing_row:
         log.info(
-            "Updating existing talking points for client_id=%s with %s opener(s)",
-            client_id,
+            "Updating existing talking points for brief_id=%s with %s opener(s)",
+            brief_id,
             len(openers),
         )
         existing_row.conversation_openers = openers
@@ -692,7 +733,7 @@ def get_or_create_client_talking_points(session, client_result):
         return existing_row
 
     row = ClientAITalkingPoints(
-        client_id=client_id,
+        brief_id=brief_id,
         conversation_openers=openers,
         portfolio_discussion=portfolio_discussion,
         product_introduction=product_introduction,
@@ -706,7 +747,11 @@ def get_or_create_client_talking_points(session, client_result):
     )
     session.add(row)
     session.flush()
-    log.info("Created talking points for client_id=%s with %s opener(s)", client_id, len(openers))
+    log.info(
+        "Created talking points for brief_id=%s with %s opener(s)",
+        brief_id,
+        len(openers)
+    )
     return row
 
 def _append_user_feedback(
@@ -730,7 +775,7 @@ def _append_user_feedback(
 
 def populate_conversation_openers(session, clients, openai_client, user_feedback: str = None):
     if not clients:
-        return {"client_id": None, "conversationOpeners": [], "citation": {}}
+        return {"brief_id": None, "conversationOpeners": [], "citation": {}}
 
     client_lines = [
         (
@@ -773,12 +818,19 @@ def populate_conversation_openers(session, clients, openai_client, user_feedback
     result = openai_json(openai_client, prompt, SYSTEM_CONVERSATION_OPENERS)
     if isinstance(result, dict):
         opener_count = len(result.get("conversationOpeners", []))
-        client_id = result.get("client_id")
-        log.info("OpenAI returned %s opener(s) for client_id=%s", opener_count, client_id)
+        brief_id = result.get("brief_id")
+        log.info(
+            "OpenAI returned %s opener(s) for brief_id=%s",
+            opener_count,
+            brief_id
+        )
         if opener_count == 0:
-            log.warning("No conversation openers were returned for client_id=%s", client_id)
+            log.warning(
+                "No conversation openers were returned for brief_id=%s",
+                brief_id
+            )
         return {
-                    "client_id": client_id,
+                    "brief_id": brief_id,
                     "conversationOpeners": result.get(
                         "conversationOpeners",
                         []
@@ -787,11 +839,11 @@ def populate_conversation_openers(session, clients, openai_client, user_feedback
                 }
 
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
-    return {"client_id": None, "conversationOpeners": result, "citation": citation}
+    return {"brief_id": None, "conversationOpeners": result, "citation": citation}
 
 def populate_product_introductions(clients, openai_client, user_feedback: str = None):
     if not clients:
-        return {"client_id": None, "product_introduction": [],"citation": {}}
+        return {"brief_id": None, "product_introduction": [],"citation": {}}
 
     client_lines = [
         _summarize_client_product_introductions(
@@ -871,22 +923,22 @@ def populate_product_introductions(clients, openai_client, user_feedback: str = 
         introduction_count = len(
             result.get("product_introduction", [])
         )
-        client_id = result.get("client_id")
+        brief_id = result.get("brief_id")
 
         log.info(
-            "OpenAI returned %s product introduction(s) for client_id=%s",
+            "OpenAI returned %s product introduction(s) for brief_id=%s",
             introduction_count,
-            client_id
+            brief_id
         )
 
         if introduction_count == 0:
             log.warning(
-                "No product introductions were returned for client_id=%s",
-                client_id
+                "No product introductions were returned for brief_id=%s",
+                brief_id
             )
 
         return {
-                   "client_id": client_id,
+                   "brief_id": brief_id,
                    "product_introduction": result.get(
                        "product_introduction",
                        []
@@ -900,7 +952,7 @@ def populate_product_introductions(clients, openai_client, user_feedback: str = 
     )
 
     return {
-        "client_id": None,
+        "brief_id": None,
         "product_introduction": result,
         "citation": citation
     }
@@ -908,7 +960,7 @@ def populate_product_introductions(clients, openai_client, user_feedback: str = 
 def populate_portfolio_discussion(session, clients, openai_client, user_feedback: str = None):
 
     if not clients:
-        return {"client_id": None, "portfolioDiscussion": [],"citation": {}}
+        return {"brief_id": None, "portfolioDiscussion": [],"citation": {}}
 
     portfolio_sections = []
     citation = []
@@ -1069,7 +1121,7 @@ def populate_portfolio_discussion(session, clients, openai_client, user_feedback
 
     if isinstance(result, dict):
         return {
-            "client_id": result.get("client_id"),
+            "brief_id": result.get("brief_id"),
             "portfolioDiscussion": result.get(
                 "portfolioDiscussion",
                 []
@@ -1078,16 +1130,16 @@ def populate_portfolio_discussion(session, clients, openai_client, user_feedback
         }
 
     return {
-        "client_id": None,
+        "brief_id": None,
         "portfolioDiscussion": [],
         "citation": citation
     }
 
-def populate_anticipated_objections(session, clients, openai_client, user_feedback: str = None):
+def populate_anticipated_objections(session, clients, openai_client, brief_id, user_feedback: str = None):
 
     if not clients:
         return {
-            "client_id": None,
+            "brief_id": None,
             "anticipatedObjections": [],
             "citation": {}
         }
@@ -1117,7 +1169,7 @@ def populate_anticipated_objections(session, clients, openai_client, user_feedba
 
         recommendation = (
             session.query(ClientFundRecommendation)
-            .filter(ClientFundRecommendation.client_id == client.id)
+            .filter(ClientFundRecommendation.brief_id == brief_id)
             .first()
         )
 
@@ -1198,7 +1250,7 @@ Recommended Funds:
     if isinstance(result, dict):
 
         return {
-            "client_id": result.get("client_id"),
+            "brief_id": result.get("brief_id"),
             "anticipatedObjections": result.get(
                 "anticipatedObjections",
                 []
@@ -1207,7 +1259,7 @@ Recommended Funds:
         }
 
     return {
-        "client_id": None,
+        "brief_id": None,
         "anticipatedObjections": [],
         "citation": citation
     }
@@ -1231,7 +1283,7 @@ def _append_user_feedback(
     )
 
 def regenerate_talking_point(
-    client_id: int,
+    brief_id: int,
     section: str,
     user_feedback: str = None
 ):
@@ -1275,20 +1327,36 @@ def regenerate_talking_point(
         # ---------------------------------------------------------
         talking_points = (
             session.query(ClientAITalkingPoints)
-            .filter_by(client_id=client_id)
+            .filter_by(brief_id=brief_id)
             .first()
         )
 
         if not talking_points:
             log.warning(
-                "Talking points not found for client_id=%s",
-                client_id
+                "Talking points not found for brief_id=%s",
+                brief_id
             )
             return None
+
 
         # ---------------------------------------------------------
         # Common client information
         # ---------------------------------------------------------
+        brief = (
+            session.query(Brief)
+            .filter(Brief.id == brief_id)
+            .first()
+        )
+
+        if not brief:
+            log.warning(
+                "Brief not found for brief_id=%s",
+                brief_id
+            )
+            return {}
+        client_id = brief.meeting.meeting_client.id
+        client = brief.meeting.meeting_client
+
         client_details = (
             session.query(ClientPersonalDetails)
             .filter(ClientPersonalDetails.client_id == client_id)
@@ -1304,7 +1372,7 @@ def regenerate_talking_point(
 
         meeting = (
             session.query(ClientMeetingSummary)
-            .filter(ClientMeetingSummary.client_id == client_id)
+            .filter(ClientMeetingSummary.brief_id == brief_id)
             .first()
         )
 
@@ -1361,38 +1429,23 @@ def regenerate_talking_point(
         # =========================================================
         elif section == "productIntroduction":
 
-            product_query = (
-                session.query(
-                    Client,
-                    ClientMeetingSummary,
-                    ClientOutlook,
-                    ClientFundRecommendation
-                )
-                .outerjoin(
-                    ClientMeetingSummary,
-                    Client.id == ClientMeetingSummary.client_id
-                )
-                .outerjoin(
-                    ClientOutlook,
-                    Client.id == ClientOutlook.client_id
-                )
-                .outerjoin(
-                    ClientFundRecommendation,
-                    Client.id == ClientFundRecommendation.client_id
-                )
-                .filter(Client.id == client_id)
+            meeting_summary = (
+                session.query(ClientMeetingSummary)
+                .filter(ClientMeetingSummary.brief_id == brief_id)
+                .first()
             )
 
-            product_data = product_query.first()
+            outlook = (
+                session.query(ClientOutlook)
+                .filter(ClientOutlook.brief_id == brief_id)
+                .first()
+            )
 
-            if not product_data:
-                log.warning(
-                    "Product introduction data not found for client_id=%s",
-                    client_id
-                )
-                return None
-
-            client, meeting_summary, outlook, recommendation = product_data
+            recommendation = (
+                session.query(ClientFundRecommendation)
+                .filter(ClientFundRecommendation.brief_id == brief_id)
+                .first()
+            )
 
             product_client_tuple = [
                 (
@@ -1427,6 +1480,7 @@ def regenerate_talking_point(
                 session,
                 client_tuple,
                 openai_client,
+                brief_id,
                 user_feedback=user_feedback
             )
 
@@ -1451,9 +1505,9 @@ def regenerate_talking_point(
 
         log.info(
             "Successfully regenerated talking-point section '%s' "
-            "for client_id=%s",
+            "for brief_id=%s",
             section,
-            client_id
+            brief_id
         )
 
         return talking_points
@@ -1500,7 +1554,7 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
 
                 if "conversationOpeners" in parsed:
                     return {
-                        "client_id": parsed.get("client_id"),
+                        "brief_id": parsed.get("brief_id"),
                         "conversationOpeners": parsed.get(
                             "conversationOpeners",
                             []
@@ -1509,17 +1563,27 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
 
                 if "portfolioDiscussion" in parsed:
                     return {
-                        "client_id": parsed.get("client_id"),
+                        "brief_id": parsed.get("brief_id"),
                         "portfolioDiscussion": parsed.get(
                             "portfolioDiscussion",
                             []
                         ),
                     }
+
                 if "anticipatedObjections" in parsed:
                     return {
-                        "client_id": parsed.get("client_id"),
+                        "brief_id": parsed.get("brief_id"),
                         "anticipatedObjections": parsed.get(
                             "anticipatedObjections",
+                            []
+                        ),
+                    }
+
+                if "product_introduction" in parsed:
+                    return {
+                        "brief_id": parsed.get("brief_id"),
+                        "product_introduction": parsed.get(
+                            "product_introduction",
                             []
                         ),
                     }

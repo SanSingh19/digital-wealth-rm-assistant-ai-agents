@@ -18,6 +18,7 @@ from models import (
     RelationshipManager,
     ClientPersonalDetails,
     Meeting,
+    Brief,
     ClientMeetingSummary,
     SectorMaster,
     ClientPreference,
@@ -1623,19 +1624,22 @@ def seed_all_clients():
 
             # Meeting
 
+            # Meeting
+
             meeting = data["meeting"]
 
-            session.add(
-                Meeting(
-                    rm_id=data["rm_id"],
-                    client_id=client.id,
-                    title=meeting["title"],
-                    date=date.today(),
-                    time=time(10,30),
-                    location=meeting["location"],
-                    platform=meeting["platform"]
-                )
+            meeting_obj = Meeting(
+                rm_id=data["rm_id"],
+                client_id=client.id,
+                title=meeting["title"],
+                date=date.today(),
+                time=time(10, 30),
+                location=meeting["location"],
+                platform=meeting["platform"]
             )
+
+            session.add(meeting_obj)
+            session.flush()
 
             # Meeting Summary
 
@@ -1644,7 +1648,7 @@ def seed_all_clients():
 #             session.add(
 #                 ClientMeetingSummary(
 #                     rm_id=data["rm_id"],
-#                     client_id=client.id,
+#                     brief_id=brief.id,
 #                     main_discussion_points=summary["discussion_points"],
 #                     client_questions=summary["questions"],
 #                     last_meeting_date=date.today()
@@ -1737,21 +1741,6 @@ def seed_all_clients():
                     sharpe_ratio=risk["sharpe_ratio"],
                     value_at_risk=risk["value_at_risk"],
                     max_drawdown=risk["max_drawdown"]
-                )
-            )
-
-            ai_data = next(
-                item for item in AI_TALKING_POINTS
-                if item["client_id"] == client.id
-            )
-
-            session.add(
-                ClientAITalkingPoints(
-                    client_id=client.id,
-                    conversation_openers=ai_data["conversation_openers"],
-                    portfolio_discussion=ai_data["portfolio_discussion"],
-                    product_introduction=ai_data["product_introduction"],
-                    anticipated_objections=ai_data["anticipated_objections"]
                 )
             )
 

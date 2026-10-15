@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from models import (
     init_db, get_session_factory,
-    Client, Account, Portfolio, Holding, Security,
+    Client,Brief, Account, Portfolio, Holding, Security,
     Theme, SectorTag, ClientThemeMatch, NewsArticle,
     ClientOutlook, ClientFundRecommendation,
     ClientPersonalDetails, ClientRiskOverview, ClientPreference,
@@ -261,6 +261,17 @@ def _client_or_404(db: Session, client_id: int) -> Client:
         raise HTTPException(status_code=404, detail=f"Client {client_id} not found")
     return client
 
+def _brief_or_404(db, brief_id):
+
+    print("Looking for brief:", brief_id)
+
+    brief = (
+        db.query(Brief)
+        .filter(Brief.id == brief_id)
+        .first()
+    )
+
+    return brief
 
 def _build_client_out(client: Client) -> ClientOut:
     portfolios_out = []
@@ -420,11 +431,19 @@ def get_client_meeting(client_id: int, db: Session = Depends(get_db)):
     return MeetingOut(title=m.title, date=m.date, location=m.location, platform=m.platform)
 
 
-@app.get("/clients/{client_id}/meeting-summary", response_model=MeetingSummaryOut)
-def get_client_meeting_summary(client_id: int, db: Session = Depends(get_db)):
+@app.get("/briefs/{brief_id}/meeting-summary", response_model=MeetingSummaryOut)
+def get_client_meeting_summary(brief_id: int, db: Session = Depends(get_db)):
     """Last meeting discussion points and client questions."""
-    _client_or_404(db, client_id)
-    s = db.query(ClientMeetingSummary).filter_by(client_id=client_id).first()
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
+
+    s = (
+        db.query(ClientMeetingSummary)
+        .filter_by(brief_id=brief.id)
+        .first()
+    )
     if not s:
         raise HTTPException(status_code=404, detail="No meeting summary found")
     return MeetingSummaryOut(
@@ -472,11 +491,19 @@ def get_client_overview(client_id: int, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/clients/{client_id}/outlook", response_model=ClientOutlookOut)
-def get_client_outlook(client_id: int, db: Session = Depends(get_db)):
+@app.get("/briefs/{brief_id}/outlook", response_model=ClientOutlookOut)
+def get_client_outlook(brief_id: int, db: Session = Depends(get_db)):
     """AI-generated market outlook (step 5 output)."""
-    _client_or_404(db, client_id)
-    outlook = db.query(ClientOutlook).filter_by(client_id=client_id).first()
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
+
+    outlook = (
+        db.query(ClientOutlook)
+        .filter_by(brief_id=brief.id)
+        .first()
+    )
     if not outlook:
         raise HTTPException(status_code=404, detail="No outlook generated yet — run step 5")
     return ClientOutlookOut(
@@ -486,18 +513,21 @@ def get_client_outlook(client_id: int, db: Session = Depends(get_db)):
     )
 
 @app.post(
-    "/clients/{client_id}/outlook/regenerate",
+    "/briefs/{brief_id}/outlook/regenerate",
     response_model=ClientOutlookOut
 )
 def regenerate_client_outlook(
-    client_id: int,
+    brief_id: int,
     request: OutlookRegenerateRequest,
     db: Session = Depends(get_db),
 ):
     """Regenerate AI-generated market outlook (step 5) with optional user feedback."""
 
     # Validate that the client exists.
-    _client_or_404(db, client_id)
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
 
     # Use only feedback actually provided by the caller.
     user_feedback = (
@@ -508,13 +538,13 @@ def regenerate_client_outlook(
 
     try:
         results = run_advisor(
-            client_ids=[client_id],
+            brief_id=brief.id,
             user_feedback=user_feedback,
         )
     except Exception:
         log.exception(
             "[%s] Failed to regenerate market outlook",
-            client_id,
+            brief_id
         )
         raise HTTPException(
             status_code=500,
@@ -522,7 +552,7 @@ def regenerate_client_outlook(
         )
 
     # run_advisor() returns the generated result keyed by client ID.
-    if client_id not in results:
+    if brief.id not in results:
         raise HTTPException(
             status_code=500,
             detail="Market outlook regeneration failed",
@@ -534,7 +564,7 @@ def regenerate_client_outlook(
 
     outlook = (
         db.query(ClientOutlook)
-        .filter_by(client_id=client_id)
+        .filter_by(brief_id=brief.id)
         .first()
     )
 
@@ -550,11 +580,19 @@ def regenerate_client_outlook(
         generated_at=outlook.generated_at,
     )
 
-@app.get("/clients/{client_id}/recommendations", response_model=ClientFundRecommendationOut)
-def get_client_recommendations(client_id: int, db: Session = Depends(get_db)):
+@app.get("/briefs/{brief_id}/recommendations", response_model=ClientFundRecommendationOut)
+def get_client_recommendations(brief_id: int, db: Session = Depends(get_db)):
     """AI-scored fund recommendations (step 8 output)."""
-    _client_or_404(db, client_id)
-    rec = db.query(ClientFundRecommendation).filter_by(client_id=client_id).first()
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
+
+    rec = (
+        db.query(ClientFundRecommendation)
+        .filter_by(brief_id=brief.id)
+        .first()
+    )
     if not rec:
         raise HTTPException(status_code=404, detail="No recommendations generated yet — run step 8")
     return ClientFundRecommendationOut(
@@ -565,11 +603,11 @@ def get_client_recommendations(client_id: int, db: Session = Depends(get_db)):
     )
 
 @app.post(
-    "/clients/{client_id}/recommendations/regenerate",
+    "/briefs/{brief_id}/recommendations/regenerate",
     response_model=ClientFundRecommendationOut
 )
 def regenerate_client_recommendations(
-    client_id: int,
+    brief_id: int,
     request: FundRecommendationRegenerateRequest,
     db: Session = Depends(get_db),
 ):
@@ -578,7 +616,10 @@ def regenerate_client_recommendations(
     """
 
     # Validate that the client exists.
-    _client_or_404(db, client_id)
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
 
     # Use only feedback actually provided by the caller.
     user_feedback = (
@@ -589,13 +630,13 @@ def regenerate_client_recommendations(
 
     try:
         results = run_recommendations(
-            client_ids=[client_id],
+            brief_id=brief.id,
             user_feedback=user_feedback,
         )
     except Exception:
         log.exception(
             "[%s] Failed to regenerate fund recommendations",
-            client_id,
+            brief_id
         )
         raise HTTPException(
             status_code=500,
@@ -604,7 +645,7 @@ def regenerate_client_recommendations(
 
     # run_recommendations() returns the generated result
     # keyed by client ID.
-    if client_id not in results:
+    if brief.id not in results:
         raise HTTPException(
             status_code=500,
             detail="Fund recommendation regeneration failed",
@@ -616,7 +657,7 @@ def regenerate_client_recommendations(
 
     rec = (
         db.query(ClientFundRecommendation)
-        .filter_by(client_id=client_id)
+        .filter_by(brief_id=brief.id)
         .first()
     )
 
@@ -636,11 +677,19 @@ def regenerate_client_recommendations(
         generated_at=rec.generated_at,
     )
 
-@app.get("/clients/{client_id}/talking-points", response_model=AITalkingPointsOut)
-def get_client_talking_points(client_id: int, db: Session = Depends(get_db)):
+@app.get("/briefs/{brief_id}/talking-points", response_model=AITalkingPointsOut)
+def get_client_talking_points(brief_id: int, db: Session = Depends(get_db)):
     """AI-generated RM talking points for client meeting."""
-    _client_or_404(db, client_id)
-    tp = db.query(ClientAITalkingPoints).filter_by(client_id=client_id).first()
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
+
+    tp = (
+        db.query(ClientAITalkingPoints)
+        .filter_by(brief_id=brief.id)
+        .first()
+    )
     if not tp:
         raise HTTPException(status_code=404, detail="No talking points found")
     return AITalkingPointsOut(
@@ -650,15 +699,18 @@ def get_client_talking_points(client_id: int, db: Session = Depends(get_db)):
         anticipated_objections = tp.anticipated_objections,
     )
 
-@app.post("/clients/{client_id}/talking-points/regenerate")
+@app.post("/briefs/{brief_id}/talking-points/regenerate")
 def regenerate_client_talking_point(
-    client_id: int,
+    brief_id: int,
     request: TalkingPointRegenerateRequest,
     db: Session = Depends(get_db),
 ):
     """Regenerate one AI talking-point section with optional user feedback."""
 
-    _client_or_404(db, client_id)
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
 
     user_feedback = (
         request.user_feedback.strip()
@@ -668,7 +720,7 @@ def regenerate_client_talking_point(
 
     try:
         result = regenerate_step6_talking_point(
-            client_id=client_id,
+            brief_id=brief.id,
             section=request.section,
             user_feedback=user_feedback,
         )
@@ -682,7 +734,7 @@ def regenerate_client_talking_point(
     except Exception:
         log.exception(
             "[%s] Failed to regenerate talking-point section '%s'",
-            client_id,
+            brief_id,
             request.section,
         )
         raise HTTPException(
@@ -693,11 +745,11 @@ def regenerate_client_talking_point(
     if result is None:
         raise HTTPException(
             status_code=404,
-            detail=f"No talking points found for client_id={client_id}",
+            detail=f"No talking points found for brief_id={brief_id}",
         )
 
     return {
-        "client_id": client_id,
+        "brief_id": brief_id,
         "section": request.section,
         "message": "Talking point regenerated successfully",
         "data": {
@@ -708,46 +760,49 @@ def regenerate_client_talking_point(
         },
     }
 
-@app.post("/clients/{client_id}/prepare-brief")
-def prepare_client_brief(client_id: int, db: Session = Depends(get_db)):
-    _client_or_404(db, client_id)
+@app.post("/briefs/{brief_id}/prepare")
+def prepare_client_brief(brief_id: int, db: Session = Depends(get_db)):
+    brief = _brief_or_404(
+        db,
+        brief_id
+    )
 
     try:
-        log.info("[%s] Prepare Brief started", client_id)
+        log.info("[%s] Prepare Brief started", brief_id)
 
         # STEP 5 - Market Outlook
-        log.info("[%s] Running Step 5 - Market Outlook", client_id)
-        step5_result = run_advisor(client_ids=[client_id])
-        if client_id not in step5_result:
+        log.info("[%s] Running Step 5 - Market Outlook", brief_id)
+        step5_result = run_advisor(brief_id=brief.id)
+        if brief.id not in step5_result:
             raise RuntimeError( "Step 5 did not generate market outlook" )
-        log.info("[%s] Step 5 completed", client_id)
+        log.info("[%s] Step 5 completed", brief_id)
 
         # STEP 7 - Meeting Summary
-        log.info("[%s] Running Step 7 - Meeting Summary", client_id)
-        generate_client_meeting_summary( client_ids=[client_id])
-        log.info("[%s] Step 7 completed", client_id)
+        log.info("[%s] Running Step 7 - Meeting Summary", brief_id)
+        generate_client_meeting_summary(brief.id)
+        log.info("[%s] Step 7 completed", brief_id)
 
         # STEP 8 - Fund Recommendations
-        log.info("[%s] Running Step 8 - Recommendations", client_id)
-        step8_result = run_recommendations( client_ids=[client_id])
-        if client_id not in step8_result:
+        log.info("[%s] Running Step 8 - Recommendations", brief_id)
+        step8_result = run_recommendations( brief_id=brief.id)
+        if brief.id not in step8_result:
             raise RuntimeError("Step 8 did not generate recommendations")
-        log.info("[%s] Step 8 completed", client_id)
+        log.info("[%s] Step 8 completed", brief_id)
 
         # STEP 6 - AI Talking Points
-        log.info("[%s] Running Step 6 - Talking Points", client_id)
-        step6_result = generated_talking_points(client_ids=[client_id])
-        if client_id not in step6_result:
+        log.info("[%s] Running Step 6 - Talking Points", brief_id)
+        step6_result = generated_talking_points(brief_id=brief.id)
+        if brief.id not in step6_result:
             raise RuntimeError( "Step 6 did not generate talking points" )
-        log.info("[%s] Step 6 completed", client_id)
+        log.info("[%s] Step 6 completed", brief_id)
 
         # The pipeline steps use their own DB sessions.
         # Refresh this API session before any subsequent DB reads.
         db.expire_all()
-        log.info("[%s] Prepare Brief completed successfully", client_id)
+        log.info("[%s] Prepare Brief completed successfully", brief_id)
 
         return {
-            "client_id": client_id,
+            "brief_id": brief.id,
             "message": "Brief prepared successfully",
             "steps": {
                 "step5": "completed",
@@ -763,7 +818,7 @@ def prepare_client_brief(client_id: int, db: Session = Depends(get_db)):
     except Exception:
         log.exception(
             "[%s] Failed to prepare client brief",
-            client_id,
+            brief_id,
         )
 
         raise HTTPException(
