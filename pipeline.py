@@ -87,25 +87,25 @@ def run_pipeline():
         total_matches = sum(len(v) for v in match_results.values())
         log.info(f"[Step 3] Done. {len(match_results)} client(s), {total_matches} theme match(es).")
 
-        #---------step 5: advisor------------
-        log.info("[Step 5] Generating client market outlooks...")
-        outlook_results = run_advisor()
-        log.info(f"[Step 5] Done. {len(outlook_results)} outlook(s) generated.")
-
-         # -- Step 6: Meeting Summary -----------------
-        log.info("[Step 6] AI Meeting Summary...")
-        generate_client_meeting_summary()
-
-        # -- Step 8: Sector recommendations -----
-        log.info("[Step 8] Generating sector recommendations...")
-        rec_results = run_recommendations()
-        total_recs  = sum(len(v) for v in rec_results.values())
-        log.info(f"[Step 8] Done. {len(rec_results)} client(s), {total_recs} sector recommendation(s).")
-
-        # -- Step 7: AI Generated Talking Points ---------------
-        log.info("[Step 7] AI Generated Talking Points...")
-        generated_talking_points()
-        log.info("[Step 7] Done.")
+#         #---------step 5: advisor------------
+#         log.info("[Step 5] Generating client market outlooks...")
+#         outlook_results = run_advisor()
+#         log.info(f"[Step 5] Done. {len(outlook_results)} outlook(s) generated.")
+#
+#          # -- Step 6: Meeting Summary -----------------
+#         log.info("[Step 6] AI Meeting Summary...")
+#         generate_client_meeting_summary()
+#
+#         # -- Step 8: Sector recommendations -----
+#         log.info("[Step 8] Generating sector recommendations...")
+#         rec_results = run_recommendations()
+#         total_recs  = sum(len(v) for v in rec_results.values())
+#         log.info(f"[Step 8] Done. {len(rec_results)} client(s), {total_recs} sector recommendation(s).")
+#
+#         # -- Step 7: AI Generated Talking Points ---------------
+#         log.info("[Step 7] AI Generated Talking Points...")
+#         generated_talking_points()
+#         log.info("[Step 7] Done.")
 
         
 
