@@ -1752,8 +1752,111 @@ def seed_all_clients():
             )
 
 
+        # ---------------- Seed Additional Meetings ----------------
+
+        additional_meetings = [
+            # Arjun Mehta - Past meetings
+            {
+                "client_code": "AB345678",
+                "date": date(2026, 10, 25),
+                "time": time(11, 0)
+            },
+            {
+                "client_code": "AB345678",
+                "date": date(2026, 11, 10),
+                "time": time(14, 30)
+            },
+
+            # Arjun Mehta - Upcoming meetings
+            {
+                "client_code": "AB345678",
+                "date": date(2026, 11, 20),
+                "time": time(10, 30)
+            },
+            {
+                "client_code": "AB345678",
+                "date": date(2026, 11, 25),
+                "time": time(15, 0)
+            },
+
+            # Priya Sharma - Past meetings
+            {
+                "client_code": "CD901234",
+                "date": date(2026, 10, 28),
+                "time": time(12, 0)
+            },
+            {
+                "client_code": "CD901234",
+                "date": date(2026, 11, 12),
+                "time": time(11, 30)
+            },
+
+            # Priya Sharma - Upcoming meetings
+            {
+                "client_code": "CD901234",
+                "date": date(2026, 11, 22),
+                "time": time(10, 0)
+            },
+            {
+                "client_code": "CD901234",
+                "date": date(2026, 11, 28),
+                "time": time(14, 0)
+            }
+        ]
+
+        for meeting_data in additional_meetings:
+
+            client = session.query(Client).filter_by(
+                client_code=meeting_data["client_code"]
+            ).first()
+
+            if not client:
+                print(
+                    f"Client not found: {meeting_data['client_code']}"
+                )
+                continue
+
+            existing_meeting = session.query(Meeting).filter_by(
+                client_id=client.id,
+                date=meeting_data["date"],
+                time=meeting_data["time"]
+            ).first()
+
+            if existing_meeting:
+                print(
+                    f"Meeting already exists for {client.name} "
+                    f"on {meeting_data['date']}"
+                )
+                continue
+
+            session.add(
+                Meeting(
+                    rm_id=client.rm_id,
+                    client_id=client.id,
+                    title="Mr" if client.client_code == "AB345678" else "Ms",
+                    date=meeting_data["date"],
+                    time=meeting_data["time"],
+                    location=(
+                        "Amsterdam - Zuid office"
+                        if client.client_code == "AB345678"
+                        else "Microsoft Teams"
+                    ),
+                    platform=(
+                        "In-person"
+                        if client.client_code == "AB345678"
+                        else "Video Call"
+                    )
+                )
+            )
+
+        session.commit()
+        print("Additional meetings seeded successfully")
+
+
 if __name__ == "__main__":
     seed_all_clients()
+
     from step3_match import run_matching
     run_matching()
+
     print("\nDone.")
