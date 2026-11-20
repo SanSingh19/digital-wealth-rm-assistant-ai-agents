@@ -777,11 +777,6 @@ def prepare_client_brief(brief_id: int, db: Session = Depends(get_db)):
             raise RuntimeError( "Step 5 did not generate market outlook" )
         log.info("[%s] Step 5 completed", brief_id)
 
-        # STEP 7 - Meeting Summary
-        log.info("[%s] Running Step 7 - Meeting Summary", brief_id)
-        generate_client_meeting_summary(brief.id)
-        log.info("[%s] Step 7 completed", brief_id)
-
         # STEP 8 - Fund Recommendations
         log.info("[%s] Running Step 8 - Recommendations", brief_id)
         step8_result = run_recommendations( brief_id=brief.id)
@@ -806,7 +801,6 @@ def prepare_client_brief(brief_id: int, db: Session = Depends(get_db)):
             "message": "Brief prepared successfully",
             "steps": {
                 "step5": "completed",
-                "step7": "completed",
                 "step8": "completed",
                 "step6": "completed",
             }

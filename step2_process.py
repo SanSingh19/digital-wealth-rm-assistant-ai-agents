@@ -38,9 +38,12 @@ from sqlalchemy.orm import Session
 import httpx
 from openai import OpenAI
 
+from anthropic import AnthropicFoundry, DefaultHttpxClient
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config.settings import (
-    DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL,
+    DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL,ANTHROPIC_API_KEY,
+    CLAUDE_MODEL,ANTHROPIC_FOUNDRY_RESOURCE,
     MAX_ARTICLES_PER_RUN, LOG_DIR,
 )
 from models import (
@@ -66,41 +69,67 @@ log = logging.getLogger("process")
 #  OPENAI CLIENT
 # ==============================================
 
-def get_openai_client() -> OpenAI:
-    api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
-    if not api_key or api_key == "sk-your-openai-key-here":
-        raise RuntimeError(
-            "OPENAI_API_KEY not set. "
-            "Export it or update OPENAI_API_KEY in config/settings.py"
-        )
-    return OpenAI(
-    api_key=api_key,
-    http_client=httpx.Client(verify=False)
+# def get_openai_client() -> OpenAI:
+#     api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
+#     if not api_key or api_key == "sk-your-openai-key-here":
+#         raise RuntimeError(
+#             "OPENAI_API_KEY not set. "
+#             "Export it or update OPENAI_API_KEY in config/settings.py"
+#         )
+#     return OpenAI(
+#     api_key=api_key,
+#     http_client=httpx.Client(verify=False)
+#     )
+# )
+
+def get_claude_client():
+
+    api_key = ANTHROPIC_API_KEY or os.getenv("ANTHROPIC_API_KEY", "")
+
+    if not api_key:
+        raise RuntimeError( "ANTHROPIC_API_KEY not set.")
+
+    return AnthropicFoundry(
+        resource=ANTHROPIC_FOUNDRY_RESOURCE,
+        api_key=api_key,
+        http_client=DefaultHttpxClient(
+            verify=False
+        ),
     )
 
 
-def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
+def openai_json(client, prompt: str, system: str) -> Any:
     """
     Call OpenAI and parse the response as JSON.
     Retries once on JSON decode failure.
     """
     for attempt in range(2):
         try:
-            resp = client.chat.completions.create(
-                model           = OPENAI_MODEL,
-                max_tokens      = 2048,
-                response_format = {"type": "json_object"},
-                messages        = [
-                    {"role": "system", "content": system},
-                    {"role": "user",   "content": prompt},
-                ],
+            resp = client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=5048,
+                system=system,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
             )
-            raw = resp.choices[0].message.content.strip()
+            text_blocks = []
+
+            for block in resp.content:
+                if hasattr(block, "text"):
+                    text_blocks.append(block.text)
+
+            raw = "".join(text_blocks)
             # strip markdown fences if present
             if raw.startswith("```"):
                 raw = raw.split("```")[1]
                 if raw.startswith("json"):
                     raw = raw[4:]
+            log.info("RAW CLAUDE RESPONSE:")
+            log.info(raw)
             parsed = json.loads(raw.strip())
             # OpenAI json_object mode wraps arrays in a dict key -- unwrap
             if isinstance(parsed, list):
@@ -739,7 +768,7 @@ def run_processing(article_ids=None):
 
     engine         = init_db(DATABASE_URL)
     SessionFactory = get_session_factory(engine)
-    client         = get_openai_client()
+    client         = get_claude_client()
 
     with SessionFactory() as session:
 

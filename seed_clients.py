@@ -1761,30 +1761,30 @@ def seed_all_clients():
                 "date": date(2026, 10, 25),
                 "time": time(11, 0)
             },
-            {
-                "client_code": "AB345678",
-                "date": date(2026, 11, 10),
-                "time": time(14, 30)
-            },
+#             {
+#                 "client_code": "AB345678",
+#                 "date": date(2026, 11, 10),
+#                 "time": time(14, 30)
+#             },
 
             # Arjun Mehta - Upcoming meetings
-            {
-                "client_code": "AB345678",
-                "date": date(2026, 11, 20),
-                "time": time(10, 30)
-            },
-            {
-                "client_code": "AB345678",
-                "date": date(2026, 11, 25),
-                "time": time(15, 0)
-            },
+#             {
+#                 "client_code": "AB345678",
+#                 "date": date(2026, 11, 20),
+#                 "time": time(10, 30)
+#             },
+#             {
+#                 "client_code": "AB345678",
+#                 "date": date(2026, 11, 25),
+#                 "time": time(15, 0)
+#             },
 
             # Priya Sharma - Past meetings
-            {
-                "client_code": "CD901234",
-                "date": date(2026, 10, 28),
-                "time": time(12, 0)
-            },
+#             {
+#                 "client_code": "CD901234",
+#                 "date": date(2026, 10, 28),
+#                 "time": time(12, 0)
+#             },
             {
                 "client_code": "CD901234",
                 "date": date(2026, 11, 12),
@@ -1792,16 +1792,16 @@ def seed_all_clients():
             },
 
             # Priya Sharma - Upcoming meetings
-            {
-                "client_code": "CD901234",
-                "date": date(2026, 11, 22),
-                "time": time(10, 0)
-            },
-            {
-                "client_code": "CD901234",
-                "date": date(2026, 11, 28),
-                "time": time(14, 0)
-            }
+#             {
+#                 "client_code": "CD901234",
+#                 "date": date(2026, 11, 22),
+#                 "time": time(10, 0)
+#             },
+#             {
+#                 "client_code": "CD901234",
+#                 "date": date(2026, 11, 28),
+#                 "time": time(14, 0)
+#             }
         ]
 
         for meeting_data in additional_meetings:

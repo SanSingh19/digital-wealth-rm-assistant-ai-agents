@@ -27,3 +27,10 @@ uvicorn[standard]>=0.29
 # langchain
 langchain>=0.2
 langchain-openai>=0.1
+langchain-anthropic>=0.3
+
+# Speech-to-Text
+faster-whisper>=1.1.0
+
+# Machine Learning / Similarity / Classification
+scikit-learn>=1.5.0

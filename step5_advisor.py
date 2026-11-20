@@ -19,6 +19,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import joinedload
 
+
 from models import (
     init_db, get_session_factory,
     Client,Brief, Meeting, Account, Portfolio, Holding, Security,
@@ -27,7 +28,8 @@ from models import (
     TrendTheme,
     ClientOutlook,
 )
-from config.settings import DATABASE_URL, OPENAI_API_KEY
+from langchain_anthropic import ChatAnthropic
+from config.settings import DATABASE_URL, OPENAI_API_KEY, ANTHROPIC_API_KEY, CLAUDE_MODEL,ANTHROPIC_BASE_URL
 
 import ssl
 import certifi
@@ -574,11 +576,11 @@ def run_advisor(brief_id: int,user_feedback: str | None = None) -> dict:
 
     import httpx
 
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0.3,
-        api_key=OPENAI_API_KEY,
-        http_client=httpx.Client(verify=False)
+    llm = ChatAnthropic(
+        model=CLAUDE_MODEL,
+        # temperature=0.3,
+        api_key=ANTHROPIC_API_KEY,
+        base_url=ANTHROPIC_BASE_URL,
     )
     chain = PROMPT | llm | PARSER
 

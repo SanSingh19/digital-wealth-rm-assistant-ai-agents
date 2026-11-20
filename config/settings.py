@@ -52,7 +52,7 @@ LOG_DIR        = BASE_DIR / "logs"
 # ── Database ───────────────────────────────────
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "sqlite:///finance_pipeline.db"          # swap for postgres in prod
+    "sqlite:///test.db"          # swap for postgres in prod
 )
 # Postgres example:
 # DATABASE_URL = "postgresql://user:pass@localhost:5432/finance_db"
@@ -61,6 +61,17 @@ DATABASE_URL = os.getenv(
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-your-openai-key-here")
 OPENAI_MODEL   = "gpt-4o"
 MAX_ARTICLES_PER_RUN = 10          # articles sent to AI per job run
+
+# ── Anthropic Claude ──────────────────────────
+# CHANGED (Claude via Azure AI Foundry): this deployment is not called on
+# api.anthropic.com directly - it's an Azure AI Foundry resource, which uses a
+# different base URL (https://<resource>.services.ai.azure.com/anthropic/) and
+# accepts the Foundry resource key as the api key. ANTHROPIC_API_KEY here is that
+# Foundry resource key, not a direct api.anthropic.com key.
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "sk-ant-your-anthropic-key-here")
+CLAUDE_MODEL = os.getenv( "CLAUDE_MODEL", "claude-sonnet-5-5")
+ANTHROPIC_FOUNDRY_RESOURCE = os.getenv("ANTHROPIC_FOUNDRY_RESOURCE", "claude2026-resource")
+ANTHROPIC_BASE_URL = f"https://{ANTHROPIC_FOUNDRY_RESOURCE}.services.ai.azure.com/anthropic"
 
 # ── Scheduler ─────────────────────────────────
 SCHEDULE_INTERVAL_MINUTES = 1440    # how often the full pipeline runs(1 Day)
