@@ -59,6 +59,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import httpx
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
@@ -66,7 +67,7 @@ from sqlalchemy.orm import joinedload, Session
 from typing import Literal
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config.settings import DATABASE_URL, OPENAI_API_KEY
+from config.settings import DATABASE_URL, OPENAI_API_KEY, ANTHROPIC_API_KEY, CLAUDE_MODEL,ANTHROPIC_BASE_URL
 from models import (
     init_db, get_session_factory,
     Client,Brief, Meeting, Account, Portfolio, Holding, Security,
@@ -1600,12 +1601,12 @@ def run_recommendations(brief_id: int, user_feedback: str | None = None) -> dict
     engine  = init_db(DATABASE_URL)
     Factory = get_session_factory(engine)
 
-    llm = ChatOpenAI(
-        model       = "gpt-4o",
-        temperature = 0.2,
-        api_key     = OPENAI_API_KEY,
-        http_client = httpx.Client(verify=False),
-    )
+    llm = ChatAnthropic(
+            model       = CLAUDE_MODEL,
+            # temperature = 0.2,
+            api_key     = ANTHROPIC_API_KEY,
+            base_url    = ANTHROPIC_BASE_URL,
+        )
     chain = PROMPT | llm | PARSER
 
     results = {}

@@ -5,25 +5,29 @@ from datetime import datetime
 
 from models import (
     Client,
-    Brief,
-    Meeting,
     ClientMeetingSummary,
     init_db,
     get_session_factory
 )
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
+from faster_whisper import WhisperModel
+from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 import httpx
 
-from config.settings import DATABASE_URL, OPENAI_API_KEY
+from config.settings import DATABASE_URL, OPENAI_API_KEY, ANTHROPIC_API_KEY,CLAUDE_MODEL, ANTHROPIC_BASE_URL
 
-openai_client = OpenAI(
-    api_key=OPENAI_API_KEY,
-    http_client=httpx.Client(verify=False),
+# openai_client = OpenAI(
+#     api_key=OPENAI_API_KEY,
+#     http_client=httpx.Client(verify=False),
+# )
+WHISPER_MODEL = WhisperModel(
+    "medium",
+    device="cpu",
+    compute_type="int8"
 )
-
 
 # ---------------- OUTPUT SCHEMA ----------------
 
@@ -79,12 +83,19 @@ Meeting Transcript
 
 # ---------------- LLM ----------------
 
-llm = ChatOpenAI(
-    model="gpt-4o",
-    temperature=0.2,
-    api_key=OPENAI_API_KEY,
-    http_client=httpx.Client(verify=False),
+# llm = ChatOpenAI(
+#     model="gpt-4o",
+#     temperature=0.2,
+#     api_key=OPENAI_API_KEY,
+#     http_client=httpx.Client(verify=False),
+# )
+llm = ChatAnthropic(
+    model=CLAUDE_MODEL,
+#     temperature=0.2,
+    api_key=ANTHROPIC_API_KEY,
+    base_url=ANTHROPIC_BASE_URL,
 )
+
 
 chain = PROMPT | llm | PARSER
 
@@ -101,13 +112,16 @@ def load_meeting(client_code, meeting_date):
     if not path.exists():
         return None
 
-    with open(path, "rb") as audio_file:
-        transcript = openai_client.audio.transcriptions.create(
-            model="gpt-4o-mini-transcribe",
-            file=audio_file
-        )
+    segments, info = WHISPER_MODEL.transcribe(
+        str(path)
+    )
 
-    return transcript.text
+    transcript_text = " ".join(
+        segment.text
+        for segment in segments
+    )
+
+    return transcript_text
 
 def get_meeting_dates_from_folder(client_code: str):
 
@@ -158,7 +172,7 @@ def generate_meeting_summary(client_code: str, meeting_date):
     }
 
 
-def generate_client_meeting_summary(brief_id: int):
+def generate_client_meeting_summary(client_ids=None):
 
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
@@ -167,38 +181,14 @@ def generate_client_meeting_summary(brief_id: int):
 
     with Session() as session:
 
-            brief = (
-                session.query(Brief)
-                .filter(Brief.id == brief_id)
-                .first()
-            )
+        client_query = session.query(Client)
 
-            if not brief:
-                raise ValueError(
-                    f"Brief {brief_id} not found"
-                )
+        if client_ids:
+            client_query = client_query.filter(Client.id.in_(client_ids))
 
-            meeting = (
-                session.query(Meeting)
-                .filter(Meeting.id == brief.meeting_id)
-                .first()
-            )
+        clients = client_query.all()
 
-            if not meeting:
-                raise ValueError(
-                    f"Meeting not found for brief {brief_id}"
-                )
-
-            db_client = (
-                session.query(Client)
-                .filter(Client.id == int(meeting.client_id))
-                .first()
-            )
-
-            if not db_client:
-                raise ValueError(
-                    f"Client not found for meeting {meeting.id}"
-                )
+        for db_client in clients:
 
             print(f"\nGenerating summary for {db_client.client_code}")
 
@@ -209,7 +199,7 @@ def generate_client_meeting_summary(brief_id: int):
                 existing_summary = (
                     session.query(ClientMeetingSummary)
                     .filter(
-                        ClientMeetingSummary.brief_id == brief_id,
+                        ClientMeetingSummary.client_id == db_client.id,
                         ClientMeetingSummary.last_meeting_date == meeting_date
                     )
                     .first()
@@ -228,7 +218,7 @@ def generate_client_meeting_summary(brief_id: int):
 
                     row = ClientMeetingSummary(
                         rm_id=db_client.rm_id,
-                        brief_id=brief_id,
+                        client_id=db_client.id,
                         last_meeting_date=summary["last_meeting_date"],
                         main_discussion_points=summary["main_discussion_points"],
                         client_questions=summary["client_questions"]
@@ -236,9 +226,9 @@ def generate_client_meeting_summary(brief_id: int):
 
                     session.add(row)
 
-                results[brief_id] = row
+                results[db_client.id] = row
 
-            session.commit()
+        session.commit()
 
     return results
 

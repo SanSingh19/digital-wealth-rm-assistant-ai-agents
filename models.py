@@ -261,6 +261,12 @@ class Client(Base):
             cascade="all, delete-orphan"
     )
 
+    client_summary = relationship(
+                    "ClientMeetingSummary",
+                     back_populates="client_meeting_data",
+                     cascade="all, delete-orphan"
+            )
+
     accounts       = relationship("Account", back_populates="client",
                                   cascade="all, delete-orphan")
 
@@ -437,12 +443,6 @@ class Brief(Base):
         cascade="all, delete-orphan"
     )
 
-    meeting_summary = relationship(
-        "ClientMeetingSummary",
-        back_populates="brief",
-        uselist=False,
-        cascade="all, delete-orphan"
-    )
 
 # ---------------- Personal Details ----------------
 
@@ -484,25 +484,27 @@ class ClientMeetingSummary(Base):
         nullable=False
     )
 
-    brief_id = Column(
-        Integer,
-        ForeignKey("briefs.id"),
-        nullable=False
-    )
+    client_id = Column(
+            String,
+            ForeignKey("clients.id"),
+            nullable=False
+        )
 
     main_discussion_points = Column(JSON)
     last_meeting_date = Column(Date)
     client_questions = Column(JSON)
+    is_approved = Column(Boolean,nullable=False,default=False)
+    approved_datetime = Column(DateTime,nullable=True)
 
     rm_summary = relationship(
         "RelationshipManager",
         back_populates="rm_meeting_summary"
     )
 
-    brief = relationship(
-        "Brief",
-        back_populates="meeting_summary"
-    )
+    client_meeting_data = relationship(
+                "Client",
+                back_populates="client_summary"
+            )
 
 class Account(Base):
     __tablename__ = "accounts"
