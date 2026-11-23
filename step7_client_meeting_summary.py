@@ -9,25 +9,19 @@ from models import (
     init_db,
     get_session_factory
 )
-# from langchain_openai import ChatOpenAI
-from faster_whisper import WhisperModel
-from langchain_anthropic import ChatAnthropic
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 import httpx
 
-from config.settings import DATABASE_URL, OPENAI_API_KEY, ANTHROPIC_API_KEY,CLAUDE_MODEL, ANTHROPIC_BASE_URL
+from config.settings import DATABASE_URL, OPENAI_API_KEY
 
-# openai_client = OpenAI(
-#     api_key=OPENAI_API_KEY,
-#     http_client=httpx.Client(verify=False),
-# )
-WHISPER_MODEL = WhisperModel(
-    "medium",
-    device="cpu",
-    compute_type="int8"
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY,
+    http_client=httpx.Client(verify=False),
 )
+
 
 # ---------------- OUTPUT SCHEMA ----------------
 
@@ -83,19 +77,12 @@ Meeting Transcript
 
 # ---------------- LLM ----------------
 
-# llm = ChatOpenAI(
-#     model="gpt-4o",
-#     temperature=0.2,
-#     api_key=OPENAI_API_KEY,
-#     http_client=httpx.Client(verify=False),
-# )
-llm = ChatAnthropic(
-    model=CLAUDE_MODEL,
-#     temperature=0.2,
-    api_key=ANTHROPIC_API_KEY,
-    base_url=ANTHROPIC_BASE_URL,
+llm = ChatOpenAI(
+    model="gpt-4o",
+    temperature=0.2,
+    api_key=OPENAI_API_KEY,
+    http_client=httpx.Client(verify=False),
 )
-
 
 chain = PROMPT | llm | PARSER
 
@@ -112,16 +99,13 @@ def load_meeting(client_code, meeting_date):
     if not path.exists():
         return None
 
-    segments, info = WHISPER_MODEL.transcribe(
-        str(path)
-    )
+    with open(path, "rb") as audio_file:
+        transcript = openai_client.audio.transcriptions.create(
+            model="gpt-4o-mini-transcribe",
+            file=audio_file
+        )
 
-    transcript_text = " ".join(
-        segment.text
-        for segment in segments
-    )
-
-    return transcript_text
+    return transcript.text
 
 def get_meeting_dates_from_folder(client_code: str):
 

@@ -1773,11 +1773,11 @@ def seed_all_clients():
 #                 "date": date(2026, 11, 20),
 #                 "time": time(10, 30)
 #             },
-#             {
-#                 "client_code": "AB345678",
-#                 "date": date(2026, 11, 25),
-#                 "time": time(15, 0)
-#             },
+            {
+                "client_code": "AB345678",
+                "date": date(2026, 12, 10),
+                "time": time(15, 0)
+            },
 
             # Priya Sharma - Past meetings
 #             {
@@ -1797,11 +1797,11 @@ def seed_all_clients():
 #                 "date": date(2026, 11, 22),
 #                 "time": time(10, 0)
 #             },
-#             {
-#                 "client_code": "CD901234",
-#                 "date": date(2026, 11, 28),
-#                 "time": time(14, 0)
-#             }
+            {
+                "client_code": "CD901234",
+                "date": date(2026, 12, 11),
+                "time": time(14, 0)
+            }
         ]
 
         for meeting_data in additional_meetings:

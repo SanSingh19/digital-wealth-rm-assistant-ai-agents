@@ -466,10 +466,24 @@ def generated_talking_points(brief_id: int) -> dict:
     openai_client = get_openai_client()
 
     with Session() as session:
+        brief = (
+            session.query(Brief)
+            .filter(Brief.id == brief_id)
+            .first()
+        )
+
+        if not brief:
+            return {}
+
+        client = brief.meeting.meeting_client
+
         meeting_summary = (
             session.query(ClientMeetingSummary)
             .filter(
-                ClientMeetingSummary.brief_id == brief_id
+                ClientMeetingSummary.client_id == client.id
+            )
+            .order_by(
+                ClientMeetingSummary.last_meeting_date.desc()
             )
             .first()
         )
@@ -609,9 +623,16 @@ def generated_product_introductions(brief_id: int) -> dict:
             .first()
         )
 
+        client = brief.meeting.meeting_client
+
         meeting_summary = (
             session.query(ClientMeetingSummary)
-            .filter(ClientMeetingSummary.brief_id == brief_id)
+            .filter(
+                ClientMeetingSummary.client_id == client.id
+            )
+            .order_by(
+                ClientMeetingSummary.last_meeting_date.desc()
+            )
             .first()
         )
 
@@ -1372,7 +1393,12 @@ def regenerate_talking_point(
 
         meeting = (
             session.query(ClientMeetingSummary)
-            .filter(ClientMeetingSummary.brief_id == brief_id)
+            .filter(
+                ClientMeetingSummary.client_id == client_id
+            )
+            .order_by(
+                ClientMeetingSummary.last_meeting_date.desc()
+            )
             .first()
         )
 
@@ -1431,7 +1457,12 @@ def regenerate_talking_point(
 
             meeting_summary = (
                 session.query(ClientMeetingSummary)
-                .filter(ClientMeetingSummary.brief_id == brief_id)
+                .filter(
+                    ClientMeetingSummary.client_id == client_id
+                )
+                .order_by(
+                    ClientMeetingSummary.last_meeting_date.desc()
+                )
                 .first()
             )
 
