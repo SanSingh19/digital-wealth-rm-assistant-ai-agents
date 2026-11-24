@@ -36,8 +36,9 @@ from portfolio_api import PortfolioApi
 
 import httpx
 from openai import OpenAI
+from anthropic import Anthropic
 
-from config.settings import DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL
+from config.settings import DATABASE_URL, OPENAI_API_KEY, OPENAI_MODEL,ANTHROPIC_API_KEY, CLAUDE_MODEL, ANTHROPIC_BASE_URL
 from models import (
     Client,
     ClientOutlook,
@@ -463,7 +464,7 @@ def generated_talking_points(brief_id: int) -> dict:
     results = {}
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
-    openai_client = get_openai_client()
+    claude_client = get_claude_client()
 
     with Session() as session:
         brief = (
@@ -539,7 +540,7 @@ def generated_talking_points(brief_id: int) -> dict:
             conversation_result = populate_conversation_openers(
                 session,
                 [(client_details, meeting)],
-                openai_client
+                claude_client
             )
 
             product_introduction_result = product_introduction_results.get(
@@ -550,13 +551,13 @@ def generated_talking_points(brief_id: int) -> dict:
             portfolio_result = populate_portfolio_discussion(
                 session,
                 [(client_details, meeting)],
-                openai_client
+                claude_client
             )
 
             objection_result = populate_anticipated_objections(
                 session,
                 [(client_details, meeting)],
-                openai_client,
+                claude_client,
                 brief_id
             )
 
@@ -614,7 +615,7 @@ def generated_product_introductions(brief_id: int) -> dict:
     results = {}
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
-    openai_client = get_openai_client()
+    claude_client = get_claude_client()
 
     with Session() as session:
         brief = (
@@ -666,7 +667,7 @@ def generated_product_introductions(brief_id: int) -> dict:
                 "Processing brief %s: %s", brief_id,
                 _summarize_client_product_introductions(outlook, meeting_summary, recommendation),
             )
-            client_result = populate_product_introductions([(outlook, meeting_summary, recommendation)], openai_client)
+            client_result = populate_product_introductions([(outlook, meeting_summary, recommendation)], claude_client)
             if isinstance(client_result, dict):
                 results[brief_id] = client_result
             else:
@@ -794,7 +795,7 @@ def _append_user_feedback(
     )
 
 
-def populate_conversation_openers(session, clients, openai_client, user_feedback: str = None):
+def populate_conversation_openers(session, clients, claude_client, user_feedback: str = None):
     if not clients:
         return {"brief_id": None, "conversationOpeners": [], "citation": {}}
 
@@ -836,7 +837,7 @@ def populate_conversation_openers(session, clients, openai_client, user_feedback
 
 
 
-    result = openai_json(openai_client, prompt, SYSTEM_CONVERSATION_OPENERS)
+    result = openai_json(claude_client, prompt, SYSTEM_CONVERSATION_OPENERS)
     if isinstance(result, dict):
         opener_count = len(result.get("conversationOpeners", []))
         brief_id = result.get("brief_id")
@@ -862,7 +863,7 @@ def populate_conversation_openers(session, clients, openai_client, user_feedback
     log.warning("Unexpected response shape from OpenAI: %s", type(result).__name__)
     return {"brief_id": None, "conversationOpeners": result, "citation": citation}
 
-def populate_product_introductions(clients, openai_client, user_feedback: str = None):
+def populate_product_introductions(clients, claude_client, user_feedback: str = None):
     if not clients:
         return {"brief_id": None, "product_introduction": [],"citation": {}}
 
@@ -935,7 +936,7 @@ def populate_product_introductions(clients, openai_client, user_feedback: str = 
 
 
     result = openai_json(
-        openai_client,
+        claude_client,
         prompt,
         SYSTEM_PRODUCT_INTRODUCTION
     )
@@ -978,7 +979,7 @@ def populate_product_introductions(clients, openai_client, user_feedback: str = 
         "citation": citation
     }
 
-def populate_portfolio_discussion(session, clients, openai_client, user_feedback: str = None):
+def populate_portfolio_discussion(session, clients, claude_client, user_feedback: str = None):
 
     if not clients:
         return {"brief_id": None, "portfolioDiscussion": [],"citation": {}}
@@ -1135,7 +1136,7 @@ def populate_portfolio_discussion(session, clients, openai_client, user_feedback
     )
 
     result = openai_json(
-        openai_client,
+        claude_client,
         prompt,
         SYSTEM_PORTFOLIO_DISCUSSION
     )
@@ -1156,7 +1157,7 @@ def populate_portfolio_discussion(session, clients, openai_client, user_feedback
         "citation": citation
     }
 
-def populate_anticipated_objections(session, clients, openai_client, brief_id, user_feedback: str = None):
+def populate_anticipated_objections(session, clients, claude_client, brief_id, user_feedback: str = None):
 
     if not clients:
         return {
@@ -1263,7 +1264,7 @@ Recommended Funds:
     )
 
     result = openai_json(
-        openai_client,
+        claude_client,
         prompt,
         SYSTEM_ANTICIPATED_OBJECTIONS
     )
@@ -1339,7 +1340,7 @@ def regenerate_talking_point(
 
     engine = init_db(DATABASE_URL)
     Session = get_session_factory(engine)
-    openai_client = get_openai_client()
+    claude_client = get_claude_client()
 
     with Session() as session:
 
@@ -1414,7 +1415,7 @@ def regenerate_talking_point(
             result = populate_conversation_openers(
                 session,
                 client_tuple,
-                openai_client,
+                claude_client,
                 user_feedback=user_feedback
             )
 
@@ -1436,7 +1437,7 @@ def regenerate_talking_point(
             result = populate_portfolio_discussion(
                 session,
                 client_tuple,
-                openai_client,
+                claude_client,
                 user_feedback=user_feedback
             )
 
@@ -1488,7 +1489,7 @@ def regenerate_talking_point(
 
             result = populate_product_introductions(
                 product_client_tuple,
-                openai_client,
+                claude_client,
                 user_feedback=user_feedback
             )
 
@@ -1510,7 +1511,7 @@ def regenerate_talking_point(
             result = populate_anticipated_objections(
                 session,
                 client_tuple,
-                openai_client,
+                claude_client,
                 brief_id,
                 user_feedback=user_feedback
             )
@@ -1543,14 +1544,11 @@ def regenerate_talking_point(
 
         return talking_points
 
-def get_openai_client() -> OpenAI:
-    api_key = OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
-    if not api_key or api_key == "sk-your-openai-key-here":
-        raise RuntimeError(
-            "OPENAI_API_KEY not set. "
-            "Export it or update OPENAI_API_KEY in config/settings.py"
-        )
-    return OpenAI(api_key=api_key, http_client=httpx.Client(verify=False))
+def get_claude_client() -> Anthropic:
+    return Anthropic(
+        api_key=ANTHROPIC_API_KEY,
+        base_url=ANTHROPIC_BASE_URL,
+    )
 
 
 
@@ -1561,16 +1559,28 @@ def openai_json(client: OpenAI, prompt: str, system: str) -> Any:
     """
     for attempt in range(2):
         try:
-            resp = client.chat.completions.create(
-                model=OPENAI_MODEL,
+            resp = client.messages.create(
+                model=CLAUDE_MODEL,
                 max_tokens=2048,
-                response_format={"type": "json_object"},
+                system=system,
                 messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": prompt},
-                ],
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
             )
-            raw = resp.choices[0].message.content.strip()
+
+            text_blocks = [
+                block.text
+                for block in resp.content
+                if hasattr(block, "text")
+            ]
+
+            raw = "\n".join(text_blocks).strip()
+
+            if not raw:
+                raise ValueError("Claude returned no text response")
             if raw.startswith("```"):
                 raw = raw.split("```")[1]
                 if raw.startswith("json"):
