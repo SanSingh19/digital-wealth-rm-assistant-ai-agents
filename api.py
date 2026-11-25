@@ -18,6 +18,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload
 
+from pathlib import Path
+from datetime import date
+import shutil
+
+from fastapi import UploadFile, File, Form, HTTPException
+
 from models import (
     init_db, get_session_factory,
     Client,Brief, Account, Portfolio, Holding, Security,
@@ -473,6 +479,54 @@ def get_client_transactions(client_id: int, db: Session = Depends(get_db)):
         for t in txns
     ]
 
+@app.post("/client/meeting-summary/upload")
+async def upload_meeting_summary(
+    client_code: str = Form(...),
+    meeting_date: date = Form(...),
+    file: UploadFile = File(...)
+):
+    try:
+        # Validate file type
+        if not file.filename or not file.filename.lower().endswith(".mp4"):
+            raise HTTPException(
+                status_code=400,
+                detail="Only MP4 files are allowed."
+            )
+
+        # Save the uploaded video in the folder expected by step7
+        meeting_folder = Path("meetings") / client_code
+        meeting_folder.mkdir(parents=True, exist_ok=True)
+
+        file_path = meeting_folder / f"{meeting_date.strftime('%Y-%m-%d')}.mp4"
+
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Generate the summary from the saved video
+        summary = generate_meeting_summary(
+            client_code,
+            meeting_date
+        )
+
+        return {
+            "status": "SUCCESS",
+            "client_code": client_code,
+            "last_meeting_date": meeting_date.isoformat(),
+            "main_discussion_points": summary["main_discussion_points"],
+            "client_questions": summary["client_questions"]
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process meeting upload: {str(e)}"
+        )
+
+    finally:
+        await file.close()
 
 @app.get("/clients/{client_id}/themes", response_model=list[ThemeMatchOut])
 def get_client_themes(client_id: int, db: Session = Depends(get_db)):
